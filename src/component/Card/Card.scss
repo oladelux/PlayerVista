@@ -1,0 +1,13 @@
+@use '../../assets/styles/colors';
+
+.Card {
+  min-height: 320px;
+  background-color: colors.$color-white;
+  border-radius: 5px;
+  padding: 0;
+  margin-bottom: 20px;
+
+  &__content {
+    height: 100%;
+  }
+}

@@ -1,0 +1,19 @@
+@use '../../assets/styles/colors';
+
+.Dashboard {
+  &__content {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    column-gap: 20px;
+
+    &-first {
+    }
+
+    &-second {
+      background-image: url('../../assets/images/versus.jpg');
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: cover;
+    }
+  }
+}

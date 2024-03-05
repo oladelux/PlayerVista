@@ -1,0 +1,35 @@
+@use '../../assets/styles/colors';
+
+.single-player-view {
+  &__header {
+    border-bottom: 1px solid colors.$color-flat-grey1;
+
+    &-player {
+      display: flex;
+      justify-content: space-between;
+      height: 250px;
+
+      &--media {
+        display: flex;
+        align-items: flex-end;
+
+        &-name {
+          color: colors.$color-white;
+          font-size: 32px;
+          padding: 2px 10px;
+          line-height: 1;
+
+        &-ln {
+          font-weight: 700;
+        }
+        }
+      }
+
+      &--number {
+        padding: 0 20px;
+        font-size: 200px;
+        color: colors.$color-white;
+      }
+    }
+  }
+}

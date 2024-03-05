@@ -1,0 +1,29 @@
+@use '../../assets/styles/colors';
+
+.usefulLinkButton {
+  border-radius: 4px;
+  border: 1px solid colors.$color-flat-grey3;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  text-decoration: none;
+  transition: box-shadow .2s ease 0s, border-color .2s ease 0s;
+
+  &:hover {
+    text-decoration: none;
+    color: colors.$color-dark-blue;
+    border-color: colors.$color-dark-blue-shadow;
+
+    .usefulLinkButton__media svg {
+        fill: colors.$color-dark-blue;
+      }
+  }
+
+  &__media {
+    margin-bottom: 5px;
+    svg {
+      fill: colors.$color-sub-text;
+    }
+  }
+}

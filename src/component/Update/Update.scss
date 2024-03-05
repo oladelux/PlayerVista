@@ -1,0 +1,67 @@
+@use '../../assets/styles/colors';
+
+.Update {
+  padding: 20px;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid colors.$color-border-line;
+
+    &-title {
+      border-bottom: 2px solid colors.$color-dark-purple;
+      padding: 0 40px;
+      font-weight: 800;
+      font-size: 0.875em;
+    }
+
+    &-nav {
+      &--link {
+        padding: 0 40px;
+        font-weight: 800;
+        font-size: 0.875em;
+        color: colors.$color-dark-purple;
+      }
+    }
+  }
+
+  &__notifications {
+    padding: 15px;
+
+    &-stack {
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid colors.$color-border-line;
+
+      &--date {
+        font-weight: 800;
+        font-size: 0.875em;
+        color: colors.$color-dark-purple;
+        width: 15%;
+      }
+
+      &--alerts {
+        width: 75%;
+
+        &-list {
+          padding: 0;
+
+          &-item {
+            font-size: 0.75em;
+            color: colors.$color-dark-purple;
+
+            &::marker {
+              font-size: 10px;
+            }
+          }
+        }
+      }
+
+      &--time {
+        width: 10%;
+        font-size: 0.75em;
+        color: colors.$color-dark-purple;
+      }
+    }
+  }
+}

@@ -1,0 +1,13 @@
+@use '../../assets/styles/colors';
+
+.Tab-button {
+  text-align: center;
+  padding: 5px 10px;
+  text-transform: capitalize;
+  font-weight: 500;
+  margin-right: 5px;
+
+  &--active {
+    border-bottom: 2px solid colors.$color-black;
+  }
+}

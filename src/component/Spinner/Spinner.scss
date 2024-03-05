@@ -1,0 +1,20 @@
+@keyframes rotating {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+
+  &__media {
+    max-width: 40px;
+    animation: rotating 2s linear infinite;
+  }
+}

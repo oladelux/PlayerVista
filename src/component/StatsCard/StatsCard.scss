@@ -1,0 +1,110 @@
+@use '../../assets/styles/colors';
+@use '../../assets/styles/fonts';
+
+.Stats-card {
+  padding: 20px;
+
+  &__title {
+    font-family: fonts.$font-regular;
+    color: colors.$color-dark-purple;
+    font-size: 1em;
+    font-weight: bold;
+  }
+
+  &__header {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 20px;
+    padding: 25px 0;
+    border-bottom: 1px solid colors.$color-border-line;
+
+    &-basic {
+      display: flex;
+      align-items: center;
+
+      &-title {
+        font-family: fonts.$font-regular;
+        font-size: 1.5em;
+        color: colors.$color-dark-purple;
+        padding: 0 10px;
+      }
+
+      &-image {
+        width: 80px;
+      }
+    }
+
+    &-info {
+      background-color: colors.$color-background;
+      border-radius: 10px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      align-content: center;
+      text-align: center;
+
+      &-data {
+        padding: 0 5px;
+        border-right: 1px solid colors.$color-dark-purple;
+
+        &:last-child {
+          border-right: none;
+        }
+
+        &-value {
+          color: colors.$color-dark-purple;
+          font-family: fonts.$font-regular;
+          font-size: 0.875em;
+        }
+
+        &-title {
+          color: colors.$color-dark-purple;
+          font-size: 0.813em;
+        }
+      }
+    }
+  }
+
+  &__content {
+    padding: 25px 0;
+    display: grid;
+    grid-template-columns: 2fr 3fr;
+    column-gap: 20px;
+
+    &-overview, &-trends {
+      height: 450px;
+      border-radius: 8px;
+      background-color: colors.$color-background;
+
+      &--title {
+        font-size: 1em;
+        color: colors.$color-dark-purple;
+        font-family: fonts.$font-regular;
+        padding: 10px 20px;
+      }
+
+      &--radar-chart {
+        height: inherit;
+      }
+    }
+  }
+}
+.recharts-default-legend {
+  margin-top: 20px;
+}
+.recharts-polar-grid-concentric-circle {
+  &:nth-child(2) {
+    fill: rgba(36, 0, 38, 0.86);
+  }
+  &:nth-child(3) {
+    fill: rgba(36, 0, 38, 0.66);
+  }
+  &:nth-child(4) {
+  fill: rgba(55, 0, 60, 0.46)
+  }
+  &:nth-child(4) {
+    fill: rgba(55, 0, 60, 0.7)
+  }
+  &:nth-child(5) {
+    fill: rgba(55, 0, 60, 0.7)
+  }
+}

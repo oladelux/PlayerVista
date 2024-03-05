@@ -1,0 +1,152 @@
+@use '../../assets/styles/colors';
+@use '../../assets/styles/fonts';
+
+.Player-metrics {
+  padding: 20px;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    &-title {
+      font-family: fonts.$font-regular;
+      font-size: 1em;
+      color: colors.$color-dark-purple;
+    }
+
+    &-form {
+      &--select {
+        height: 40px;
+        width: 165px;
+        padding: 10px;
+        border-radius: 10px;
+        border: 1px solid colors.$color-border-line;
+        color: colors.$color-text;
+        font-size: 0.875em;
+        outline: none;
+      }
+    }
+  }
+
+  &__profile {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 20px;
+    padding: 25px 0;
+    border-bottom: 1px solid colors.$color-border-line;
+
+    &-card {
+      display: flex;
+      align-items: center;
+
+      &--media {
+        background-color: colors.$color-border-line;
+        width: 88px;
+        height: 88px;
+        border-radius: 100%;
+        display: grid;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+
+        &-logo {
+          max-width: 100%;
+          height: auto;
+          margin-bottom: -10px;
+        }
+      }
+
+      &--name {
+        padding: 0 5px;
+
+        &-first-name {
+          font-size: 1em;
+          color: colors.$color-dark-purple;
+        }
+
+        &-last-name {
+          font-size: 1.5em;
+          font-family: fonts.$font-regular;
+          color: colors.$color-dark-purple;
+        }
+
+        &-club {
+          display: flex;
+          align-items: center;
+
+          &-name {
+            color: colors.$color-ash;
+            padding: 0 4px;
+            font-size: 0.625em;
+          }
+        }
+      }
+    }
+
+    &-metric {
+      background-color: colors.$color-background;
+      border-radius: 10px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      align-content: center;
+      text-align: center;
+
+      &-data {
+        padding: 0 5px;
+        border-right: 1px solid colors.$color-dark-purple;
+
+        &:last-child {
+          border-right: none;
+        }
+
+        &-value {
+          color: colors.$color-dark-purple;
+          font-family: fonts.$font-regular;
+          font-size: 0.875em;
+        }
+
+        &-title {
+          color: colors.$color-dark-purple;
+          font-size: 0.813em;
+        }
+      }
+    }
+  }
+
+  &__metrics {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    column-gap: 20px;
+    padding: 20px 0;
+
+    &-card {
+      min-height: 265px;
+      background-color: colors.$color-background;
+      border-radius: 10px;
+      padding: 20px;
+
+      &-title {
+        color: colors.$color-dark-purple;
+        font-family: fonts.$font-regular;
+        font-size: 0.875em;
+        margin-top: 20px;
+      }
+
+      &-progress {
+        padding: 15px 0;
+
+        &-label {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+
+          &--title, &--value {
+            font-size: 0.875em;
+            color: colors.$color-dark-purple;
+          }
+        }
+      }
+    }
+  }
+}

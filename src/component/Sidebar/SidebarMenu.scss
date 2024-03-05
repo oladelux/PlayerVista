@@ -1,0 +1,125 @@
+@use '../../assets/styles/colors';
+
+.Sidebar {
+  height: calc(100vh - 115px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  &__nav {
+    &-footer-nav {
+      margin: 0 20px 12px;
+      padding: 12px;
+    }
+    &-search{
+      margin: 0 20px 12px;
+      padding-bottom: 12px;
+
+      &-title {
+        font-size: 0.875em;
+        color: colors.$color-dark-blue;
+        padding-bottom: 10px;
+      }
+
+      &-select {
+        height: 50px;
+        width: 100%;
+        padding: 10px;
+        color: colors.$color-dark-blue;
+        border: 1px solid colors.$color-grey;
+        border-radius: 8px;
+        outline: none;
+      }
+    }
+  }
+
+  &__item {
+    margin: 0 20px;
+
+    &--active {
+      cursor: default;
+      color: colors.$color-white;
+      background: colors.$color-dark-blue;
+      border-radius: 5px;
+
+      .Sidebar__item-menu-content-link, .Sidebar__item-arrow {
+        color: colors.$color-white;
+      }
+    }
+
+    &-menu {
+      padding: 12px;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      text-decoration: none;
+
+      &-content {
+        display: flex;
+        align-items: center;
+
+        &-media {
+          display: flex;
+
+          &-icon {
+            color: colors.$color-dark-blue;
+          }
+        }
+        &-link {
+          font-size: 0.875em;
+          padding-left: 10px;
+          color: colors.$color-dark-blue;
+        }
+      }
+    }
+
+    &-arrow {
+      display: flex;
+      font-size: 1.125em;
+      cursor: pointer;
+      margin-right: 5px;
+      color: colors.$color-dark-blue;
+    }
+
+    &-submenu {
+      margin: 0;
+      padding: 0 12px;
+      background-color: colors.$color-white;
+      color: colors.$color-dark-purple;
+      list-style: none;
+
+      &--item {
+        padding: 12px 0;
+        border-bottom: 1px solid colors.$color-border-line;
+
+        &:last-child {
+          border-bottom: 0;
+        }
+
+        &-link {
+          text-decoration: none;
+          color: colors.$color-grey;
+          font-size: 0.875em;
+        }
+      }
+    }
+  }
+}
+
+.Sidebar-footer-menu {
+  &__nav {
+    display: flex;
+    align-items: center;
+    margin-bottom: 24px;
+    text-decoration: none;
+    cursor: pointer;
+
+    &-title {
+      padding: 0 10px;
+      color: colors.$color-dark-blue;
+      font-size: 0.875em;
+      text-decoration: none;
+    }
+  }
+}

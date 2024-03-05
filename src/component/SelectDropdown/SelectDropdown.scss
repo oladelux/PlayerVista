@@ -1,0 +1,49 @@
+@use '../../assets/styles/colors';
+
+.select-dropdown {
+  position: relative;
+  width: max-content;
+
+  &__btn {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 10px 10px 0 0;
+    text-align: center;
+    background-color: colors.$color-dark-blue;
+    color: colors.$color-white;
+    padding: 5px 10px;
+
+    &-arrow {
+      width: 10px;
+      height: 10px;
+      margin-left: 10px;
+    }
+  }
+
+  &__options {
+    z-index: 10;
+    background-color: colors.$color-white;
+    color: colors.$color-black;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    width: 100%;
+    box-shadow: 0 6px 7px -5px rgba(50, 50, 93, .1), 0 8px 16px -8px rgba(0, 0, 0, .15), 0 -6px 16px -6px rgba(0, 0, 0, .01);
+
+    &-btn {
+      padding: 7px 15px;
+      width: 100%;
+      border-bottom: 1px solid colors.$color-flat-grey1;
+
+      &:last-child {
+        border-bottom: 0;
+      }
+
+      &:hover {
+        color: colors.$color-white;
+        background-color: colors.$color-dark-blue;
+      }
+    }
+  }
+}

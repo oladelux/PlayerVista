@@ -1,0 +1,59 @@
+@use '../../assets/styles/colors';
+
+.Table {
+  border: 1px solid colors.$color-border-line;
+  border-radius: 10px;
+  padding: 10px 20px 20px;
+
+  &__container {
+    width: 100%;
+    border-spacing: 0;
+
+    &-head {
+      height: 40px;
+      background-color: colors.$color-th-background;
+
+      &-row {
+        &-cell {
+          padding: 5px 24px;
+          text-align: justify;
+          font-size: 0.875em;
+          color: colors.$color-text;
+        }
+      }
+    }
+
+    &-body {
+      &-row {
+        &-cell {
+          padding: 24px 24px 10px;
+          text-align: justify;
+          font-size: 0.875em;
+          color: colors.$color-text;
+          border-bottom: 1px solid colors.$color-border-line;
+        }
+      }
+
+      &--no-data {
+        color: colors.$color-dark-purple;
+        font-size: 1em;
+        padding: 15px 0;
+      }
+    }
+  }
+
+  &__pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 20px 0;
+
+    &-btn {
+      padding: 8px 24px;
+      border-radius: 8px;
+      border: 1px solid colors.$color-border-line;
+      color: colors.$color-grey;
+      background-color: transparent;
+    }
+  }
+}

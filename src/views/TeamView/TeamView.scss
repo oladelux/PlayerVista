@@ -1,0 +1,94 @@
+@use '../../assets/styles/colors';
+@use '../../assets/styles/fonts';
+
+.Team-view {
+  background-color: colors.$color-background;
+  height: calc(100vh - 115px);
+  padding: 20px;
+
+  &__no-team {
+    padding: 15px;
+    background-color: colors.$color-white;
+    height: 100%;
+  }
+
+  &__team {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    column-gap: 10px;
+
+    &-card {
+      text-decoration: none;
+      background-color: colors.$color-white;
+      padding: 15px;
+      height: 150px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+
+      &--media {
+        text-align: center;
+
+        &-image {
+          width: 50px;
+        }
+      }
+
+      &--title {
+        padding: 15px 0;
+        font-size: 1em;
+        font-family: fonts.$font-regular;
+        color: colors.$color-dark-purple;
+        text-align: center;
+      }
+
+      &--footer {
+        display: flex;
+        justify-content: space-between;
+
+        &-players {
+          color: colors.$color-dark-blue;
+          font-size: 0.875em;
+
+          &-value {
+            font-family: fonts.$font-regular;
+          }
+        }
+
+        &-age-group {
+          padding: 2px 5px;
+          background-color: colors.$color-dark-blue3;
+          color: colors.$color-dark-blue;
+          border-radius: 10px;
+          font-size: 0.875em;
+        }
+      }
+    }
+  }
+}
+
+.No-team-view {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  &__title {
+    font-size: 1.2em;
+    padding-bottom: 5px;
+    color: colors.$color-dark-purple;
+  }
+
+  &__link {
+    padding: 8px 20px;
+    font-size: 1em;
+    text-decoration: none;
+    border: none;
+    border-radius: 8px;
+    background-color: colors.$color-dark-blue;
+    color: colors.$color-white;
+  }
+}

@@ -1,0 +1,17 @@
+@use './assets/styles/fonts';
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  width: 100%;
+}
+
+:root {
+  font-family: fonts.$font-light;
+}
+
+* {
+  box-sizing: border-box;
+}

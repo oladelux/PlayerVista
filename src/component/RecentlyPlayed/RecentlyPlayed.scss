@@ -1,0 +1,19 @@
+@use '../../assets/styles/colors';
+@use '../../assets/styles/fonts';
+
+.No-matches {
+  display: flex;
+  color: colors.$color-dark-purple;
+}
+
+.Recently-played {
+  padding: 0 20px;
+
+  &__title {
+    padding: 20px 0;
+    font-size: 1em;
+    font-family: fonts.$font-regular;
+    font-weight: 800;
+    color: colors.$color-dark-purple;
+  }
+}

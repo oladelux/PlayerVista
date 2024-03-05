@@ -1,0 +1,6 @@
+.main-content {
+  flex-grow: 1;
+  margin-left: 240px;
+  background-color: #F8F8F9;
+  height: 100%;
+}

@@ -1,0 +1,139 @@
+@use '../../assets/styles/colors';
+@use '../../assets/styles/fonts';
+
+.Sign-up {
+  height: 100vh;
+  display: flex;
+
+  &__hero {
+    line-height: 1.2;
+    background-image: url('../../assets/images/register.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    width: 40%;
+
+    &-overlay {
+      background-color: colors.$color-hero-background;
+      height: 100%;
+      color: colors.$color-white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+
+      &-heading {
+        font-size: 2.875em;
+        line-height: 62px;
+        text-transform: capitalize;
+        font-family: fonts.$font-regular;
+      }
+
+      &-sub-heading {
+        padding: 5px 20px;
+
+        &--quote {
+          font-family: fonts.$font-light;
+          font-style: italic;
+          font-size: 1.2em;
+        }
+        &--author {
+          font-size: 1.563em;
+          font-family: fonts.$font-regular;
+          text-align: end;
+        }
+      }
+    }
+
+    &-media {
+      width: 100%;
+    }
+  }
+
+  &__form {
+    background-color: colors.$color-background;
+    width: 60%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    &-title {
+      font-size: 2.2em;
+      line-height: 47px;
+      color: colors.$color-dark-purple;
+      font-family: fonts.$font-regular;
+    }
+
+    &-sub-heading {
+      color: colors.$color-grey;
+      font-weight: 400;
+      font-size: 1.25em;
+    }
+
+    &-body {
+      width: 50%;
+      margin-bottom: 10px;
+
+      &-flex {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        column-gap: 20px;
+      }
+
+      &--input {
+        margin-top: 5px;
+
+        &-label {
+          font-size: 1.25em;
+          color: colors.$color-dark-purple;
+          font-weight: 700;
+          padding-bottom: 5px;
+        }
+      }
+
+      &--btn {
+        width: 100%;
+        background-color: colors.$color-dark-purple;
+        color: colors.$color-white;
+        border-radius: 8px;
+        border: none;
+        padding: 10px 15px;
+        font-size: 1em;
+      }
+    }
+
+    &-validate {
+      text-align: start;
+      padding-bottom: 15px;
+
+      &-text {
+        color: colors.$color-grey;
+        font-size: 0.75em;
+        display: flex;
+
+        &--icon {
+          color: colors.$color-grey;
+          padding-right: 5px;
+          font-size: 1.4em;
+        }
+
+        &--valid {
+          color: colors.$color-green;
+        }
+      }
+    }
+
+    &-sign-up {
+      padding: 20px 0;
+      color: colors.$color-dark-purple;
+      font-size: 1.25em;
+
+      &--bold {
+        margin-left: 5px;
+        font-family: fonts.$font-regular;
+        color: colors.$color-dark-purple;
+      }
+    }
+  }
+}

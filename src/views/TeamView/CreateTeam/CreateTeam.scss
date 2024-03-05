@@ -1,0 +1,198 @@
+@use '../../../assets/styles/colors';
+@use '../../../assets/styles/fonts';
+
+.Create-team {
+  background-color: colors.$color-background;
+  min-height: calc(100vh - 115px);
+  padding: 20px;
+
+  &__content {
+    padding: 45px;
+    background-color: colors.$color-white;
+    height: 100%;
+
+    &-header {
+      &-title {
+        color: colors.$color-dark;
+        font-size: 1.085em;
+        font-weight: 700;
+        line-height: 1.48em;
+      }
+      &-sub-title {
+        color: colors.$color-text;
+        font-size: 0.813em;
+        line-height: 1.184em;
+        font-weight: 400;
+      }
+    }
+  }
+}
+
+.css-1hv8oq8-MuiStepLabel-label {
+  font-family: fonts.$font-light !important;
+  color: colors.$color-grey;
+  font-size: 0.75em !important;
+}
+
+.css-1hv8oq8-MuiStepLabel-label.Mui-active, .css-1hv8oq8-MuiStepLabel-label.Mui-completed {
+  color: colors.$color-dark-blue !important;
+  font-size: 0.75em;
+}
+
+.css-10mg1vw-MuiStepper-root {
+  margin: 30px 0;
+}
+
+.Multi-step {
+  &__title {
+    color: colors.$color-dark-purple;
+    font-family: fonts.$font-regular;
+    padding-bottom: 20px;
+  }
+
+  &__layout {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 20px;
+
+    &-form-group {
+      margin-bottom: 10px;
+
+      &--label {
+        padding: 15px 0;
+        color: colors.$color-dark-purple;
+        font-size: 0.875em;
+      }
+
+      &--2 {
+        display: flex;
+        padding: 5px 0;
+        border-radius: 8px;
+        border: 0.87px solid colors.$color-grey;
+
+        &__field {
+          border: none;
+          height: 39px;
+          padding: 3px 8px;
+          width: 100%;
+          color: colors.$color-dark-purple;
+          font-size: 0.813em;
+          outline: none;
+
+          &:first-child {
+            border-right: 0.87px solid colors.$color-grey;
+          }
+        }
+      }
+
+      &--3 {
+        display: flex;
+        padding: 5px 0;
+        border-radius: 8px;
+        border: 0.87px solid colors.$color-grey;
+
+        &__field {
+          border: none;
+          height: 39px;
+          padding: 3px 8px;
+          width: 100%;
+          color: colors.$color-dark-purple;
+          border-right: 0.87px solid colors.$color-grey;
+          font-size: 0.813em;
+          outline: none;
+
+          &:last-child {
+            border-right: none;
+          }
+        }
+      }
+
+      &--field {
+        height: 50px;
+        padding: 10px 8px;
+        width: 100%;
+        border: 0.87px solid colors.$color-grey;
+        border-radius: 8px;
+        color: colors.$color-dark-purple;
+        font-size: 0.813em;
+        outline: none;
+      }
+    }
+  }
+
+  &__team {
+    &-title {
+      padding: 15px 0;
+      color: colors.$color-dark-purple;
+      font-size: 0.875em;
+    }
+    &-image {
+      background-color: colors.$color-image-background;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 200px;
+
+      &--input {
+        display: none;
+      }
+
+      &--label {
+        text-align: center;
+        padding: 60px 150px;
+        cursor: pointer;
+
+        &-icon {
+          width: 35px !important;
+          height: 35px !important;
+          color: colors.$color-grey;
+        }
+
+        &-text {
+          color: colors.$color-dark-purple;
+          font-size: 0.875em;
+
+          &-bold {
+            font-family: fonts.$font-regular;
+          }
+        }
+
+        &-image {
+          height: 20px;
+          padding: 5px 0;
+          font-family: fonts.$font-regular;
+          text-transform: uppercase;
+        }
+      }
+    }
+  }
+}
+
+.Formik-stepper {
+  &__btn {
+    margin: 30px 0;
+    display: flex;
+    justify-content: space-between;
+
+    &--back {
+      padding: 18px 70px;
+      background-color: colors.$color-white;
+      color: colors.$color-dark-purple;
+      font-weight: 800;
+      font-size: 0.875em;
+      border: 1px solid colors.$color-dark-purple;
+      border-radius: 8px;
+    }
+
+    &--submit {
+      padding: 18px 70px;
+      background-color: colors.$color-dark-blue;
+      color: colors.$color-white;
+      font-weight: 800;
+      font-size: 0.875em;
+      border: none;
+      border-radius: 8px;
+    }
+  }
+}

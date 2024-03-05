@@ -1,0 +1,18 @@
+@font-face {
+  font-family: Nunito-Light;
+  src: local('Nunito-Light'),url('../fonts/nunito-light.woff') format('woff');
+}
+
+@font-face {
+  font-family: Nunito-Regular;
+  src: local('Nunito-Regular'),url('../fonts/nunito-regular.woff') format('woff');
+}
+
+@font-face {
+  font-family: Nunito-Bold;
+  src: local('Nunito-Bold'),url('../fonts/nunito-bold.woff') format('woff');
+}
+
+$font-light: Nunito-Light, -apple-system, system-ui, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
+$font-regular: Nunito-Regular, -apple-system, system-ui, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
+$font-bold: Nunito-Bold, -apple-system, system-ui, BlinkMacSystemFont, Helvetica, Arial, sans-serif;

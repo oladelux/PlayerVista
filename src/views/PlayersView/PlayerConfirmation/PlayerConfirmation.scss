@@ -1,0 +1,39 @@
+@use '../../../assets/styles/colors';
+
+.Player-confirmation {
+  padding: 35px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  &__media {
+    height: 68px;
+    width: 68px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 100%;
+    background-color: colors.$light-background;
+
+    &-icon {
+      color: colors.$color-dark-blue;
+      font-size: 2.5em;
+    }
+  }
+
+  &__title {
+    margin: 23px 0;
+    font-size: 1.5em;
+    color: colors.$color-text;
+    text-align: center;
+  }
+
+  &__btn {
+    padding: 16px;
+    background-color: colors.$color-dark-blue;
+    color: colors.$color-white;
+    font-size: 1em;
+    border: none;
+    width: 100%;
+  }
+}

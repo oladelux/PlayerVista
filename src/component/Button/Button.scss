@@ -1,0 +1,13 @@
+@use '../../assets/styles/colors';
+@use '../../assets/styles/fonts';
+
+.button {
+  cursor: pointer;
+  padding: 10px 15px;
+  border-radius: 5px;
+  font-family: fonts.$font-light;
+
+  &__disabled {
+    cursor: not-allowed;
+  }
+}
