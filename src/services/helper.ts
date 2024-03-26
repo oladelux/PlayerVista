@@ -1,3 +1,5 @@
+import { getCookie } from './cookies'
+
 export const formatDate = (date: Date) => {
   return date.toLocaleDateString('en-US', {
     month: 'short',
@@ -25,4 +27,9 @@ export function calculateAge(birthDate: Date): number {
     age--
   }
   return age
+}
+
+export function isAccessToken(): boolean {
+  const accessToken = getCookie('access-token')
+  return !!accessToken
 }

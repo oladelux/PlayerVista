@@ -1,11 +1,13 @@
-import React, { FC, useState } from 'react'
+import React, {FC, useEffect, useState} from 'react'
 import classnames from 'classnames'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
-import { useSelector } from 'react-redux'
+import {useDispatch, useSelector} from 'react-redux'
 import { FaAngleRight, FaAngleDown } from 'react-icons/fa'
 
 import { AppController } from '../../hooks/useAppController'
 import { teamSelector } from '../../store/slices/TeamSlice'
+import { getPlayersThunk } from '../../store/slices/PlayersSlice'
+import { AppDispatch } from '../../store/types'
 
 import DashboardIcon from '../../assets/images/icons/dashboard.svg'
 import DashboardActiveIcon from '../../assets/images/icons/dashboard-active.svg'
@@ -129,6 +131,7 @@ type SidebarProps = {
 }
 
 export const Sidebar: FC<SidebarProps> = props => {
+  const dispatch = useDispatch<AppDispatch>()
   const { pathname } = useLocation()
   const { teamId } = useParams()
   const { teams } = useSelector(teamSelector)
@@ -207,6 +210,12 @@ export const Sidebar: FC<SidebarProps> = props => {
     const selectedTeamId = e.target.value
     navigate(`/team/${selectedTeamId}`)
   }
+
+  useEffect(() => {
+    if (teamId) {
+      dispatch(getPlayersThunk({teamId}))
+    }
+  }, [dispatch, teamId])
 
   return (
     <div className='Sidebar'>

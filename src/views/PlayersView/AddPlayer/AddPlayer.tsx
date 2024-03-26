@@ -1,19 +1,20 @@
-import React, { ChangeEvent, useState } from 'react'
+import { ChangeEvent, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import BackupOutlinedIcon from '@mui/icons-material/BackupOutlined'
 import { Field } from 'formik'
+import CenterFocusWeakIcon from '@mui/icons-material/CenterFocusWeak'
 
 import { useAppDispatch } from '../../../store/types'
 import { FormikStep, FormikStepper } from '../../TeamView/CreateTeam/Step'
-import { PlayerFormData } from '../../../api'
+import { PlayerFormData, uploadImageToCloudinary } from '../../../api'
 import { createNewPlayerThunk, getPlayersThunk } from '../../../store/slices/PlayersSlice'
 import { convertToDate } from '../../../services/helper'
+import { cloudName, cloudUploadPresets } from '../../../config/constants'
 
 import { DashboardLayout } from '../../../component/DashboardLayout/DashboardLayout'
 import { PlayerConfirmationPopup } from '../PlayerConfirmation/PlayerConfirmation'
 
-
 import './AddPlayer.scss'
+import {SelectPlayerPositionWithFormik} from "../../../component/SelectPlayerPosition/SelectPlayerPosition.tsx";
 
 export const AddPlayer = () => {
 
@@ -34,7 +35,9 @@ const AddPlayerMultiStep = () => {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const { teamId } = useParams()
-  const [playerImage, setPlayerImage] = useState<string>('')
+  const [selectedImage, setSelectedImage] = useState<string>('')
+  const [imageUrl, setImageUrl] = useState<string>('')
+  const [isUploading, setIsUploading] = useState(false)
   const [isActiveConfirmationPopup, setIsActiveConfirmationPopup] = useState(false)
 
   const openConfirmationPopup = () => setIsActiveConfirmationPopup(true)
@@ -46,7 +49,28 @@ const AddPlayerMultiStep = () => {
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     const imgFile = e.target.files
-    imgFile && setPlayerImage(URL.createObjectURL(imgFile[0]))
+
+    if (imgFile && imgFile[0]) {
+      setSelectedImage(URL.createObjectURL(imgFile[0]))
+      setIsUploading(true)
+
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        uploadImageToCloudinary({
+          folder: 'playerImage',
+          file: reader.result as string,
+          cloud_name: cloudName,
+          upload_preset: cloudUploadPresets
+        }).then(res => {
+          setIsUploading(false)
+          setImageUrl(res.url)
+        }).catch(err => {
+          console.error('Error uploading image:', err)
+          setIsUploading(false)
+        })
+      }
+      reader.readAsDataURL(imgFile[0])
+    }
   }
 
   return (
@@ -76,7 +100,7 @@ const AddPlayerMultiStep = () => {
           const data: PlayerFormData = {
             ...(values as PlayerFormData),
             birthDate: convertToDate(values.birthDate),
-            imageSrc: playerImage,
+            imageSrc: imageUrl,
           }
           teamId && dispatch(createNewPlayerThunk({ data, teamId }))
             .finally(() => {
@@ -87,6 +111,30 @@ const AddPlayerMultiStep = () => {
       >
         <FormikStep label='Player Info'>
           <div className='Multi-step__title'>Please provide the following details</div>
+          <div className='Multi-step__team'>
+            <div className='Multi-step__team-image'>
+              <input
+                id='teamImage'
+                name='teamImage'
+                className='Multi-step__team-image--input'
+                type='file'
+                accept='image/*'
+                onChange={handleImageChange}
+                disabled={isUploading}
+              />
+              <label htmlFor='teamImage' className='Multi-step__team-image--label'>
+                <div className='Multi-step__team-image--label-preview'>
+                  {selectedImage ?
+                    <img alt='preview' className='Multi-step__team-image--label-preview-img' src={selectedImage}/>
+                    : <CenterFocusWeakIcon className='Multi-step__team-image--label-preview-icon'/>
+                  }
+                </div>
+              </label>
+              <div className='Multi-step__team-image--title'>
+                Upload player image
+              </div>
+            </div>
+          </div>
           <div className='Multi-step__layout'>
             <div className='Multi-step__layout-form-group'>
               <div className='Multi-step__layout-form-group--label'>First Name</div>
@@ -173,46 +221,7 @@ const AddPlayerMultiStep = () => {
             </div>
             <div className='Multi-step__layout-form-group'>
               <div className='Multi-step__layout-form-group--label'>Position</div>
-              <Field
-                className='Multi-step__layout-form-group--field'
-                as='select'
-                name='position'
-              >
-                <option>Select Position</option>
-                <option value='GK'>GK</option>
-                <option value='CB'>CB</option>
-                <option value='RB'>RB</option>
-                <option value='LB'>LB</option>
-                <option value='WRB'>WRB</option>
-                <option value='WLB'>WLB</option>
-                <option value='CDM'>CDM</option>
-                <option value='CM'>CM</option>
-                <option value='RM'>RM</option>
-                <option value='LM'>LM</option>
-                <option value='CAM'>CAM</option>
-                <option value='ST'>ST</option>
-                <option value='CF'>CF</option>
-              </Field>
-            </div>
-          </div>
-          <div className='Multi-step__team'>
-            <div className='Multi-step__team-title'>Player Image</div>
-            <div className='Multi-step__team-image'>
-              <input
-                id='fileInput'
-                name='playerImage'
-                className='Multi-step__team-image--input'
-                type='file'
-                accept='image/*'
-                onChange={handleImageChange}
-              />
-              <label htmlFor='fileInput' className='Multi-step__team-image--label'>
-                <BackupOutlinedIcon className='Multi-step__team-image--label-icon' />
-                <div className='Multi-step__team-image--label-text'>
-                  <span className='Multi-step__team-image--label-text-bold'>Click to upload</span>, or drag and drop SVG, PNG, JPG or GIF (max 800x400px)
-                </div>
-                <div className='Multi-step__team-image--label-image'>{playerImage}</div>
-              </label>
+              <SelectPlayerPositionWithFormik className='Multi-step__layout-form-group--field' name='position' />
             </div>
           </div>
         </FormikStep>

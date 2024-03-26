@@ -5,10 +5,9 @@
   padding: 20px;
 
   &__title {
-    font-family: fonts.$font-regular;
+    font-family: fonts.$font-bold;
     color: colors.$color-dark-purple;
     font-size: 1em;
-    font-weight: bold;
   }
 
   &__header {

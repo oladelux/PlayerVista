@@ -6,7 +6,6 @@ import { getTeamsThunk, teamSelector } from '../store/slices/TeamSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch } from '../store/types'
 import { useTeams } from './useTeams'
-import { getPlayersThunk } from '../store/slices/PlayersSlice'
 import { usePlayers } from './usePlayers'
 
 export type AppController = ReturnType<typeof useAppController>
@@ -14,8 +13,6 @@ let didInit = false
 
 export function useAppController () {
   const dispatch = useDispatch<AppDispatch>()
-  const teamIds = localStorage.getItem('TeamIds')
-  const parsedTeamIds: string[] = teamIds && JSON.parse(teamIds)
 
   const { teams } = useSelector(teamSelector)
   const user = useUser()
@@ -33,10 +30,6 @@ export function useAppController () {
         .then(async data => {
           if (data) {
             await dispatch(getTeamsThunk())
-
-            if (parsedTeamIds) {
-              parsedTeamIds.map(teamId => dispatch(getPlayersThunk({ teamId })))
-            }
           }
         })
         .then(() => {

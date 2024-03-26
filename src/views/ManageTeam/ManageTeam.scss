@@ -1,4 +1,5 @@
 @use '../../assets/styles/colors';
+@use '../../assets/styles/fonts';
 
 .active {
   color: colors.$color-active-text;
@@ -30,8 +31,8 @@
   padding: 40px 50px;
 
   &__title {
+    font-family: fonts.$font-medium;
     font-size: 1.75em;
-    font-weight: bolder;
   }
 
   &__header {

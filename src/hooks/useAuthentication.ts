@@ -56,6 +56,7 @@ export function useAuthentication (user: UserHook, afterLogin: () => Promise<voi
       api.logout({ refreshToken })
         .then(() => {
           removeCookie('access-token')
+          removeCookie('refresh-token')
           navigate(routes.login)
         })
         .catch(e => {

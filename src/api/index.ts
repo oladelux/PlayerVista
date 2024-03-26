@@ -1,8 +1,10 @@
 import { getCookie } from '../services/cookies'
 
 const apiURI = import.meta.env.VITE_API_URI
+const cloudinaryAPI = import.meta.env.VITE_CLOUDINARY_API
+const cloudName = import.meta.env.VITE_CLOUD_NAME
 
-type Method = 'GET' | 'POST' | 'PUT' | 'DELETE'
+type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
 
 export class UnauthorizedError extends Error {
   constructor (url: string, status: number, public responseBody: Record<string, unknown>) {
@@ -73,6 +75,17 @@ const apiRequest = async (
   return apiResponse(res)
 }
 
+const senRequestToCloudinary = async (endpoint: string, data: object = {}): Promise<Response> => {
+  const url = cloudinaryAPI + endpoint
+  const headers = new Headers()
+  headers.append('Content-Type', 'application/json')
+  return fetch(url, {
+    method: 'POST',
+    headers: headers,
+    body: JSON.stringify(data)
+  }).then(apiResponse)
+}
+
 export type AuthenticationCredentials = {
   email: string,
   password: string
@@ -140,8 +153,10 @@ export type TeamApiResponse = {
 
 export type Player = {
   id: string
+  team: string
   firstName: string
   lastName: string
+  teamCaptain: boolean
   email: string
   phoneNumber: string
   uniformNumber: string
@@ -196,6 +211,7 @@ export type TeamFormData = {
 export type PlayerFormData = {
   firstName: string
   lastName: string
+  teamCaptain: boolean
   email: string
   phoneNumber: string
   uniformNumber: string
@@ -239,42 +255,59 @@ export type Fixtures = {
   awayLogo: string
 }
 
-export function register(data: RegistrationDetails): Promise<RegistrationResponse> {
-  return apiRequest('/v1/auth/register', 'POST', data)
-    .then(res => res.json())
+export async function register(data: RegistrationDetails): Promise<RegistrationResponse> {
+  const res = await apiRequest('/v1/auth/register', 'POST', data)
+  return await res.json()
 }
 
-export function loginAuthentication(data: AuthenticationCredentials):
+export async function loginAuthentication(data: AuthenticationCredentials):
   Promise<AuthenticationResult> {
-  return apiRequest('/v1/auth/login', 'POST', data)
-    .then(res => res.json())
+  const res = await apiRequest('/v1/auth/login', 'POST', data)
+  return await res.json()
 }
 
 export function logout(data: AuthRefreshToken) {
   return apiRequest('/v1/auth/logout', 'POST', data)
 }
 
-export function getAuthenticatedUser(): Promise<AuthenticatedUserData> {
-  return apiRequest('/v1/user/data', 'GET')
-    .then(res => res.json())
+export async function getAuthenticatedUser(): Promise<AuthenticatedUserData> {
+  const res = await apiRequest('/v1/user/data', 'GET')
+  return await res.json()
 }
 
-export function createTeam(data: TeamFormData): Promise<Response> {
-  return apiRequest('/v1/team', 'POST', data)
-    .then(res => res.json())
+export async function createTeam(data: TeamFormData): Promise<Response> {
+  const res = await apiRequest('/v1/team', 'POST', data)
+  return await res.json()
 }
 
-export function getTeams(): Promise<TeamDataResponse> {
-  return apiRequest('/v1/team', 'GET')
-    .then(res => res.json())
+export async function getTeams(): Promise<TeamDataResponse> {
+  const res = await apiRequest('/v1/team', 'GET')
+  return await res.json()
 }
 
-export function addPlayer(data: PlayerFormData, teamId: string): Promise<Response> {
-  return apiRequest(`/v1/player?teamId=${teamId}`, 'POST', data)
-    .then(res => res.json())
+export async function addPlayer(data: PlayerFormData, teamId: string): Promise<Response> {
+  const res = await apiRequest(`/v1/player?teamId=${teamId}`, 'POST', data)
+  return await res.json()
 }
 
-export function getPlayers( teamId: string): Promise<PlayerDataResponse> {
-  return apiRequest(`/v1/player?teamId=${teamId}`, 'GET')
-    .then(res => res.json())
+export async function getPlayers(teamId: string): Promise<PlayerDataResponse> {
+  const res = await apiRequest(`/v1/player?teamId=${teamId}`, 'GET')
+  return await res.json()
+}
+
+export async function updatePlayer(data: PlayerFormData, playerId: string): Promise<Response> {
+  const res = await apiRequest(`/v1/player/id/${playerId}`, 'PATCH', data)
+  return await res.json()
+}
+
+type PlayerImage = {
+  folder: string
+  file: string
+  cloud_name: string
+  upload_preset: string
+}
+
+export async function uploadImageToCloudinary(data: PlayerImage): Promise<Response> {
+  const res = await senRequestToCloudinary(`/v1_1/${cloudName}/image/upload`, data)
+  return await res.json()
 }

@@ -25,7 +25,7 @@ const playerColumns = [
   {
     key: 'action',
     title: 'Action',
-    render: (value: string) => <a className='table-link' href={value}>View</a>,
+    render: (value: string) => <Link className='table-link' to={value}>View</Link>,
   },
 ]
 
@@ -37,7 +37,7 @@ export const PlayersView:FC<PlayersViewProps> = props => {
   const { teamId } = useParams()
   const { searchPlayerValue, handleSearchInput } = usePlayers()
 
-  const currentTeamPlayers = teamId && props.players.hasOwnProperty(teamId)
+  const currentTeamPlayers = teamId && Object.prototype.hasOwnProperty.call(props.players, teamId)
     ? props.players[teamId]
     : []
 
@@ -62,7 +62,7 @@ export const PlayersView:FC<PlayersViewProps> = props => {
     position: player.position,
     jerseyNumber: player.uniformNumber,
     status: true,
-    action: `/player/${player.id}`,
+    action: `/team/${teamId}/players/${player.id}`,
   }))
 
   return (

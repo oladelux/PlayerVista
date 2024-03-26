@@ -29,10 +29,6 @@ export const TeamView: FC<TeamViewProps> = props => {
   const isTeamsAvailable = props.teams.length > 0
 
   const setActiveTeam = (teamId: string) => {
-    if (isTeamsAvailable) {
-      const teamIds = props.teams.map(team => team.id)
-      localStorage.setItem('TeamIds', JSON.stringify(teamIds))
-    }
     dispatch(setActiveTeamId({ teamId }))
     navigate(`/team/${teamId}`)
   }

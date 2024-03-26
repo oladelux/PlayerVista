@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { Fixtures, TeamResult } from '../../api'
@@ -20,6 +20,7 @@ type DashboardProps = {
 export const Dashboard: FC<DashboardProps> = props => {
   const { teamId } = useParams()
   const currentTeam = props.teams.find((team) => team.id === teamId)
+
   return (
     <DashboardLayout>
       <div className='Dashboard'>

@@ -3,11 +3,15 @@
 
 .button {
   cursor: pointer;
-  padding: 10px 15px;
+  padding: 10px 20px;
+  border: none;
+  background-color: colors.$color-dark-blue;
+  color: colors.$color-white;
   border-radius: 5px;
   font-family: fonts.$font-light;
 
   &__disabled {
     cursor: not-allowed;
+    background-color: colors.$color-dark-blue-shadow;
   }
 }

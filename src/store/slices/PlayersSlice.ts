@@ -6,7 +6,7 @@ import {
   ClientError,
   getPlayers, Player,
   PlayerDataResponse,
-  PlayerFormData,
+  PlayerFormData, updatePlayer,
 } from '../../api'
 
 type InitialPlayersState = {
@@ -19,12 +19,17 @@ type InitialPlayersState = {
    * The loading state of getting players for a team
    */
   loadingGettingTeamPlayersStatus: AsyncThunkLoading
+  /**
+   * The loading state of updating a player
+   */
+  loadingUpdatingPlayer: AsyncThunkLoading
 }
 
 const initialState: InitialPlayersState = {
   players: {},
   loadingCreatingNewPlayerStatus: 'idle',
   loadingGettingTeamPlayersStatus: 'idle',
+  loadingUpdatingPlayer: 'idle',
 }
 
 /**
@@ -58,6 +63,23 @@ export const getPlayersThunk = createAsyncThunk<
       return rejectWithValue(e.message)
     }
     return rejectWithValue('Unexpected error in getting players')
+  }
+})
+
+/**
+ * The thunk for updating player data
+ */
+export const updatePlayerThunk = createAsyncThunk<
+  unknown,
+  { data: PlayerFormData, playerId: string }
+>('players/updatePlayer', ({ data, playerId }, { rejectWithValue }) => {
+  try {
+    return updatePlayer(data, playerId)
+  } catch (e) {
+    if (e instanceof ClientError) {
+      return rejectWithValue(e.message)
+    }
+    return rejectWithValue('Unexpected error in updating player')
   }
 })
 
@@ -103,6 +125,24 @@ export const playersSlice = createSlice({
         ) {
           state.loadingGettingTeamPlayersStatus = 'failed'
           console.error('Error getting players', action.error)
+        }
+      })
+      .addCase(updatePlayerThunk.pending, state => {
+        state.loadingUpdatingPlayer = 'pending'
+      })
+      .addCase(updatePlayerThunk.fulfilled, state => {
+        if (
+          state.loadingUpdatingPlayer === 'pending'
+        ) {
+          state.loadingUpdatingPlayer = 'succeeded'
+        }
+      })
+      .addCase(updatePlayerThunk.rejected, (state, action) => {
+        if (
+          state.loadingUpdatingPlayer === 'pending'
+        ) {
+          state.loadingUpdatingPlayer = 'failed'
+          console.error('Error updating player', action.error)
         }
       })
   },

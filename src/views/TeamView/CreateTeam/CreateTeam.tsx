@@ -1,10 +1,11 @@
 import { ChangeEvent, FC, useState } from 'react'
 import { Field } from 'formik'
-import BackupOutlinedIcon from '@mui/icons-material/BackupOutlined'
+import CenterFocusWeakIcon from '@mui/icons-material/CenterFocusWeak'
 
 import { useAppDispatch } from '../../../store/types'
 import { createTeamThunk } from '../../../store/slices/TeamSlice'
-import { TeamFormData } from '../../../api'
+import { TeamFormData, uploadImageToCloudinary } from '../../../api'
+import { cloudName, cloudUploadPresets } from '../../../config/constants'
 
 import { DashboardHeader } from '../../../component/DashboardLayout/DashboardLayout'
 import { FormikStep, FormikStepper } from './Step'
@@ -29,18 +30,34 @@ export const CreateTeam: FC = () => {
 }
 
 const CreateTeamMultiStep = () => {
+  const [selectedImage, setSelectedImage] = useState<string>('')
   const [file, setFile] = useState<string>('')
   const [fileName, setFileName] = useState<string>('')
+  const [isUploading, setIsUploading] = useState(false)
   const dispatch = useAppDispatch()
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     const imgFile = e.target.files
-    imgFile && setFileName(imgFile[0].name)
-    const reader = new FileReader()
-    reader.onloadend = () => {
-      setFile(reader.result as string)
-    }
-    if (imgFile && imgFile[0]) {
+    if (imgFile) {
+      setFileName(imgFile[0].name)
+      setSelectedImage(URL.createObjectURL(imgFile[0]))
+      setIsUploading(true)
+
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        uploadImageToCloudinary({
+          folder: 'teamImage',
+          file: reader.result as string,
+          cloud_name: cloudName,
+          upload_preset: cloudUploadPresets
+        }).then(res => {
+          setIsUploading(false)
+          setFile(res.url)
+        }).catch(err => {
+          console.error('Error uploading image:', err)
+          setIsUploading(false)
+        })
+      }
       reader.readAsDataURL(imgFile[0])
     }
   }
@@ -81,6 +98,30 @@ const CreateTeamMultiStep = () => {
       >
         <FormikStep label='Team Info'>
           <div className='Multi-step__title'>Please provide the following details</div>
+          <div className='Multi-step__team'>
+            <div className='Multi-step__team-image'>
+              <input
+                id='teamImage'
+                name='teamImage'
+                className='Multi-step__team-image--input'
+                type='file'
+                accept='image/*'
+                onChange={handleImageChange}
+                disabled={isUploading}
+              />
+              <label htmlFor='teamImage' className='Multi-step__team-image--label'>
+                <div className='Multi-step__team-image--label-preview'>
+                  {selectedImage ?
+                    <img alt='preview' className='Multi-step__team-image--label-preview-img' src={selectedImage}/>
+                    : <CenterFocusWeakIcon className='Multi-step__team-image--label-preview-icon'/>
+                  }
+                </div>
+              </label>
+              <div className='Multi-step__team-image--title'>
+                Choose your team logo
+              </div>
+            </div>
+          </div>
           <div className='Multi-step__layout'>
             <div className='Multi-step__layout-form-group'>
               <div className='Multi-step__layout-form-group--label'>Team Name</div>
@@ -140,26 +181,6 @@ const CreateTeamMultiStep = () => {
                 <option value='under-23'>Under-23</option>
                 <option value='senior-team'>Senior Team</option>
               </Field>
-            </div>
-          </div>
-          <div className='Multi-step__team'>
-            <div className='Multi-step__team-title'>Team Logo</div>
-            <div className='Multi-step__team-image'>
-              <input
-                id='fileInput'
-                name='teamImage'
-                className='Multi-step__team-image--input'
-                type='file'
-                accept='image/*'
-                onChange={handleImageChange}
-              />
-              <label htmlFor='fileInput' className='Multi-step__team-image--label'>
-                <BackupOutlinedIcon className='Multi-step__team-image--label-icon' />
-                <div className='Multi-step__team-image--label-text'>
-                  <span className='Multi-step__team-image--label-text-bold'>Click to upload</span>, or drag and drop SVG, PNG, JPG or GIF (max 800x400px)
-                </div>
-                <div className='Multi-step__team-image--label-image'>{fileName}</div>
-              </label>
             </div>
           </div>
         </FormikStep>
