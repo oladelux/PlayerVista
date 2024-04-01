@@ -311,3 +311,62 @@ export async function uploadImageToCloudinary(data: PlayerImage): Promise<Respon
   const res = await senRequestToCloudinary(`/v1_1/${cloudName}/image/upload`, data)
   return await res.json()
 }
+
+export type EventFormData = {
+  type: string,
+  startDate: Date
+  eventLocation?: string
+  location?: string
+  opponent?: string
+  info?: string
+}
+
+export type Event = {
+  id: string
+  team: string
+  type: string
+  startDate: Date
+  endDate: Date
+  eventLocation: string
+  location: string
+  opponent: string
+  info: string
+}
+
+type EventsApiResponse = {
+  results: Event[]
+}
+
+export type EventDataResponse = BaseApiResponse & EventsApiResponse
+
+export async function addEvent(data: EventFormData, teamId: string): Promise<Response> {
+  const res = await apiRequest(`/v1/event?teamId=${teamId}`, 'POST', data)
+  return await res.json()
+}
+
+export async function getEvents(teamId: string): Promise<EventDataResponse> {
+  const res = await apiRequest(`/v1/event?teamId=${teamId}`, 'GET')
+  return await res.json()
+}
+
+export type SingleEventType = {
+  type: string
+  startDate: string
+  endDate: string
+  location: string
+  eventLocation: string
+  opponent: string
+  info: string
+  team: string
+  id: string
+}
+
+export async function getSingleEvent(eventId: string): Promise<SingleEventType> {
+  const res = await apiRequest(`/v1/event/id/${eventId}`, 'GET')
+  return await res.json()
+}
+
+export async function updateEvent(data: EventFormData, eventId: string): Promise<Response> {
+  const res = await apiRequest(`/v1/event/id/${eventId}`, 'PATCH', data)
+  return await res.json()
+}

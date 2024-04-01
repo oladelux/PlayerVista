@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch } from '../store/types'
 import { useTeams } from './useTeams'
 import { usePlayers } from './usePlayers'
+import {useEvents} from "./useEvents.ts";
 
 export type AppController = ReturnType<typeof useAppController>
 let didInit = false
@@ -17,6 +18,7 @@ export function useAppController () {
   const { teams } = useSelector(teamSelector)
   const user = useUser()
   const { players } = usePlayers()
+  const { events } = useEvents()
   const authentication = useAuthentication(user, async () => {
     await dispatch(getTeamsThunk())
   })
@@ -45,5 +47,6 @@ export function useAppController () {
     team,
     players,
     teams,
+    events,
   }
 }

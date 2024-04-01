@@ -11,7 +11,7 @@ import { Dashboard } from './views/Dashboard/Dashboard'
 import { PlayersView } from './views/PlayersView/PlayersView'
 import { SinglePlayerView } from './views/SinglePlayerView/SinglePlayerView'
 import { TrainingData } from './views/TrainingData/TrainingData'
-import { Events } from './views/Events/Events'
+import { EventsView } from './views/EventsView/EventsView'
 import { MyAccount } from './views/MyAccount/MyAccount'
 import { Spinner } from './component/Spinner/Spinner'
 import { AddPlayer } from './views/PlayersView/AddPlayer/AddPlayer'
@@ -19,14 +19,15 @@ import { SignUp } from './views/SignUp/SignUp'
 import { ForgotPassword } from './views/ForgotPassword/ForgotPassword'
 import { ChangePasswordView } from './views/ChangePasswordView/ChangePasswordView'
 import { TeamView } from './views/TeamView/TeamView'
-import { CreateTeam } from './views/TeamView/CreateTeam/CreateTeam'
+import { CreateTeam, DashboardCreateTeam } from './views/TeamView/CreateTeam/CreateTeam'
 import { ManageTeam } from './views/ManageTeam/ManageTeam'
 import { Staffs } from './views/UserManagementView/Staffs/Staffs'
+import { DashboardLayout } from './component/DashboardLayout/DashboardLayout.tsx'
 
 export const AppRoutes: FC = () => {
   const controller = useAppController()
 
-  const { user, players } = controller
+  const { user, players, events } = controller
   const accessToken = getCookie('access-token')
 
   if (user.data === undefined && accessToken) {
@@ -54,6 +55,8 @@ export const AppRoutes: FC = () => {
         <Route path={routes.home} element={<Home />} />
         <Route path={routes.team} element={<TeamView teams={controller.teams} />} />
         <Route path={routes.createTeam} element={<CreateTeam />} />
+        <Route path={routes.dashboardCreateTeam}
+               element={<DashboardLayout><DashboardCreateTeam /></DashboardLayout>} />
         <Route path={routes.dashboard}
           element={<Dashboard teamResult={controller.team.teamResult}
             teams={controller.teams} />} />
@@ -63,7 +66,7 @@ export const AppRoutes: FC = () => {
         <Route path={routes.singlePlayer} element={<SinglePlayerView/>}/>
         <Route path={routes.staffs} element={<Staffs />}/>
         <Route path={routes.trainingData} element={<TrainingData />}/>
-        <Route path={routes.events} element={<Events />}/>
+        <Route path={routes.events} element={<EventsView events={events} />}/>
         <Route path={routes.account} element={<MyAccount/>}/>
         <Route path={routes.logout} element={<MyAccount/>}/>
         <Route path={routes.login} element={<Login controller={controller} />} />

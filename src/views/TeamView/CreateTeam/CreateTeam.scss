@@ -116,6 +116,14 @@
         color: colors.$color-dark-purple;
         font-size: 0.813em;
         outline: none;
+
+        .MuiInputBase-formControl {
+          height: 50px;
+          border-radius: 8px;
+          color: colors.$color-dark-purple;
+          font-size: 0.813em;
+          outline: none;
+        }
       }
     }
   }

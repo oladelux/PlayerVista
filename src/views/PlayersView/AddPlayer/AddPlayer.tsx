@@ -7,14 +7,14 @@ import { useAppDispatch } from '../../../store/types'
 import { FormikStep, FormikStepper } from '../../TeamView/CreateTeam/Step'
 import { PlayerFormData, uploadImageToCloudinary } from '../../../api'
 import { createNewPlayerThunk, getPlayersThunk } from '../../../store/slices/PlayersSlice'
-import { convertToDate } from '../../../services/helper'
 import { cloudName, cloudUploadPresets } from '../../../config/constants'
 
 import { DashboardLayout } from '../../../component/DashboardLayout/DashboardLayout'
 import { PlayerConfirmationPopup } from '../PlayerConfirmation/PlayerConfirmation'
+import { SelectPlayerPositionWithFormik } from '../../../component/SelectPlayerPosition/SelectPlayerPosition.tsx'
+import { CustomFormikDatePicker } from '../../../component/FormikWrapper/CustomFormikDatePicker.tsx'
 
 import './AddPlayer.scss'
-import {SelectPlayerPositionWithFormik} from "../../../component/SelectPlayerPosition/SelectPlayerPosition.tsx";
 
 export const AddPlayer = () => {
 
@@ -42,7 +42,7 @@ const AddPlayerMultiStep = () => {
 
   const openConfirmationPopup = () => setIsActiveConfirmationPopup(true)
   const closeConfirmationPopup = async () => {
-    await setIsActiveConfirmationPopup(false)
+    setIsActiveConfirmationPopup(false)
     teamId && await dispatch(getPlayersThunk({ teamId }))
     navigate(`/team/${teamId}/players`)
   }
@@ -99,14 +99,16 @@ const AddPlayerMultiStep = () => {
         onSubmit={async (values, { resetForm }) => {
           const data: PlayerFormData = {
             ...(values as PlayerFormData),
-            birthDate: convertToDate(values.birthDate),
+            birthDate: new Date(values.birthDate),
             imageSrc: imageUrl,
           }
-          teamId && dispatch(createNewPlayerThunk({ data, teamId }))
-            .finally(() => {
-              resetForm()
-              openConfirmationPopup()
-            })
+          teamId &&
+            await dispatch(createNewPlayerThunk({data, teamId}))
+              .unwrap()
+              .then(() => {
+                openConfirmationPopup()
+                resetForm()
+              })
         }}
       >
         <FormikStep label='Player Info'>
@@ -178,6 +180,7 @@ const AddPlayerMultiStep = () => {
                 className='Multi-step__layout-form-group--field'
                 type='text'
                 name='birthDate'
+                component={CustomFormikDatePicker}
                 placeholder='Select Date'
               />
             </div>

@@ -4,7 +4,7 @@ export enum Routes {
   TEAM = '/team',
   CREATE_TEAM = '/team/create-team',
   MANAGE_TEAM = '/team/:teamId/manage-teams',
-  DASHBOARD_CREATE_TEAM = '/team/:teamId/create-team',
+  DASHBOARD_CREATE_TEAM = '/team/:teamId/team/create-team',
   DASHBOARD = '/team/:teamId',
   PLAYERS = '/team/:teamId/players',
   ADD_PLAYER = '/team/:teamId/players/add-player',

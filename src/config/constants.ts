@@ -92,4 +92,3 @@ export const players: PlayerType[] = [
     imgSrc: DefaultPlayerImage3,
   },
 ]
-

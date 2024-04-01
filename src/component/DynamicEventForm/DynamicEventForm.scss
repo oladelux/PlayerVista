@@ -1,0 +1,66 @@
+@use '../../assets/styles/colors';
+@use '../../assets/styles/fonts';
+
+.Training-form, .Match-form {
+
+  &__title {
+    color: colors.$color-dark-purple;
+  }
+
+  &__radio-group {
+    display: flex;
+    align-items: center;
+    padding: 15px 0;
+
+    &-label {
+      cursor: pointer;
+      padding-right: 15px;
+      color: colors.$color-dark-purple;
+      font-size: 0.875em;
+      display: flex;
+      align-items: center;
+
+      &--field {
+        height: 25px;
+        width: 25px;
+        margin-left: 0;
+        margin-right: 5px;
+      }
+    }
+  }
+
+  &__layout {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 20px;
+
+    &--form-group {
+      margin-bottom: 10px;
+
+      &-label {
+        padding: 15px 0;
+        color: colors.$color-dark-purple;
+        font-size: 0.875em;
+      }
+
+      &-field {
+        height: 50px;
+        padding: 10px 8px;
+        width: 100%;
+        border: 0.87px solid colors.$color-grey;
+        border-radius: 8px;
+        color: colors.$color-dark-purple;
+        font-size: 0.813em;
+        outline: none;
+
+        .MuiInputBase-formControl {
+          height: 50px;
+          border-radius: 8px;
+          color: colors.$color-dark-purple;
+          font-size: 0.813em;
+          outline: none;
+        }
+      }
+    }
+  }
+}

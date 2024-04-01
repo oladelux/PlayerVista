@@ -1,0 +1,41 @@
+@use '../../assets/styles/colors';
+@use '../../assets/styles/fonts';
+
+.Event-form {
+  &__wrapper {
+    width: 600px;
+    background-color: colors.$color-white;
+    padding: 20px;
+
+    &-multi-step {
+      &__title {
+        color: colors.$color-dark-purple;
+        font-family: fonts.$font-bold;
+        padding-bottom: 20px;
+      }
+
+      &__layout {
+        margin: 0 0 40px;
+
+        &-form {
+          &-label {
+            padding: 15px 0;
+            color: colors.$color-dark-purple;
+            font-size: 0.875em;
+          }
+
+          &-input {
+            height: 50px;
+            padding: 10px 8px;
+            width: 50%;
+            border: 0.87px solid colors.$color-grey;
+            border-radius: 8px;
+            color: colors.$color-dark-purple;
+            font-size: 0.813em;
+            outline: none;
+          }
+        }
+      }
+    }
+  }
+}

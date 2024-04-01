@@ -15,6 +15,10 @@ export const FormikStepper =
     const currentChild = childrenArray[step]
     const [completed, setCompleted] = useState(false)
 
+    function isUpdatePage() {
+      return childrenArray.some(item => item.props.title === 'update')
+    }
+
     function isLastStep() {
       return step === childrenArray.length - 1
     }
@@ -28,7 +32,7 @@ export const FormikStepper =
           setStep(s => s + 1)
         }
       }}>
-        {({ isSubmitting, setFieldValue }) => (
+        {({ isSubmitting }) => (
           <Form autoComplete='off' className='Formik-stepper'>
             <ProgressBar step={step} childrenArray={childrenArray} completed={completed} />
             { currentChild }
@@ -46,7 +50,7 @@ export const FormikStepper =
                 disabled={isSubmitting}
                 type='submit'
               >
-                {isLastStep() ? 'Submit' : 'Next'}
+                {isLastStep() && isUpdatePage() ? 'Update' : isLastStep() ? 'Submit' : 'Next'}
               </Button>
             </div>
           </Form>

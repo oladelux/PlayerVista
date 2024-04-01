@@ -1,11 +1,10 @@
 import { FC, useState } from 'react'
 import { FiSearch } from 'react-icons/fi'
 import { FaPlus } from 'react-icons/fa'
-import { Link } from 'react-router-dom'
+import {Link, useParams} from 'react-router-dom'
 
 import { TeamResult } from '../../api'
 import { formatDate } from '../../services/helper'
-import { routes } from '../../constants/routes'
 
 import { DashboardLayout } from '../../component/DashboardLayout/DashboardLayout'
 import { Table } from '../../component/Table/Table'
@@ -34,6 +33,7 @@ const columns = [
 ]
 
 export const ManageTeam:FC<ManageTeamProps> = props => {
+  const { teamId } = useParams()
   const [searchQuery, setSearchQuery] = useState('')
   const data = props.teams.map(team => ({
     name: team.teamName,
@@ -60,7 +60,7 @@ export const ManageTeam:FC<ManageTeamProps> = props => {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          <Link to={routes.createTeam} className='Manage-teams__header-link'>
+          <Link to={`/team/${teamId}/team/create-team`} className='Manage-teams__header-link'>
             <FaPlus />
             <span className='Manage-teams__header-link--text'>Add Team</span>
           </Link>

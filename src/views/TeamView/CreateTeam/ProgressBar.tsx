@@ -10,6 +10,7 @@ import './CreateTeam.scss'
 
 export interface FormikStepProps extends Pick<FormikConfig<FormikValues>, 'children' | 'validationSchema'> {
   label: string
+  title?: string
 }
 
 type ProgressBarProps = {

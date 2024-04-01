@@ -29,17 +29,29 @@ export const CreateTeam: FC = () => {
   )
 }
 
+export const DashboardCreateTeam: FC = () => {
+  return (
+      <div className='Create-team'>
+        <div className='Create-team__content'>
+          <div className='Create-team__content-header'>
+            <div className='Create-team__content-header-title'>Hello Admin,</div>
+            <div className='Create-team__content-header-sub-title'>Let’s create a team for you in three easy steps</div>
+          </div>
+          <CreateTeamMultiStep />
+        </div>
+      </div>
+  )
+}
+
 const CreateTeamMultiStep = () => {
   const [selectedImage, setSelectedImage] = useState<string>('')
   const [file, setFile] = useState<string>('')
-  const [fileName, setFileName] = useState<string>('')
   const [isUploading, setIsUploading] = useState(false)
   const dispatch = useAppDispatch()
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     const imgFile = e.target.files
     if (imgFile) {
-      setFileName(imgFile[0].name)
       setSelectedImage(URL.createObjectURL(imgFile[0]))
       setIsUploading(true)
 

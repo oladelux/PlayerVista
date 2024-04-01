@@ -88,6 +88,9 @@
           color: colors.$color-text;
 
           &--label {
+            padding-bottom: 10px;
+            font-size: 0.875em;
+
             &-datepicker {
               border: 1px solid colors.$color-grey;
 
@@ -124,18 +127,20 @@
             display: flex;
             align-items: center;
 
-            &--label {
-              padding-bottom: 10px;
-
-              &-datepicker {
-                height: 45px;
-              }
+            &-input {
+              position: relative;
+              display: inline-block;
+              width: 25px;
+              height: 25px;
+              border-radius: 4px;
+              cursor: pointer;
+              transition: .4s;
             }
-          }
 
-          &--label {
-            padding-bottom: 10px;
-            font-size: 0.875em;
+            &-label {
+              cursor: pointer;
+              padding: 0 5px;
+            }
           }
         }
       }

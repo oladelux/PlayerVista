@@ -34,8 +34,6 @@ export const SinglePlayerView: FC = () => {
     contactPersonPostCode, contactPersonStreet, country, street, postCode, uniformNumber,
     position, email, id, phoneNumber} = player || {}
 
-  const [isChecked, setIsChecked] = useState(teamCaptain)
-
   const [updateFormData, setUpdateFormData] = useState<PlayerFormData>({
     firstName: firstName || '',
     teamCaptain: teamCaptain || false,
@@ -68,14 +66,16 @@ export const SinglePlayerView: FC = () => {
   }
 
   const handleCheckbox = () => {
-    setIsChecked(!isChecked)
+    setUpdateFormData({
+      ...updateFormData,
+      teamCaptain: !updateFormData.teamCaptain,
+    })
   }
 
   const updatePlayerData = () => {
-    id && isChecked && dispatch(updatePlayerThunk({
+    id && dispatch(updatePlayerThunk({
       data: {
         ...updateFormData,
-        teamCaptain: isChecked,
         birthDate: dateValue ? dateValue.toDate() : updateFormData.birthDate
       },
       playerId: id
@@ -91,7 +91,6 @@ export const SinglePlayerView: FC = () => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { team, id, ...playerWithoutTeamAndId } = player
         setUpdateFormData(playerWithoutTeamAndId)
-        setIsChecked(playerWithoutTeamAndId.teamCaptain)
       }
     }
   }, [players, teamId, playerId])
@@ -223,13 +222,20 @@ export const SinglePlayerView: FC = () => {
                 <div className='Single-player-view__sections-bio-form-input--label'>Jersey No.</div>
                 <InputField value={updateFormData.uniformNumber} name='uniformNumber' onChange={handleInputChange} />
               </div>
-              <div className='Single-player-view__sections-bio-form-input, Single-player-view__sections-bio-form-input--checkbox'>
-                <div className='Single-player-view__sections-bio-form-input--label, Single-player-view__sections-bio-form-input--label--checkbox'>Team Captain</div>
+              <div
+                className='Single-player-view__sections-bio-form-input, Single-player-view__sections-bio-form-input--checkbox'>
                 <input
+                  id='teamCaptain'
+                  className='Single-player-view__sections-bio-form-input--checkbox-input'
                   type='checkbox'
-                  checked={isChecked}
+                  checked={updateFormData.teamCaptain}
                   onChange={handleCheckbox}
                 />
+                <label
+                  htmlFor='teamCaptain'
+                  className='Single-player-view__sections-bio-form-input--checkbox-label'>Team
+                  Captain
+                </label>
               </div>
             </div>
           </div>

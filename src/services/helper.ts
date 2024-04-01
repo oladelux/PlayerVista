@@ -1,4 +1,4 @@
-import { getCookie } from './cookies'
+import {getCookie} from './cookies'
 
 export const formatDate = (date: Date) => {
   return date.toLocaleDateString('en-US', {
@@ -32,4 +32,28 @@ export function calculateAge(birthDate: Date): number {
 export function isAccessToken(): boolean {
   const accessToken = getCookie('access-token')
   return !!accessToken
+}
+
+// Create a new Date object with combined values
+export const combinedDate = (date: Date, time: string) => {
+  return new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+    parseInt(time.slice(0, 2)),
+    parseInt(time.slice(3, 5)),
+    parseInt(time.slice(6, 8))
+  )
+}
+
+export function convertToCalenderDate(dateStr: Date) {
+// Extract year, month, and day from the parsed date
+  const year = new Date(dateStr).getUTCFullYear()
+  const month = new Date(dateStr).getUTCMonth()
+  const day = new Date(dateStr).getUTCDate()
+  const hour = new Date(dateStr).getHours()
+  const minutes = new Date(dateStr).getMinutes()
+  const seconds = new Date(dateStr).getSeconds()
+
+  return new Date(year, month, day, hour, minutes, seconds)
 }

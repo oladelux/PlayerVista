@@ -23,6 +23,7 @@ import SettingsIcon from '../../assets/images/icons/settingsIcon.svg'
 import LogoutIcon from '../../assets/images/icons/logoutIcon.svg'
 
 import './SidebarMenu.scss'
+import {getEventsThunk} from "../../store/slices/EventsSlice.ts";
 
 type SidebarMenuProps = {
   menu: SideBarTabsType
@@ -214,6 +215,7 @@ export const Sidebar: FC<SidebarProps> = props => {
   useEffect(() => {
     if (teamId) {
       dispatch(getPlayersThunk({teamId}))
+      dispatch(getEventsThunk({teamId}))
     }
   }, [dispatch, teamId])
 
