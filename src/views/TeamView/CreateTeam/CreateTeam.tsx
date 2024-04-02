@@ -1,18 +1,26 @@
 import { ChangeEvent, FC, useState } from 'react'
 import { Field } from 'formik'
+import { useNavigate, useParams } from 'react-router-dom'
 import CenterFocusWeakIcon from '@mui/icons-material/CenterFocusWeak'
 
 import { useAppDispatch } from '../../../store/types'
-import { createTeamThunk } from '../../../store/slices/TeamSlice'
-import { TeamFormData, uploadImageToCloudinary } from '../../../api'
+import { createTeamThunk, getTeamsThunk } from '../../../store/slices/TeamSlice'
+import { AuthenticatedUserData, TeamFormData, uploadImageToCloudinary } from '../../../api'
+import { UseUpdates } from '../../../hooks/useUpdates.ts'
 import { cloudName, cloudUploadPresets } from '../../../config/constants'
 
 import { DashboardHeader } from '../../../component/DashboardLayout/DashboardLayout'
+import { SuccessConfirmationPopup } from '../../../component/SuccessConfirmation/SuccessConfirmation.tsx'
 import { FormikStep, FormikStepper } from './Step'
 
 import './CreateTeam.scss'
 
-export const CreateTeam: FC = () => {
+type DashboardCreateTeamProps = {
+  logger: UseUpdates
+  user: AuthenticatedUserData
+}
+
+export const CreateTeam: FC<DashboardCreateTeamProps> = ({ logger, user }) => {
   return (
     <>
       <DashboardHeader />
@@ -22,32 +30,44 @@ export const CreateTeam: FC = () => {
             <div className='Create-team__content-header-title'>Hello Admin,</div>
             <div className='Create-team__content-header-sub-title'>Let’s create a team for you in three easy steps</div>
           </div>
-          <CreateTeamMultiStep />
+          <CreateTeamMultiStep logger={logger} user={user} />
         </div>
       </div>
     </>
   )
 }
 
-export const DashboardCreateTeam: FC = () => {
+export const DashboardCreateTeam: FC<DashboardCreateTeamProps> = ({ logger, user }) => {
   return (
-      <div className='Create-team'>
-        <div className='Create-team__content'>
-          <div className='Create-team__content-header'>
-            <div className='Create-team__content-header-title'>Hello Admin,</div>
-            <div className='Create-team__content-header-sub-title'>Let’s create a team for you in three easy steps</div>
-          </div>
-          <CreateTeamMultiStep />
+    <div className='Create-team'>
+      <div className='Create-team__content'>
+        <div className='Create-team__content-header'>
+          <div className='Create-team__content-header-title'>Hello Admin,</div>
+          <div className='Create-team__content-header-sub-title'>Let’s create a team for you in three easy steps</div>
         </div>
+        <CreateTeamMultiStep logger={logger} user={user} />
       </div>
+    </div>
   )
 }
 
-const CreateTeamMultiStep = () => {
+const CreateTeamMultiStep: FC<DashboardCreateTeamProps> = ({ logger, user }) => {
+  const navigate = useNavigate()
+  const dispatch = useAppDispatch()
+
+  const { teamId } = useParams()
   const [selectedImage, setSelectedImage] = useState<string>('')
   const [file, setFile] = useState<string>('')
   const [isUploading, setIsUploading] = useState(false)
-  const dispatch = useAppDispatch()
+
+  const [isActiveConfirmationPopup, setIsActiveConfirmationPopup] = useState(false)
+
+  const openConfirmationPopup = () => setIsActiveConfirmationPopup(true)
+  const closeConfirmationPopup = async () => {
+    setIsActiveConfirmationPopup(false)
+    await dispatch(getTeamsThunk())
+    navigate(`/team/${teamId}/manage-teams`)
+  }
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     const imgFile = e.target.files
@@ -61,7 +81,7 @@ const CreateTeamMultiStep = () => {
           folder: 'teamImage',
           file: reader.result as string,
           cloud_name: cloudName,
-          upload_preset: cloudUploadPresets
+          upload_preset: cloudUploadPresets,
         }).then(res => {
           setIsUploading(false)
           setFile(res.url)
@@ -100,12 +120,19 @@ const CreateTeamMultiStep = () => {
           city: '',
           country: '',
         }}
-        onSubmit={async (values) => {
+        onSubmit={async (values, { resetForm }) => {
           const data: TeamFormData = {
             ...(values as TeamFormData),
             logo: file,
           }
-          dispatch(createTeamThunk({ data }))
+          await dispatch(createTeamThunk({ data }))
+            .unwrap()
+            .then(() => {
+              logger.setUpdate({ message: 'added a new team', userId: user.id })
+              logger.sendUpdates()
+              openConfirmationPopup()
+              resetForm()
+            })
         }}
       >
         <FormikStep label='Team Info'>
@@ -347,6 +374,8 @@ const CreateTeamMultiStep = () => {
           </div>
         </FormikStep>
       </FormikStepper>
+      {isActiveConfirmationPopup && <SuccessConfirmationPopup
+        onClose={closeConfirmationPopup} title='Team added successfully' />}
     </div>
   )
 }

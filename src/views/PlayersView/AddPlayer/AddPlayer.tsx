@@ -1,22 +1,28 @@
-import { ChangeEvent, useState } from 'react'
+import { ChangeEvent, FC, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Field } from 'formik'
 import CenterFocusWeakIcon from '@mui/icons-material/CenterFocusWeak'
 
 import { useAppDispatch } from '../../../store/types'
-import { FormikStep, FormikStepper } from '../../TeamView/CreateTeam/Step'
-import { PlayerFormData, uploadImageToCloudinary } from '../../../api'
+import { AuthenticatedUserData, PlayerFormData, uploadImageToCloudinary } from '../../../api'
 import { createNewPlayerThunk, getPlayersThunk } from '../../../store/slices/PlayersSlice'
 import { cloudName, cloudUploadPresets } from '../../../config/constants'
+import { UseUpdates } from '../../../hooks/useUpdates.ts'
 
+import { FormikStep, FormikStepper } from '../../TeamView/CreateTeam/Step'
 import { DashboardLayout } from '../../../component/DashboardLayout/DashboardLayout'
-import { PlayerConfirmationPopup } from '../PlayerConfirmation/PlayerConfirmation'
 import { SelectPlayerPositionWithFormik } from '../../../component/SelectPlayerPosition/SelectPlayerPosition.tsx'
 import { CustomFormikDatePicker } from '../../../component/FormikWrapper/CustomFormikDatePicker.tsx'
+import { SuccessConfirmationPopup } from '../../../component/SuccessConfirmation/SuccessConfirmation.tsx'
 
 import './AddPlayer.scss'
 
-export const AddPlayer = () => {
+type AddPlayerProps = {
+  logger: UseUpdates
+  user: AuthenticatedUserData
+}
+
+export const AddPlayer:FC<AddPlayerProps> = ({ logger, user }) => {
 
   return (
     <DashboardLayout>
@@ -25,13 +31,18 @@ export const AddPlayer = () => {
           <div className='Add-player__header-title'>Hello Admin,</div>
           <div className='Add-player__header-sub-title'>Let’s add a new player</div>
         </div>
-        <AddPlayerMultiStep />
+        <AddPlayerMultiStep logger={logger} user={user} />
       </div>
     </DashboardLayout>
   )
 }
 
-const AddPlayerMultiStep = () => {
+type AddPlayerMultiStepProps = {
+  logger: UseUpdates
+  user: AuthenticatedUserData
+}
+
+const AddPlayerMultiStep:FC<AddPlayerMultiStepProps> = ({ logger, user }) => {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const { teamId } = useParams()
@@ -60,7 +71,7 @@ const AddPlayerMultiStep = () => {
           folder: 'playerImage',
           file: reader.result as string,
           cloud_name: cloudName,
-          upload_preset: cloudUploadPresets
+          upload_preset: cloudUploadPresets,
         }).then(res => {
           setIsUploading(false)
           setImageUrl(res.url)
@@ -103,9 +114,11 @@ const AddPlayerMultiStep = () => {
             imageSrc: imageUrl,
           }
           teamId &&
-            await dispatch(createNewPlayerThunk({data, teamId}))
+            await dispatch(createNewPlayerThunk({ data, teamId }))
               .unwrap()
               .then(() => {
+                logger.setUpdate({ message: 'added a new player', userId: user.id })
+                logger.sendUpdates()
                 openConfirmationPopup()
                 resetForm()
               })
@@ -290,7 +303,8 @@ const AddPlayerMultiStep = () => {
           </div>
         </FormikStep>
       </FormikStepper>
-      {isActiveConfirmationPopup && <PlayerConfirmationPopup onClose={closeConfirmationPopup}/>}
+      {isActiveConfirmationPopup && <SuccessConfirmationPopup
+        onClose={closeConfirmationPopup} title='Player added successfully' />}
     </div>
   )
 }

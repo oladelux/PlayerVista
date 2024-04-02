@@ -1,7 +1,7 @@
 import { FC } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { Fixtures, TeamResult } from '../../api'
+import { Fixtures, LogType, TeamResult } from '../../api'
 
 import { DashboardLayout } from '../../component/DashboardLayout/DashboardLayout'
 import { Card } from '../../component/Card/Card'
@@ -15,6 +15,7 @@ import './Dashboard.scss'
 type DashboardProps = {
   teamResult: Fixtures[]
   teams: TeamResult[]
+  applicationLogs: LogType[]
 }
 
 export const Dashboard: FC<DashboardProps> = props => {
@@ -26,7 +27,7 @@ export const Dashboard: FC<DashboardProps> = props => {
       <div className='Dashboard'>
         <div className='Dashboard__content'>
           <Card className='Dashboard__content-first'>
-            <Update />
+            <Update applicationLogs={props.applicationLogs} />
           </ Card>
           <Card className='Dashboard__content-second'>
             <UpcomingMatch />

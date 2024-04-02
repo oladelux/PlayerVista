@@ -1,19 +1,37 @@
-import {getCookie} from './cookies'
+import { getCookie } from './cookies'
 
 export const formatDate = (date: Date) => {
-  return date.toLocaleDateString('en-US', {
+  return new Date(date).toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
   })
 }
 
-export function convertToDate(dateStr: string): Date {
-  // Split the date string into components (day, month, year)
-  const [day, month, year] = dateStr.split('.') as [string, string, string]
+export const formattedTime = (date: Date) => {
+  return new Date(date).toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: true,
+  })
+}
 
-  // Create a Date object using the numeric values
-  return new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
+export function renderUpcomingFixtureDate(dateString: Date): string {
+  // Parse the date string considering the timezone information (Z for UTC)
+  const parsedDate = new Date(dateString)
+
+  // Adjust the hours to reflect the desired 12-hour format with noon indicator
+  parsedDate.setHours(parsedDate.getHours() + (parsedDate.getHours() >= 12 ? -12 : 0))
+
+  // Format the date according to the desired output
+  return parsedDate.toLocaleString('en-US', {
+    weekday: 'short',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+  })
 }
 
 export function calculateAge(birthDate: Date): number {
@@ -42,7 +60,7 @@ export const combinedDate = (date: Date, time: string) => {
     date.getDate(),
     parseInt(time.slice(0, 2)),
     parseInt(time.slice(3, 5)),
-    parseInt(time.slice(6, 8))
+    parseInt(time.slice(6, 8)),
   )
 }
 

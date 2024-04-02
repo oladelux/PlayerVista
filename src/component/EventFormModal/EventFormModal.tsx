@@ -6,6 +6,8 @@ import { useParams } from 'react-router-dom'
 import { combinedDate } from '../../services/helper.ts'
 import { useAppDispatch } from '../../store/types.ts'
 import { createEventThunk } from '../../store/slices/EventsSlice.ts'
+import { UseUpdates } from '../../hooks/useUpdates.ts'
+import { AuthenticatedUserData } from '../../api'
 
 import { Popup } from '../Popup/Popup.tsx'
 import { FormikStep, FormikStepper } from '../../views/TeamView/CreateTeam/Step.tsx'
@@ -20,10 +22,11 @@ type EventFormModalProps = {
    */
   onClose: () => void
   startDate: Date
-  endDate: Date
+  logger: UseUpdates
+  user: AuthenticatedUserData
 }
 
-const EventFormModal: FC<EventFormModalProps> = ({ onClose, startDate }) => {
+const EventFormModal: FC<EventFormModalProps> = ({ onClose, startDate, logger, user }) => {
   const dispatch = useAppDispatch()
   const { teamId } = useParams()
   return (
@@ -54,11 +57,12 @@ const EventFormModal: FC<EventFormModalProps> = ({ onClose, startDate }) => {
                 opponent: values.opponent,
                 info: values.info,
               }
-              console.log('teamId', teamId)
               teamId &&
                 await dispatch(createEventThunk({ data, teamId }))
                   .unwrap()
                   .then(() => {
+                    logger.setUpdate({ message: 'added a new event', userId: user.id })
+                    logger.sendUpdates()
                     resetForm()
                     onClose()
                   })
@@ -91,9 +95,13 @@ const EventFormModal: FC<EventFormModalProps> = ({ onClose, startDate }) => {
   )
 }
 
-export const EventFormModalPortal: FC<EventFormModalProps> = ({ onClose, startDate, endDate }) => {
+export const EventFormModalPortal: FC<EventFormModalProps> = props => {
   const container = document.body
 
   return ReactDOM.createPortal(
-    <EventFormModal onClose={onClose} startDate={startDate} endDate={endDate} />, container)
+    <EventFormModal
+      onClose={props.onClose}
+      startDate={props.startDate}
+      logger={props.logger}
+      user={props.user} />, container)
 }

@@ -82,7 +82,7 @@ const senRequestToCloudinary = async (endpoint: string, data: object = {}): Prom
   return fetch(url, {
     method: 'POST',
     headers: headers,
-    body: JSON.stringify(data)
+    body: JSON.stringify(data),
   }).then(apiResponse)
 }
 
@@ -231,15 +231,6 @@ export type PlayerFormData = {
   contactPersonCountry: string
 }
 
-export type TeamPlayer = {
-  id: string
-  name: string
-  age: string
-  position: string
-  jerseyNumber: string
-  status: boolean
-}
-
 export type TeamDataBaseResponse = {
   id: string
   active: boolean
@@ -272,6 +263,21 @@ export function logout(data: AuthRefreshToken) {
 
 export async function getAuthenticatedUser(): Promise<AuthenticatedUserData> {
   const res = await apiRequest('/v1/user/data', 'GET')
+  return await res.json()
+}
+
+type UserDetailsResponse = {
+  id: string
+  firstName: string
+  lastName: string
+  email: string
+  teams: string[]
+  isEmailVerified: boolean
+  role: string
+}
+
+export async function getUserDetails(id: string): Promise<UserDetailsResponse> {
+  const res = await apiRequest(`/v1/user/id/${id}`, 'GET')
   return await res.json()
 }
 
@@ -368,5 +374,33 @@ export async function getSingleEvent(eventId: string): Promise<SingleEventType> 
 
 export async function updateEvent(data: EventFormData, eventId: string): Promise<Response> {
   const res = await apiRequest(`/v1/event/id/${eventId}`, 'PATCH', data)
+  return await res.json()
+}
+
+export type UpdateType = {
+  userId: string
+  message: string
+  date?: Date
+}
+
+export async function sendLog(data: UpdateType): Promise<Response> {
+  const res = await apiRequest('/v1/log', 'POST', data)
+  return await res.json()
+}
+
+export type LogType = {
+  userId: string
+  message: string
+  date: Date
+}
+
+export type LogApiResponse = {
+  results: LogType
+}
+
+export type LogsResponse = BaseApiResponse & LogApiResponse
+
+export async function getLogs(): Promise<LogsResponse> {
+  const res = await apiRequest('/v1/log', 'GET')
   return await res.json()
 }

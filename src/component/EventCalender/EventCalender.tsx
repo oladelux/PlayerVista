@@ -1,10 +1,11 @@
 import React, { FC, useCallback, useEffect, useState } from 'react'
 import { CalenderEvents } from '../../constants/events.ts'
-import { Calendar, dayjsLocalizer } from 'react-big-calendar'
+import { Calendar, dayjsLocalizer, Views } from 'react-big-calendar'
 import dayjs from 'dayjs'
 
-import { Event } from '../../api'
+import { AuthenticatedUserData, Event } from '../../api'
 import { convertToCalenderDate } from '../../services/helper.ts'
+import { UseUpdates } from '../../hooks/useUpdates.ts'
 
 import { EventFormModalPortal } from '../EventFormModal/EventFormModal.tsx'
 import { SelectedEventModal } from '../SelectedEventModal/SelectedEventModal.tsx'
@@ -20,6 +21,8 @@ const localizer = dayjsLocalizer(dayjs)
 
 type EventCalenderProps = {
   events: Event[]
+  logger: UseUpdates
+  user: AuthenticatedUserData
 }
 
 export const EventCalender:FC<EventCalenderProps> = props => {
@@ -70,6 +73,7 @@ export const EventCalender:FC<EventCalenderProps> = props => {
       <Calendar
         events={myEvents}
         localizer={localizer}
+        defaultView={Views.MONTH}
         onSelectEvent={handleSelectSlot}
         onSelectSlot={handleCalenderSlot}
         selectable
@@ -80,7 +84,8 @@ export const EventCalender:FC<EventCalenderProps> = props => {
         <EventFormModalPortal
           onClose={closeEventFormModal}
           startDate={eventStartDate}
-          endDate={eventEndDate}
+          logger={props.logger}
+          user={props.user}
         />
       }
       {isSelectedEventModal &&

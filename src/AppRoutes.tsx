@@ -27,7 +27,7 @@ import { DashboardLayout } from './component/DashboardLayout/DashboardLayout.tsx
 export const AppRoutes: FC = () => {
   const controller = useAppController()
 
-  const { user, players, events } = controller
+  const { user, players, events, logger, logs } = controller
   const accessToken = getCookie('access-token')
 
   if (user.data === undefined && accessToken) {
@@ -54,19 +54,21 @@ export const AppRoutes: FC = () => {
       <Routes>
         <Route path={routes.home} element={<Home />} />
         <Route path={routes.team} element={<TeamView teams={controller.teams} />} />
-        <Route path={routes.createTeam} element={<CreateTeam />} />
+        <Route path={routes.createTeam} element={<CreateTeam user={user.data} logger={logger} />} />
         <Route path={routes.dashboardCreateTeam}
-               element={<DashboardLayout><DashboardCreateTeam /></DashboardLayout>} />
+          element={<DashboardLayout><DashboardCreateTeam
+            user={user.data} logger={logger} /></DashboardLayout>} />
         <Route path={routes.dashboard}
           element={<Dashboard teamResult={controller.team.teamResult}
-            teams={controller.teams} />} />
+            teams={controller.teams} applicationLogs={logs} />} />
         <Route path={routes.manageTeam} element={<ManageTeam teams={controller.teams} />} />
         <Route path={routes.players} element={<PlayersView players={players} />}/>
-        <Route path={routes.addPlayer} element={<AddPlayer />}/>
+        <Route path={routes.addPlayer} element={<AddPlayer user={user.data} logger={logger} />}/>
         <Route path={routes.singlePlayer} element={<SinglePlayerView/>}/>
         <Route path={routes.staffs} element={<Staffs />}/>
         <Route path={routes.trainingData} element={<TrainingData />}/>
-        <Route path={routes.events} element={<EventsView events={events} />}/>
+        <Route path={routes.events} element={<EventsView events={events} user={user.data}
+          logger={logger} />}/>
         <Route path={routes.account} element={<MyAccount/>}/>
         <Route path={routes.logout} element={<MyAccount/>}/>
         <Route path={routes.login} element={<Login controller={controller} />} />

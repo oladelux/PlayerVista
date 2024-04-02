@@ -1,5 +1,6 @@
-import { Form, Formik, FormikConfig, FormikValues } from 'formik'
 import React, { PropsWithChildren, useState } from 'react'
+import { Form, Formik, FormikConfig, FormikValues } from 'formik'
+
 import { FormikStepProps, ProgressBar } from './ProgressBar'
 import { Button } from '../../../component/Button/Button'
 

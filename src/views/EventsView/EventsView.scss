@@ -2,7 +2,37 @@
 @use '../../assets/styles/fonts';
 @import 'react-big-calendar/lib/sass/styles';
 
+.rbc-toolbar button.rbc-active, .rbc-toolbar button:focus, .rbc-toolbar button.rbc-active:focus {
+  background-color: colors.$color-dark-blue;
+  color: colors.$color-white;
+  border-color: transparent;
+
+  &:hover {
+    background-color: colors.$color-dark-blue;
+    color: colors.$color-white;
+  }
+}
+
+.rbc-agenda-table {
+  border: 0.87px solid colors.$color-grey;
+}
+
+.rbc-btn-group {
+  button {
+    cursor: pointer;
+
+    &:hover {
+      background-color: colors.$color-dark-blue;
+      color: colors.$color-white;
+    }
+  }
+}
+
 .Events-view {
+  .rbc-agenda-view {
+    background-color: colors.$color-white;
+  }
+
   &__header {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -70,8 +100,5 @@
         }
       }
     }
-  }
-
-  &__content {
   }
 }

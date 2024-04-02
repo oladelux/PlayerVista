@@ -1,4 +1,3 @@
-import { FC } from 'react'
 import { Field, useFormikContext } from 'formik'
 
 import { CustomFormikDatePicker } from '../FormikWrapper/CustomFormikDatePicker.tsx'

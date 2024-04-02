@@ -5,7 +5,8 @@ import TrendingDownIcon from '@mui/icons-material/TrendingDown'
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
 
-import { Event } from '../../api'
+import { AuthenticatedUserData, Event } from '../../api'
+import { UseUpdates } from '../../hooks/useUpdates.ts'
 
 import { DashboardLayout } from '../../component/DashboardLayout/DashboardLayout'
 import { EventCalender } from '../../component/EventCalender/EventCalender.tsx'
@@ -14,6 +15,8 @@ import './EventsView.scss'
 
 type EventsViewProps = {
   events: Record<string, Event[]>
+  logger: UseUpdates
+  user: AuthenticatedUserData
 }
 
 export const EventsView: FC<EventsViewProps> = props => {
@@ -69,7 +72,7 @@ export const EventsView: FC<EventsViewProps> = props => {
           </div>
         </div>
         <div className='Events-view__content'>
-          <EventCalender events={currentEvents} />
+          <EventCalender events={currentEvents} user={props.user} logger={props.logger} />
         </div>
       </div>
     </DashboardLayout>

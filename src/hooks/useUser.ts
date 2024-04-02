@@ -11,20 +11,30 @@ export function useUser() {
   const navigate = useNavigate()
 
   function refreshUserData(): Promise<api.AuthenticatedUserData | undefined> {
-      return api.getAuthenticatedUser()
-        .then(user => {
-          setData(user)
-          return user
-        })
-        .catch(e => {
-          if (e instanceof api.UnauthorizedError) {
-            navigate(routes.login)
-          } else {
-            console.error('Unhandled error getting user data', e)
-          }
-          return undefined
-        })
+    return api.getAuthenticatedUser()
+      .then(user => {
+        setData(user)
+        return user
+      })
+      .catch(e => {
+        if (e instanceof api.UnauthorizedError) {
+          navigate(routes.login)
+        } else {
+          console.error('Unhandled error getting user data', e)
+        }
+        return undefined
+      })
 
+  }
+
+  async function getUserName(id: string): Promise<string> {
+    try {
+      const user = await api.getUserDetails(id)
+      return user.firstName + ' ' + user.lastName
+    } catch (e) {
+      console.error('Unable to get user full name', e)
+      return ''
+    }
   }
 
   async function initializeApp (): Promise<api.AuthenticatedUserData | undefined> {
@@ -46,5 +56,6 @@ export function useUser() {
      * Effect to run at application startup
      */
     initializeApp,
+    getUserName,
   }
 }

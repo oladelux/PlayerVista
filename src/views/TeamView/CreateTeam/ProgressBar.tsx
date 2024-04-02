@@ -1,10 +1,11 @@
-import { ColorLibConnector, ColorLibStepIconRoot } from '../../../services/progressBar'
-import { Step, StepIconProps, StepLabel, Stepper } from '@mui/material'
 import React, { FC } from 'react'
 import { FormikConfig, FormikValues } from 'formik'
+import { Step, StepIconProps, StepLabel, Stepper } from '@mui/material'
 import InfoIcon from '@mui/icons-material/Info'
 import AccountBoxIcon from '@mui/icons-material/AccountBox'
 import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox'
+
+import { ColorLibConnector, ColorLibStepIconRoot } from '../../../services/progressBar'
 
 import './CreateTeam.scss'
 

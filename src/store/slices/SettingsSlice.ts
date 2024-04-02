@@ -1,14 +1,31 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-import { RootState } from '../types'
+import { AsyncThunkLoading, RootState } from '../types'
+import { getLogs, LogType, LogsResponse } from '../../api'
 
 type InitialSettingsState = {
-  activeTeamId: string
+  activeTeamId: string,
+  logs: LogType[],
+  /**
+   * The loading state of getting logs
+   */
+  loadingGettingLogs: AsyncThunkLoading
 }
 
 const initialState: InitialSettingsState = {
   activeTeamId: '',
+  logs: [],
+  loadingGettingLogs: 'idle',
 }
+
+/**
+ * Gets the application logs
+ */
+export const getApplicationLogsThunk = createAsyncThunk<
+  undefined | LogsResponse
+>('settings/logs', async () => {
+  return await getLogs()
+})
 
 export const settingsSlice = createSlice({
   name: 'settings',
@@ -22,7 +39,30 @@ export const settingsSlice = createSlice({
       state.activeTeamId = teamId
     },
   },
-  extraReducers: (builder) => {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(getApplicationLogsThunk.pending, state => {
+        state.loadingGettingLogs = 'pending'
+      })
+      .addCase(getApplicationLogsThunk.fulfilled, (state, action) => {
+        if (
+          state.loadingGettingLogs === 'pending'
+        ) {
+          state.loadingGettingLogs = 'succeeded'
+          if (action.payload) {
+            state.logs = state.logs.concat(action.payload.results)
+          }
+        }
+      })
+      .addCase(getApplicationLogsThunk.rejected, (state, action) => {
+        if (
+          state.loadingGettingLogs === 'pending'
+        ) {
+          state.loadingGettingLogs = 'failed'
+          console.error('Error getting logs', action.error)
+        }
+      })
+  },
 })
 
 export const {
