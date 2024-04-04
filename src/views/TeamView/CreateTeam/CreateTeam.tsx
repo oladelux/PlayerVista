@@ -1,6 +1,6 @@
 import { ChangeEvent, FC, useState } from 'react'
 import { Field } from 'formik'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import CenterFocusWeakIcon from '@mui/icons-material/CenterFocusWeak'
 
 import { useAppDispatch } from '../../../store/types'
@@ -55,7 +55,6 @@ const CreateTeamMultiStep: FC<DashboardCreateTeamProps> = ({ logger, user }) => 
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
 
-  const { teamId } = useParams()
   const [selectedImage, setSelectedImage] = useState<string>('')
   const [file, setFile] = useState<string>('')
   const [isUploading, setIsUploading] = useState(false)
@@ -66,7 +65,7 @@ const CreateTeamMultiStep: FC<DashboardCreateTeamProps> = ({ logger, user }) => 
   const closeConfirmationPopup = async () => {
     setIsActiveConfirmationPopup(false)
     await dispatch(getTeamsThunk())
-    navigate(`/team/${teamId}/manage-teams`)
+    navigate('/team')
   }
 
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -128,8 +127,8 @@ const CreateTeamMultiStep: FC<DashboardCreateTeamProps> = ({ logger, user }) => 
           await dispatch(createTeamThunk({ data }))
             .unwrap()
             .then(() => {
-              logger.setUpdate({ message: 'added a new team', userId: user.id })
-              logger.sendUpdates()
+              logger.setUpdate({ message: 'added a new team', userId: user.id, groupId: user.groupId })
+              logger.sendUpdates(user.groupId)
               openConfirmationPopup()
               resetForm()
             })

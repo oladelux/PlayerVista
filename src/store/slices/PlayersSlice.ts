@@ -86,7 +86,16 @@ export const updatePlayerThunk = createAsyncThunk<
 export const playersSlice = createSlice({
   name: 'players',
   initialState,
-  reducers: {},
+  reducers: {
+    clearPlayerState: (
+      state,
+    ) => {
+      state.loadingUpdatingPlayer = 'idle'
+      state.loadingCreatingNewPlayerStatus = 'idle'
+      state.loadingGettingTeamPlayersStatus = 'idle'
+      state.players = {}
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(createNewPlayerThunk.pending, state => {
@@ -147,6 +156,10 @@ export const playersSlice = createSlice({
       })
   },
 })
+
+export const {
+  clearPlayerState,
+} = playersSlice.actions
 
 export const playersSelector = (state: RootState) => state.players
 

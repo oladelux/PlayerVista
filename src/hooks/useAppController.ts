@@ -10,6 +10,9 @@ import { usePlayers } from './usePlayers'
 import { useEvents } from './useEvents.ts'
 import { useUpdates } from './useUpdates.ts'
 import { getApplicationLogsThunk, settingsSelector } from '../store/slices/SettingsSlice.ts'
+import { getCurrentTeam } from '../utils/localStorage.ts'
+import { getPlayersThunk } from '../store/slices/PlayersSlice.ts'
+import { getEventsThunk } from '../store/slices/EventsSlice.ts'
 
 export type AppController = ReturnType<typeof useAppController>
 let didInit = false
@@ -19,13 +22,14 @@ export function useAppController () {
 
   const { teams } = useSelector(teamSelector)
   const { logs } = useSelector(settingsSelector)
+  const currentTeam = getCurrentTeam()
   const user = useUser()
   const logger = useUpdates()
   const { players } = usePlayers()
   const { events } = useEvents()
-  const authentication = useAuthentication(user, async () => {
+  const authentication = useAuthentication(user, async (userData) => {
     await dispatch(getTeamsThunk())
-    await dispatch(getApplicationLogsThunk())
+    await dispatch(getApplicationLogsThunk({ groupId: userData.groupId }))
   })
   const team = useTeams()
   const loading = useAppLoading()
@@ -37,7 +41,9 @@ export function useAppController () {
         .then(async data => {
           if (data) {
             await dispatch(getTeamsThunk())
-            await dispatch(getApplicationLogsThunk())
+            await dispatch(getApplicationLogsThunk({ groupId: data.groupId }))
+            await dispatch(getPlayersThunk({ teamId: currentTeam }))
+            await dispatch(getEventsThunk({ teamId: currentTeam }))
           }
         })
         .then(() => {

@@ -22,9 +22,10 @@ const initialState: InitialSettingsState = {
  * Gets the application logs
  */
 export const getApplicationLogsThunk = createAsyncThunk<
-  undefined | LogsResponse
->('settings/logs', async () => {
-  return await getLogs()
+  undefined | LogsResponse,
+  { groupId: string }
+>('settings/logs', async ({ groupId }) => {
+  return await getLogs(groupId)
 })
 
 export const settingsSlice = createSlice({
@@ -37,6 +38,13 @@ export const settingsSlice = createSlice({
     ) => {
       const { teamId } = action.payload
       state.activeTeamId = teamId
+    },
+    clearSettingsState: (
+      state,
+    ) => {
+      state.logs = []
+      state.activeTeamId = ''
+      state.loadingGettingLogs = 'idle'
     },
   },
   extraReducers: (builder) => {
@@ -67,6 +75,7 @@ export const settingsSlice = createSlice({
 
 export const {
   setActiveTeamId,
+  clearSettingsState,
 } = settingsSlice.actions
 
 export const settingsSelector = (state: RootState) => state.settings

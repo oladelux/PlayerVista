@@ -3,7 +3,8 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { AsyncThunkLoading, RootState } from '../types'
 import {
   ClientError, Event,
-  EventFormData, addEvent, EventDataResponse, getEvents, SingleEventType, getSingleEvent, updateEvent,
+  EventFormData, addEvent, EventDataResponse, getEvents, SingleEventType,
+  getSingleEvent, updateEvent,
 } from '../../api'
 
 type InitialEventsState = {
@@ -39,18 +40,18 @@ const initialState: InitialEventsState = {
   loadingCreatingNewEventStatus: 'idle',
   loadingGettingEventsStatus: 'idle',
   loadingGettingSingleEvent: 'idle',
-  loadingUpdatingEvent: 'idle'
+  loadingUpdatingEvent: 'idle',
 }
 
 /**
  * Create a new event
  */
 export const createEventThunk = createAsyncThunk<
-  unknown,
+  EventDataResponse,
   { data: EventFormData, teamId: string }
->('events/addEvent', ({ data, teamId }, { rejectWithValue }) => {
+>('events/addEvent', async ({ data, teamId }, { rejectWithValue }) => {
   try {
-    return addEvent(data, teamId)
+    return await addEvent(data, teamId)
   } catch (e) {
     if (e instanceof ClientError) {
       return rejectWithValue(e.message)
@@ -110,17 +111,28 @@ export const updateEventThunk = createAsyncThunk<
 export const eventsSlice = createSlice({
   name: 'events',
   initialState,
-  reducers: {},
+  reducers: {
+    clearEventState: (
+      state,
+    ) => {
+      state.loadingCreatingNewEventStatus = 'idle'
+      state.loadingGettingEventsStatus = 'idle'
+      state.loadingGettingSingleEvent = 'idle'
+      state.loadingUpdatingEvent = 'idle'
+      state.events = {}
+      state.selectedEvent = undefined
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(createEventThunk.pending, state => {
         state.loadingCreatingNewEventStatus = 'pending'
       })
-      .addCase(createEventThunk.fulfilled, state => {
-        if (
-          state.loadingCreatingNewEventStatus === 'pending'
-        ) {
-          state.loadingCreatingNewEventStatus = 'succeeded'
+      .addCase(createEventThunk.fulfilled, (state, action) => {
+        state.loadingCreatingNewEventStatus = 'succeeded'
+        const { teamId } = action.meta.arg
+        if (action.payload) {
+          state.events[teamId].push(action.payload.results[0])
         }
       })
       .addCase(createEventThunk.rejected, (state, action) => {
@@ -189,6 +201,10 @@ export const eventsSlice = createSlice({
       })
   },
 })
+
+export const {
+  clearEventState,
+} = eventsSlice.actions
 
 export const eventsSelector = (state: RootState) => state.events
 

@@ -1,7 +1,7 @@
-import React, {FC, useEffect, useState} from 'react'
+import React, { FC, useState } from 'react'
 import classnames from 'classnames'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
-import {useDispatch, useSelector} from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { FaAngleRight, FaAngleDown } from 'react-icons/fa'
 
 import { AppController } from '../../hooks/useAppController'
@@ -23,7 +23,7 @@ import SettingsIcon from '../../assets/images/icons/settingsIcon.svg'
 import LogoutIcon from '../../assets/images/icons/logoutIcon.svg'
 
 import './SidebarMenu.scss'
-import {getEventsThunk} from "../../store/slices/EventsSlice.ts";
+import { getEventsThunk } from '../../store/slices/EventsSlice.ts'
 
 type SidebarMenuProps = {
   menu: SideBarTabsType
@@ -208,16 +208,11 @@ export const Sidebar: FC<SidebarProps> = props => {
   const activeTeamName = teams.find((team) => team.id === teamId)?.teamName
 
   const handleTeamChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedTeamId = e.target.value
-    navigate(`/team/${selectedTeamId}`)
+    const id = e.target.value
+    navigate(`/team/${id}`)
+    dispatch(getPlayersThunk({ teamId: id }))
+    dispatch(getEventsThunk({ teamId: id }))
   }
-
-  useEffect(() => {
-    if (teamId) {
-      dispatch(getPlayersThunk({teamId}))
-      dispatch(getEventsThunk({teamId}))
-    }
-  }, [dispatch, teamId])
 
   return (
     <div className='Sidebar'>

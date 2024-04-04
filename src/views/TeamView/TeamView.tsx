@@ -3,7 +3,9 @@ import { Link, useNavigate } from 'react-router-dom'
 
 import { routes } from '../../constants/routes'
 import { useAppDispatch } from '../../store/types'
-import { setActiveTeamId } from '../../store/slices/SettingsSlice'
+import { getPlayersThunk } from '../../store/slices/PlayersSlice.ts'
+import { getEventsThunk } from '../../store/slices/EventsSlice.ts'
+import { setCurrentTeam } from '../../utils/localStorage.ts'
 import { TeamResult } from '../../api'
 
 import { DashboardHeader } from '../../component/DashboardLayout/DashboardLayout'
@@ -29,8 +31,10 @@ export const TeamView: FC<TeamViewProps> = props => {
   const isTeamsAvailable = props.teams.length > 0
 
   const setActiveTeam = (teamId: string) => {
-    dispatch(setActiveTeamId({ teamId }))
     navigate(`/team/${teamId}`)
+    setCurrentTeam(teamId)
+    dispatch(getPlayersThunk({ teamId }))
+    dispatch(getEventsThunk({ teamId }))
   }
   return (
     <>

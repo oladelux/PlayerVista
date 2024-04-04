@@ -61,8 +61,8 @@ const EventFormModal: FC<EventFormModalProps> = ({ onClose, startDate, logger, u
                 await dispatch(createEventThunk({ data, teamId }))
                   .unwrap()
                   .then(() => {
-                    logger.setUpdate({ message: 'added a new event', userId: user.id })
-                    logger.sendUpdates()
+                    logger.setUpdate({ message: 'added a new event', userId: user.id, groupId: user.groupId })
+                    logger.sendUpdates(user.groupId)
                     resetForm()
                     onClose()
                   })

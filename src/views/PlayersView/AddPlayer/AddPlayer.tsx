@@ -117,8 +117,8 @@ const AddPlayerMultiStep:FC<AddPlayerMultiStepProps> = ({ logger, user }) => {
             await dispatch(createNewPlayerThunk({ data, teamId }))
               .unwrap()
               .then(() => {
-                logger.setUpdate({ message: 'added a new player', userId: user.id })
-                logger.sendUpdates()
+                logger.setUpdate({ message: 'added a new player', userId: user.id, groupId: user.groupId })
+                logger.sendUpdates(user.groupId)
                 openConfirmationPopup()
                 resetForm()
               })

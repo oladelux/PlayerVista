@@ -131,6 +131,7 @@ export type AuthenticatedUserData = {
   role: string
   name: string
   email: string
+  groupId: string
 }
 
 type AuthenticationResult = {
@@ -345,7 +346,7 @@ type EventsApiResponse = {
 
 export type EventDataResponse = BaseApiResponse & EventsApiResponse
 
-export async function addEvent(data: EventFormData, teamId: string): Promise<Response> {
+export async function addEvent(data: EventFormData, teamId: string): Promise<EventDataResponse> {
   const res = await apiRequest(`/v1/event?teamId=${teamId}`, 'POST', data)
   return await res.json()
 }
@@ -379,6 +380,7 @@ export async function updateEvent(data: EventFormData, eventId: string): Promise
 
 export type UpdateType = {
   userId: string
+  groupId: string
   message: string
   date?: Date
 }
@@ -400,7 +402,7 @@ export type LogApiResponse = {
 
 export type LogsResponse = BaseApiResponse & LogApiResponse
 
-export async function getLogs(): Promise<LogsResponse> {
-  const res = await apiRequest('/v1/log', 'GET')
+export async function getLogs(groupId: string): Promise<LogsResponse> {
+  const res = await apiRequest(`/v1/log?groupId=${groupId}`, 'GET')
   return await res.json()
 }

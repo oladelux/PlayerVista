@@ -54,7 +54,15 @@ export const getTeamsThunk = createAsyncThunk<
 export const teamSlice = createSlice({
   name: 'teams',
   initialState,
-  reducers: {},
+  reducers: {
+    clearTeamState: (
+      state,
+    ) => {
+      state.loadingCreatingTeamStatus = 'idle'
+      state.loadingGettingTeams = 'idle'
+      state.teams = []
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(createTeamThunk.pending, state => {
@@ -94,6 +102,10 @@ export const teamSlice = createSlice({
       })
   },
 })
+
+export const {
+  clearTeamState,
+} = teamSlice.actions
 
 export const teamSelector = (state: RootState) => state.teams
 

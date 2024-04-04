@@ -11,6 +11,7 @@ import { EventFormModalPortal } from '../EventFormModal/EventFormModal.tsx'
 import { SelectedEventModal } from '../SelectedEventModal/SelectedEventModal.tsx'
 
 import './EventCalender.scss'
+import { useNavigate, useParams } from 'react-router-dom';
 
 type NewEvent = {
   start: Date
@@ -26,6 +27,8 @@ type EventCalenderProps = {
 }
 
 export const EventCalender:FC<EventCalenderProps> = props => {
+  const navigate = useNavigate()
+  const { teamId } = useParams()
   const [isEventFormModal, setIsEventFormModal] = useState(false)
   const [isSelectedEventModal, setIsSelectedEventModal] = useState(false)
   const [myEvents, setEvents] = useState<CalenderEvents[]>([])
@@ -47,9 +50,14 @@ export const EventCalender:FC<EventCalenderProps> = props => {
   }, [])
 
   const handleSelectSlot = useCallback(
-    ({ id }: { id: string } ) => {
+    ({ id, start }: { id: string, start: Date } ) => {
+      const now = new Date()
       setSelectedEvent(id)
-      openSelectedEventModal()
+      if(now > start) {
+        navigate(`/team/${teamId}/events/${id}`)
+      } else {
+        openSelectedEventModal()
+      }
     },
     [],
   )

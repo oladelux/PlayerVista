@@ -6,9 +6,18 @@ import { ApiError, AuthenticationCredentials, RegistrationDetails } from '../api
 import { routes } from '../constants/routes'
 import { UserHook } from './useUser'
 import { addCookie, getCookie, removeCookie } from '../services/cookies'
+import { useAppDispatch } from '../store/types.ts'
+import { clearSettingsState } from '../store/slices/SettingsSlice.ts'
+import { clearTeamState } from '../store/slices/TeamSlice.ts'
+import { clearPlayerState } from '../store/slices/PlayersSlice.ts'
+import { clearEventState } from '../store/slices/EventsSlice.ts'
 
-export function useAuthentication (user: UserHook, afterLogin: () => Promise<void>) {
+export function useAuthentication (
+  user: UserHook,
+  afterLogin: (user: api.AuthenticatedUserData) => Promise<void>,
+) {
   const navigate = useNavigate()
+  const dispatch = useAppDispatch()
   const refreshToken = getCookie('refresh-token')
 
   const [loggingIn, setLoggingIn] = useState(false)
@@ -38,11 +47,11 @@ export function useAuthentication (user: UserHook, afterLogin: () => Promise<voi
       .then(async res => {
         addCookie('access-token', res.tokens.access.token, res.tokens.access.expires)
         addCookie('refresh-token', res.tokens.refresh.token, res.tokens.refresh.expires)
-        const userData = user.refreshUserData()
+        const userData = await user.refreshUserData()
         if (!userData) {
           throw new Error('Unexpected no user data after logging in')
         }
-        await afterLogin()
+        await afterLogin(userData)
         navigate(routes.team)
       })
       .catch(e => {
@@ -57,6 +66,10 @@ export function useAuthentication (user: UserHook, afterLogin: () => Promise<voi
         .then(() => {
           removeCookie('access-token')
           removeCookie('refresh-token')
+          dispatch(clearSettingsState())
+          dispatch(clearTeamState())
+          dispatch(clearPlayerState())
+          dispatch(clearEventState())
           navigate(routes.login)
         })
         .catch(e => {

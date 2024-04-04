@@ -1,5 +1,4 @@
-import { combineReducers, configureStore, PreloadedState } from '@reduxjs/toolkit'
-import { RootState } from './types'
+import { combineReducers, configureStore } from '@reduxjs/toolkit'
 import { playersReducer } from './slices/PlayersSlice'
 import { settingsReducer } from './slices/SettingsSlice'
 import { teamReducer } from './slices/TeamSlice'
@@ -12,9 +11,8 @@ export const rootReducer = combineReducers({
   events: eventsReducer,
 })
 
-export const setupStore = (preloadedState?: PreloadedState<RootState>) => configureStore({
+export const setupStore = configureStore({
   reducer: rootReducer,
-  preloadedState,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {},
