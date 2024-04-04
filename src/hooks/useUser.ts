@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import * as api from '../api'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { routes } from '../constants/routes'
 import { isAccessToken } from '../services/helper'
 
@@ -45,7 +45,6 @@ export function useUser() {
         console.log('User is logged in' )
       }
       console.debug('Initial user data loaded')
-      console.log('usss', user)
       return user
     }
   }

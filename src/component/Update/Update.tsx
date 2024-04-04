@@ -1,8 +1,9 @@
-import { FC } from 'react'
+import { FC, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 
 import { LogType } from '../../api'
 import { formatDate, formattedTime } from '../../services/helper.ts'
+import { sortApplicationLogs } from '../../utils/logs.ts'
 
 import './Update.scss'
 
@@ -11,6 +12,8 @@ type UpdateProps = {
 }
 
 export const Update:FC<UpdateProps> = ({ applicationLogs }) => {
+  const sortedApplicationLogs = useMemo(() =>
+    sortApplicationLogs(applicationLogs), [applicationLogs])
 
   return (
     <div className='Update'>
@@ -21,7 +24,7 @@ export const Update:FC<UpdateProps> = ({ applicationLogs }) => {
         </div>
       </div>
       <div className='Update__notifications'>
-        {applicationLogs.map(logs => (
+        {sortedApplicationLogs.slice(0, 5).map(logs => (
           <div key={new Date(logs.date).toLocaleTimeString()} className='Update__notifications-stack'>
             <div className='Update__notifications-stack--date'>{formatDate(logs.date)}</div>
             <div className='Update__notifications-stack--alerts'>

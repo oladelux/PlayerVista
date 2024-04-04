@@ -346,7 +346,7 @@ type EventsApiResponse = {
 
 export type EventDataResponse = BaseApiResponse & EventsApiResponse
 
-export async function addEvent(data: EventFormData, teamId: string): Promise<EventDataResponse> {
+export async function addEvent(data: EventFormData, teamId: string): Promise<Event> {
   const res = await apiRequest(`/v1/event?teamId=${teamId}`, 'POST', data)
   return await res.json()
 }

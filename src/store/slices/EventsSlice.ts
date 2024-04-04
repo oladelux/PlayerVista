@@ -47,7 +47,7 @@ const initialState: InitialEventsState = {
  * Create a new event
  */
 export const createEventThunk = createAsyncThunk<
-  EventDataResponse,
+  Event,
   { data: EventFormData, teamId: string }
 >('events/addEvent', async ({ data, teamId }, { rejectWithValue }) => {
   try {
@@ -132,7 +132,7 @@ export const eventsSlice = createSlice({
         state.loadingCreatingNewEventStatus = 'succeeded'
         const { teamId } = action.meta.arg
         if (action.payload) {
-          state.events[teamId].push(action.payload.results[0])
+          state.events[teamId].push(action.payload)
         }
       })
       .addCase(createEventThunk.rejected, (state, action) => {

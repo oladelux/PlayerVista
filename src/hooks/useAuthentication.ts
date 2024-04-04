@@ -11,6 +11,7 @@ import { clearSettingsState } from '../store/slices/SettingsSlice.ts'
 import { clearTeamState } from '../store/slices/TeamSlice.ts'
 import { clearPlayerState } from '../store/slices/PlayersSlice.ts'
 import { clearEventState } from '../store/slices/EventsSlice.ts'
+import { clearLocalStorage } from '../utils/localStorage.ts'
 
 export function useAuthentication (
   user: UserHook,
@@ -66,6 +67,7 @@ export function useAuthentication (
         .then(() => {
           removeCookie('access-token')
           removeCookie('refresh-token')
+          clearLocalStorage()
           dispatch(clearSettingsState())
           dispatch(clearTeamState())
           dispatch(clearPlayerState())
