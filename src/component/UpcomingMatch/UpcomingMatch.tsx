@@ -1,10 +1,12 @@
-import React from 'react'
+import React, { FC } from 'react'
 import { useParams } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 
 import { eventsSelector } from '../../store/slices/EventsSlice.ts'
-import { renderUpcomingFixtureDate } from '../../services/helper.ts'
-import { Event } from '../../api'
+import { Event, TeamResult } from '../../api'
+import { formatSingleEventDate, formatSingleEventTime } from '../../utils/date.ts'
+
+import ClubLogo from '../../assets/images/club.png'
 
 import './UpcomingMatch.scss'
 
@@ -26,7 +28,11 @@ const NoUpcomingMatch = () => {
   )
 }
 
-export const UpcomingMatch = () => {
+type UpcomingMatchProps = {
+  team: TeamResult | undefined
+}
+
+export const UpcomingMatch:FC<UpcomingMatchProps> = props => {
   const { teamId } = useParams()
   const { events } = useSelector(eventsSelector)
 
@@ -40,9 +46,31 @@ export const UpcomingMatch = () => {
         {
           upcomingFixture ?
             <div className='Upcoming-match__content-details'>
-              <div>{renderUpcomingFixtureDate(upcomingFixture.startDate)}</div>
-              <div>Match</div>
-              <div>{upcomingFixture.eventLocation}</div>
+              <div className='Upcoming-match__content-details-date'>
+                {formatSingleEventDate(upcomingFixture.startDate)} /
+                {formatSingleEventTime(upcomingFixture.startDate)}</div>
+              <div className='Upcoming-match__content-details-board'>
+                <div className='Upcoming-match__content-details-board--home'>
+                  <div className='Upcoming-match__content-details-board--home-media'>
+                    <img src={props.team?.logo} alt='team-logo' />
+                  </div>
+                  <div className='Upcoming-match__content-details-board--home-name'>
+                    {props.team?.teamName}
+                  </div>
+                </div>
+                <div className='Upcoming-match__content-details-board--versus'>vs</div>
+                <div className='Upcoming-match__content-details-board--away'>
+                  <div className='Upcoming-match__content-details-board--away-media'>
+                    <img src={ClubLogo} alt='team-logo' />
+                  </div>
+                  <div className='Upcoming-match__content-details-board--away-name'>
+                    {upcomingFixture.opponent}
+                  </div>
+                </div>
+              </div>
+              <div className='Upcoming-match__content-details-location'>
+                {upcomingFixture.eventLocation}
+              </div>
             </div>
             : <NoUpcomingMatch />
         }

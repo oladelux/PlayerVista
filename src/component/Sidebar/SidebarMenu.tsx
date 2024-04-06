@@ -8,6 +8,8 @@ import { AppController } from '../../hooks/useAppController'
 import { teamSelector } from '../../store/slices/TeamSlice'
 import { getPlayersThunk } from '../../store/slices/PlayersSlice'
 import { AppDispatch } from '../../store/types'
+import { getEventsThunk } from '../../store/slices/EventsSlice.ts'
+import { setCurrentTeam } from '../../utils/localStorage.ts'
 
 import DashboardIcon from '../../assets/images/icons/dashboard.svg'
 import DashboardActiveIcon from '../../assets/images/icons/dashboard-active.svg'
@@ -23,7 +25,6 @@ import SettingsIcon from '../../assets/images/icons/settingsIcon.svg'
 import LogoutIcon from '../../assets/images/icons/logoutIcon.svg'
 
 import './SidebarMenu.scss'
-import { getEventsThunk } from '../../store/slices/EventsSlice.ts'
 
 type SidebarMenuProps = {
   menu: SideBarTabsType
@@ -210,6 +211,7 @@ export const Sidebar: FC<SidebarProps> = props => {
   const handleTeamChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const id = e.target.value
     navigate(`/team/${id}`)
+    setCurrentTeam(id)
     dispatch(getPlayersThunk({ teamId: id }))
     dispatch(getEventsThunk({ teamId: id }))
   }

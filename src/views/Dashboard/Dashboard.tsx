@@ -30,7 +30,7 @@ export const Dashboard: FC<DashboardProps> = props => {
             <Update applicationLogs={props.applicationLogs} />
           </ Card>
           <Card className='Dashboard__content-second'>
-            <UpcomingMatch />
+            <UpcomingMatch team={currentTeam} />
           </Card>
         </div>
         <div className='Dashboard__section'>

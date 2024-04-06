@@ -1,0 +1,170 @@
+@use '../../assets/styles/colors';
+@use '../../assets/styles/fonts';
+
+.Single-event {
+  &__header {
+    background-color: colors.$light-background;
+    padding: 18px 50px;
+    border-radius: 5px 5px 0 0;
+
+    &-title {
+      font-family: fonts.$font-bold;
+      color: colors.$color-dark-purple;
+    }
+  }
+
+  &__wrapper {
+    background-color: colors.$color-white;
+    min-height: calc(100vh - 258px);
+    padding: 50px;
+
+    &-content {
+
+      &-header {
+        display: flex;
+        justify-content: space-between;
+        padding: 15px 0;
+
+        &-nav {
+          font-family: fonts.$font-medium;
+          font-size: 0.975em;
+          color: colors.$color-dark-purple;
+        }
+      }
+
+      &-match {
+        height: 400px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+        align-items: center;
+        border: 1px solid colors.$color-border-line;
+        border-radius: 5px;
+        padding: 12px;
+
+        &-info {
+          color: colors.$color-ash;
+          font-size: 1.25em;
+          font-family: fonts.$font-medium;
+          padding: 10px 0;
+          width: 100%;
+          text-align: center;
+          border-bottom: 1px solid colors.$color-border-line;
+        }
+
+        &-board {
+          display: flex;
+          align-items: center;
+          font-family: fonts.$font-bold;
+          color: colors.$color-dark-blue;
+
+          &__home, &__away {
+            &--media {
+              text-align: center;
+
+              img {
+                width: 60px;
+              }
+            }
+            &--name {
+              font-size: 1.875em;
+            }
+
+            &--time {
+              text-align: center;
+            }
+          }
+
+          &__score {
+            display: flex;
+            align-items: center;
+            padding: 0 40px;
+            font-size: 2.5em;
+
+            &--divider {
+              padding: 0 10px;
+            }
+          }
+        }
+
+        &-btn {
+          background-color: colors.$color-white;
+          color: colors.$color-dark-blue;
+          font-size: 1em;
+          padding: 10px;
+          border: 1px solid colors.$color-dark-blue;
+          border-radius: 5px;
+          display: flex;
+          align-items: center;
+
+          &:hover {
+            background-color: colors.$color-dark-blue;
+            color: colors.$color-white;
+          }
+        }
+      }
+    }
+
+    &-similar {
+      padding: 20px 0;
+
+      &-title {
+        font-family: fonts.$font-medium;
+        font-size: 0.975em;
+        color: colors.$color-dark-purple;
+        padding-bottom: 10px;
+      }
+
+      &-list {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        column-gap: 20px;
+
+        &__item {
+          height: 120px;
+          border-radius: 5px;
+          border-left: 6px solid colors.$color-dark-purple;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 20px 10px;
+
+          &--Away {
+            background-color: colors.$color-dark-purple-2;
+          }
+          &--Home, &--training {
+            background-color: colors.$light-background;
+          }
+
+          &--date {
+            font-size: 0.875em;
+            font-family: fonts.$font-medium;
+            color: colors.$color-dark-purple;
+            width: 10%;
+          }
+
+          &--info {
+            width: 60%;
+
+            &-title {
+              font-size: 1em;
+              font-family: fonts.$font-medium;
+              color: colors.$color-dark-purple;
+            }
+
+            &-address {
+              font-size: 0.875em;
+              color: colors.$color-dark-purple;
+            }
+          }
+
+          &--location {
+            text-transform: uppercase;
+            font-size: 0.875em;
+            color: colors.$color-dark-purple;
+          }
+        }
+      }
+    }
+  }
+}

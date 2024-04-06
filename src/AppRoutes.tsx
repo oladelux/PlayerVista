@@ -23,11 +23,12 @@ import { CreateTeam, DashboardCreateTeam } from './views/TeamView/CreateTeam/Cre
 import { ManageTeam } from './views/ManageTeam/ManageTeam'
 import { Staffs } from './views/UserManagementView/Staffs/Staffs'
 import { DashboardLayout } from './component/DashboardLayout/DashboardLayout.tsx'
+import { SingleEventView } from './views/SingleEventView/SingleEventView.tsx'
 
 export const AppRoutes: FC = () => {
   const controller = useAppController()
 
-  const { user, players, events, logger, logs } = controller
+  const { user, players, events, logger, logs, teams } = controller
   const accessToken = getCookie('access-token')
 
   if (user.data === undefined && accessToken) {
@@ -69,6 +70,8 @@ export const AppRoutes: FC = () => {
         <Route path={routes.trainingData} element={<TrainingData />}/>
         <Route path={routes.events} element={<EventsView events={events} user={user.data}
           logger={logger} />}/>
+        <Route path={routes.singleEvent} element={<SingleEventView
+          events={events} teams={teams} />} />
         <Route path={routes.account} element={<MyAccount/>}/>
         <Route path={routes.logout} element={<MyAccount/>}/>
         <Route path={routes.login} element={<Login controller={controller} />} />
