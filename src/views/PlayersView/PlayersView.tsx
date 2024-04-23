@@ -30,23 +30,19 @@ const playerColumns = [
 ]
 
 type PlayersViewProps = {
-  players: Record<string, Player[]>
+  players: Player[]
 }
 
-export const PlayersView:FC<PlayersViewProps> = props => {
+export const PlayersView:FC<PlayersViewProps> = ({ players }) => {
   const { teamId } = useParams()
   const { searchPlayerValue, handleSearchInput } = usePlayers()
 
-  const currentTeamPlayers = teamId && Object.prototype.hasOwnProperty.call(props.players, teamId)
-    ? props.players[teamId]
-    : []
-
   const filteredPlayers = useMemo(() => {
-    return currentTeamPlayers.filter(currentTeamPlayer => {
+    return players.filter(player => {
       if (searchPlayerValue) {
         // Convert both search term and player names to lowercase
         const lowercaseSearchTerm = searchPlayerValue.toLowerCase()
-        const lowercasePlayerNames = `${currentTeamPlayer.firstName || ''} ${currentTeamPlayer.lastName || ''}`.toLowerCase()
+        const lowercasePlayerNames = `${player.firstName || ''} ${player.lastName || ''}`.toLowerCase()
 
         return lowercasePlayerNames.includes(lowercaseSearchTerm)
       } else {
@@ -54,9 +50,9 @@ export const PlayersView:FC<PlayersViewProps> = props => {
         return true
       }
     })
-  }, [currentTeamPlayers, searchPlayerValue])
+  }, [players, searchPlayerValue])
 
-  const players = filteredPlayers.map(player => ({
+  const formattedPlayers = filteredPlayers.map(player => ({
     name: player.firstName + ' ' + player.lastName,
     age: calculateAge(player.birthDate),
     position: player.position,
@@ -87,7 +83,7 @@ export const PlayersView:FC<PlayersViewProps> = props => {
           </Link>
         </div>
         <div className='Players-view__content'>
-          <Table columns={playerColumns} data={players} />
+          <Table columns={playerColumns} data={formattedPlayers} />
         </div>
       </div>
     </DashboardLayout>

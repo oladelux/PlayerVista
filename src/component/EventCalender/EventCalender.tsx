@@ -1,4 +1,5 @@
 import React, { FC, useCallback, useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 import { CalenderEvents } from '../../constants/events.ts'
 import { Calendar, dayjsLocalizer, Views } from 'react-big-calendar'
 import dayjs from 'dayjs'
@@ -11,7 +12,6 @@ import { EventFormModalPortal } from '../EventFormModal/EventFormModal.tsx'
 import { SelectedEventModal } from '../SelectedEventModal/SelectedEventModal.tsx'
 
 import './EventCalender.scss'
-import { useNavigate, useParams } from 'react-router-dom';
 
 type NewEvent = {
   start: Date
@@ -63,6 +63,7 @@ export const EventCalender:FC<EventCalenderProps> = props => {
   )
 
   useEffect(() => {
+    // const now = new Date()
     if(props.events) {
       const newEvents = props.events.map((item) => {
         return {
@@ -73,6 +74,15 @@ export const EventCalender:FC<EventCalenderProps> = props => {
         }
       })
       setEvents(newEvents)
+      /*const lastMonthMatchData = filterEventsByMonth(newEvents, 'match', now.getMonth() - 1)
+      const thisMonthMatchData = filterEventsByMonth(newEvents, 'match', now.getMonth())
+      setLastMonthMatches(lastMonthMatchData)
+      setThisMonthMatches(thisMonthMatchData)
+
+      const lastMonthTrainingData = filterEventsByMonth(newEvents, 'training', now.getMonth() - 1)
+      const thisMonthTrainingData = filterEventsByMonth(newEvents, 'training', now.getMonth())
+      setLastMonthTrainings(lastMonthTrainingData)
+      setThisMonthTrainings(thisMonthTrainingData)*/
     }
   }, [props.events])
 

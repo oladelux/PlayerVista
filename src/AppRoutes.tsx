@@ -24,6 +24,7 @@ import { ManageTeam } from './views/ManageTeam/ManageTeam'
 import { Staffs } from './views/UserManagementView/Staffs/Staffs'
 import { DashboardLayout } from './component/DashboardLayout/DashboardLayout.tsx'
 import { SingleEventView } from './views/SingleEventView/SingleEventView.tsx'
+import { EventSummary } from './views/SingleEventView/EventSummary/EventSummary.tsx'
 
 export const AppRoutes: FC = () => {
   const controller = useAppController()
@@ -72,6 +73,7 @@ export const AppRoutes: FC = () => {
           logger={logger} />}/>
         <Route path={routes.singleEvent} element={<SingleEventView
           events={events} teams={teams} />} />
+        <Route path={routes.eventSummary} element={<EventSummary players={players} />} />
         <Route path={routes.account} element={<MyAccount/>}/>
         <Route path={routes.logout} element={<MyAccount/>}/>
         <Route path={routes.login} element={<Login controller={controller} />} />

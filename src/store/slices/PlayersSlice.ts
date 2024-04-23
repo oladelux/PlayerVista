@@ -10,7 +10,7 @@ import {
 } from '../../api'
 
 type InitialPlayersState = {
-  players: Record<string, Player[]>
+  players: Player[]
   /**
    * The loading state of creating new player
    */
@@ -26,7 +26,7 @@ type InitialPlayersState = {
 }
 
 const initialState: InitialPlayersState = {
-  players: {},
+  players: [],
   loadingCreatingNewPlayerStatus: 'idle',
   loadingGettingTeamPlayersStatus: 'idle',
   loadingUpdatingPlayer: 'idle',
@@ -93,7 +93,7 @@ export const playersSlice = createSlice({
       state.loadingUpdatingPlayer = 'idle'
       state.loadingCreatingNewPlayerStatus = 'idle'
       state.loadingGettingTeamPlayersStatus = 'idle'
-      state.players = {}
+      state.players = []
     },
   },
   extraReducers: (builder) => {
@@ -120,12 +120,10 @@ export const playersSlice = createSlice({
         state.loadingGettingTeamPlayersStatus = 'pending'
       })
       .addCase(getPlayersThunk.fulfilled, (state, action) => {
-        const { arg } = action.meta
-        const { teamId } = arg
         state.loadingGettingTeamPlayersStatus = 'succeeded'
 
         if (action.payload) {
-          state.players[teamId] = action.payload.results
+          state.players = action.payload.results
         }
       })
       .addCase(getPlayersThunk.rejected, (state, action) => {

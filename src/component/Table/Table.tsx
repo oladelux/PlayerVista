@@ -3,12 +3,13 @@ import './Table.scss'
 import { Button } from '../Button/Button'
 
 type Item = {
-  [key: string]: string | number | boolean | JSX.Element
+  [key: string]: string | number | boolean | undefined | JSX.Element
 }
 
-type Column = {
+export type Column = {
   key: string
   title: string
+  placeholder?: string
   render?: (value: any) => JSX.Element
 }
 type TableProps = {
@@ -23,7 +24,7 @@ export const Table: FC<TableProps> = ({ columns, data }) => {
       <table className='Table__container'>
         <thead className='Table__container-head'>
           <tr className='Table__container-head-row'>
-            {columns.map(column => <th key={column.key}
+            {columns.map(column => <th key={column.key} title={column.placeholder}
               className='Table__container-head-row-cell'>{column.title}</th>)}
           </tr>
         </thead>

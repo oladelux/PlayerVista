@@ -130,6 +130,7 @@ type SingleMatchProps = {
 }
 
 const SingleMatch: FC<SingleMatchProps> = props => {
+  const { teamId, eventId } = useParams()
   const { isEvent, isTeam, isMatches } = props
 
   return (
@@ -137,7 +138,12 @@ const SingleMatch: FC<SingleMatchProps> = props => {
       <div className='Single-event__wrapper-content'>
         <div className='Single-event__wrapper-content-header'>
           <div className='Single-event__wrapper-content-header-nav'>Match</div>
-          <Link to='/' className='Single-event__wrapper-content-header-nav'>View Summary</Link>
+          <Link
+            to={`/team/${teamId}/events/${eventId}/summary`}
+            className='Single-event__wrapper-content-header-nav'
+          >
+            View Summary
+          </Link>
         </div>
         <div className='Single-event__wrapper-content-match'>
           <div className='Single-event__wrapper-content-match-info'>

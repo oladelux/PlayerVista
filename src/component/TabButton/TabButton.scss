@@ -2,12 +2,18 @@
 
 .Tab-button {
   text-align: center;
-  padding: 5px 10px;
+  padding: 0 12px;
+  min-width: 120px;
+  height: 40px;
+  margin-right: 2px;
   text-transform: capitalize;
-  font-weight: 500;
-  margin-right: 5px;
+  border: none;
+  background-color: colors.$light-background;
+  color: colors.$color-dark-purple;
+  font-weight: bolder;
+  cursor: pointer;
 
   &--active {
-    border-bottom: 2px solid colors.$color-black;
+    background-color: colors.$color-white;
   }
 }
