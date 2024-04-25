@@ -7,6 +7,7 @@ import { FaAngleRight, FaAngleDown } from 'react-icons/fa'
 import { AppController } from '../../hooks/useAppController'
 import { teamSelector } from '../../store/slices/TeamSlice'
 import { getPlayersThunk } from '../../store/slices/PlayersSlice'
+import { getStaffsThunk } from '../../store/slices/StaffSlice.ts'
 import { AppDispatch } from '../../store/types'
 import { getEventsThunk } from '../../store/slices/EventsSlice.ts'
 import { setCurrentTeam } from '../../utils/localStorage.ts'
@@ -19,8 +20,6 @@ import UserManagementIcon from '../../assets/images/icons/user-management.svg'
 import UserManagementActiveIcon from '../../assets/images/icons/user-management-active.svg'
 import EventIcon from '../../assets/images/icons/event.svg'
 import EventActiveIcon from '../../assets/images/icons/event-active.svg'
-import MessageIcon from '../../assets/images/icons/message.svg'
-import MessageActiveIcon from '../../assets/images/icons/message-active.svg'
 import SettingsIcon from '../../assets/images/icons/settingsIcon.svg'
 import LogoutIcon from '../../assets/images/icons/logoutIcon.svg'
 
@@ -32,8 +31,8 @@ type SidebarMenuProps = {
   isActive: boolean
 }
 
-type TabType = 'DASHBOARD' | 'TEAM MANAGEMENT' | 'USER MANAGEMENT' | 'EVENT' | 'MESSAGE'
-const sidebarMenu = ['DASHBOARD', 'TEAM MANAGEMENT', 'USER MANAGEMENT', 'EVENT', 'MESSAGE']
+type TabType = 'DASHBOARD' | 'TEAM MANAGEMENT' | 'STAFF MANAGEMENT' | 'EVENT' | 'MESSAGE'
+const sidebarMenu = ['DASHBOARD', 'TEAM MANAGEMENT', 'STAFF MANAGEMENT', 'EVENT', 'MESSAGE']
 
 export type SideBarTabsType = {
   /**
@@ -165,21 +164,11 @@ export const Sidebar: FC<SidebarProps> = props => {
       ],
     },
     {
-      tabName: 'User Management',
-      tabType: 'USER MANAGEMENT',
+      tabName: 'Staff Management',
+      tabType: 'STAFF MANAGEMENT',
       image: UserManagementIcon,
       activeImage: UserManagementActiveIcon,
-      link: '#',
-      subMenu: [
-        {
-          text: 'Staffs',
-          link: `/team/${teamId}/staffs`,
-        },
-        {
-          text: 'Roles',
-          link: `/team/${teamId}/roles`,
-        },
-      ],
+      link: `/team/${teamId}/staffs`,
     },
     {
       tabName: 'Event',
@@ -188,13 +177,13 @@ export const Sidebar: FC<SidebarProps> = props => {
       activeImage: EventActiveIcon,
       link: `/team/${teamId}/events`,
     },
-    {
+    /*{
       tabName: 'Message',
       tabType: 'MESSAGE',
       image: MessageIcon,
       activeImage: MessageActiveIcon,
       link: `/team/${teamId}/message`,
-    },
+    },*/
   ]
 
   const [activeTab, setActiveTab] = useState('')
@@ -214,6 +203,7 @@ export const Sidebar: FC<SidebarProps> = props => {
     setCurrentTeam(id)
     dispatch(getPlayersThunk({ teamId: id }))
     dispatch(getEventsThunk({ teamId: id }))
+    dispatch(getStaffsThunk({ teamId: id }))
   }
 
   return (

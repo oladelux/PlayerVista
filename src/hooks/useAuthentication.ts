@@ -9,9 +9,10 @@ import { addCookie, getCookie, removeCookie } from '../services/cookies'
 import { useAppDispatch } from '../store/types.ts'
 import { clearSettingsState } from '../store/slices/SettingsSlice.ts'
 import { clearTeamState } from '../store/slices/TeamSlice.ts'
-import { clearPlayerState } from '../store/slices/PlayersSlice.ts'
-import { clearEventState } from '../store/slices/EventsSlice.ts'
-import { clearLocalStorage } from '../utils/localStorage.ts'
+import { clearPlayerState, getPlayersThunk } from '../store/slices/PlayersSlice.ts'
+import { clearEventState, getEventsThunk } from '../store/slices/EventsSlice.ts'
+import { clearLocalStorage, setCurrentTeam } from '../utils/localStorage.ts'
+import { clearStaffState, getStaffsThunk } from '../store/slices/StaffSlice.ts'
 
 export function useAuthentication (
   user: UserHook,
@@ -53,7 +54,15 @@ export function useAuthentication (
           throw new Error('Unexpected no user data after logging in')
         }
         await afterLogin(userData)
-        navigate(routes.team)
+        if(userData.role === 'admin') {
+          navigate(routes.team)
+        } else {
+          setCurrentTeam(userData.teams[0])
+          dispatch(getPlayersThunk({ teamId: userData.teams[0] }))
+          dispatch(getEventsThunk({ teamId: userData.teams[0] }))
+          dispatch(getStaffsThunk({ teamId: userData.teams[0] }))
+          navigate(`/team/${userData.teams[0]}`)
+        }
       })
       .catch(e => {
         console.log('Logging in failed', e)
@@ -72,6 +81,7 @@ export function useAuthentication (
           dispatch(clearTeamState())
           dispatch(clearPlayerState())
           dispatch(clearEventState())
+          dispatch(clearStaffState())
           navigate(routes.login)
         })
         .catch(e => {

@@ -13,6 +13,7 @@ import { getApplicationLogsThunk, settingsSelector } from '../store/slices/Setti
 import { getCurrentTeam } from '../utils/localStorage.ts'
 import { getPlayersThunk } from '../store/slices/PlayersSlice.ts'
 import { getEventsThunk } from '../store/slices/EventsSlice.ts'
+import { getStaffsThunk, staffSelector } from '../store/slices/StaffSlice.ts'
 
 export type AppController = ReturnType<typeof useAppController>
 let didInit = false
@@ -22,6 +23,7 @@ export function useAppController () {
 
   const { teams } = useSelector(teamSelector)
   const { logs } = useSelector(settingsSelector)
+  const { staffs } = useSelector(staffSelector)
   const currentTeam = getCurrentTeam()
   const user = useUser()
   const logger = useUpdates()
@@ -44,6 +46,7 @@ export function useAppController () {
             await dispatch(getApplicationLogsThunk({ groupId: data.groupId }))
             await dispatch(getPlayersThunk({ teamId: currentTeam }))
             await dispatch(getEventsThunk({ teamId: currentTeam }))
+            await dispatch(getStaffsThunk({ teamId: currentTeam }))
           }
         })
         .then(() => {
@@ -59,6 +62,7 @@ export function useAppController () {
     team,
     players,
     teams,
+    staffs,
     events,
     logger,
     logs,

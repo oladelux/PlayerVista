@@ -1,71 +1,88 @@
-import React, { ChangeEvent, FC, useState } from 'react'
+import React, { FC, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 import { Field } from 'formik'
-import BackupOutlinedIcon from '@mui/icons-material/BackupOutlined'
+import generator from 'generate-password-ts'
 
 import { useAppDispatch } from '../../../../store/types'
-import { createTeamThunk } from '../../../../store/slices/TeamSlice'
-import { TeamFormData } from '../../../../api'
+import { AuthenticatedUserData, StaffData } from '../../../../api'
+import { createStaffThunk } from '../../../../store/slices/StaffSlice.ts'
+import { UseUpdates } from '../../../../hooks/useUpdates.ts'
 
-import { DashboardHeader } from '../../../../component/DashboardLayout/DashboardLayout'
+import { DashboardLayout } from '../../../../component/DashboardLayout/DashboardLayout'
+import { FormikStep, FormikStepper } from '../../../TeamView/CreateTeam/Step'
+import { SuccessConfirmationPopup } from '../../../../component/SuccessConfirmation/SuccessConfirmation.tsx'
 
 import './AddStaff.scss'
-import {FormikStep, FormikStepper} from "../../../TeamView/CreateTeam/Step";
 
-export const AddStaff: FC = () => {
+const password = generator.generate({
+  length: 10,
+  numbers: true,
+  lowercase: true,
+  uppercase: true,
+  strict: true,
+})
+
+type AddStaffProps = {
+  logger: UseUpdates
+  user: AuthenticatedUserData
+}
+
+export const AddStaff: FC<AddStaffProps> = ({ logger, user }) => {
   return (
-    <>
-      <DashboardHeader />
+    <DashboardLayout>
       <div className='Add-staff'>
-        <div className='Add-staff__content'>
-          <div className='Add-staff__content-header'>
-            <div className='Add-staff__content-header-title'>Hello Admin,</div>
-            <div className='Add-staff__content-header-sub-title'>Let’s create a team for you in three easy steps</div>
-          </div>
-          <CreateTeamMultiStep />
+        <div className='Add-staff__header'>
+          <div className='Add-staff__header-title'>Hello Admin,</div>
+          <div className='Add-staff__header-sub-title'>Let’s add a new staff</div>
         </div>
+        <AddStaffMultiStep user={user} logger={logger} />
       </div>
-    </>
+    </DashboardLayout>
   )
 }
 
-const CreateTeamMultiStep = () => {
-  const [file, setFile] = useState<string>('')
-  const [fileName, setFileName] = useState<string>('')
+const AddStaffMultiStep: FC<AddStaffProps> = ({ user, logger }) => {
   const dispatch = useAppDispatch()
+  const navigate = useNavigate()
+  const { teamId } = useParams()
+  const [isActiveConfirmationPopup, setIsActiveConfirmationPopup] = useState(false)
 
-  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const imgFile = e.target.files
-    imgFile && setFileName(imgFile[0].name)
-    const reader = new FileReader()
-    reader.onloadend = () => {
-      setFile(reader.result as string)
-    }
-    if (imgFile && imgFile[0]) {
-      reader.readAsDataURL(imgFile[0])
-    }
+  const openConfirmationPopup = () => setIsActiveConfirmationPopup(true)
+  const closeConfirmationPopup = async () => {
+    setIsActiveConfirmationPopup(false)
+    navigate(`/team/${teamId}/staffs`)
   }
 
   return (
-    <div className='Multi-step'>
+    <div className='Add-staff__Multi-step Multi-step'>
       <FormikStepper
         initialValues={{
           firstName: '',
           lastName: '',
           email: '',
           role: '',
-          phoneNumber: '',
-          staffImage: '',
         }}
-        onSubmit={async (values) => {
-          const data: TeamFormData = {
-            ...(values as TeamFormData),
-            logo: file,
-          }
-          dispatch(createTeamThunk({ data }))
-        }}
+        onSubmit={async (values, { resetForm }) => {
+          if (teamId) {
+            const data: StaffData = {
+              ...(values as StaffData),
+              groupId: user.groupId,
+              password: password,
+              teams: [teamId],
+            }
+            console.log('data', data)
+            dispatch(createStaffThunk({ data }))
+              .unwrap()
+              .then(() => {
+                logger.setUpdate({ message: 'added a new staff', userId: user.id, groupId: user.groupId })
+                logger.sendUpdates(user.groupId)
+                openConfirmationPopup()
+                resetForm()
+              })
+          } }
+        }
       >
-        <div>
-          <div className='Multi-step__title'>Please provide the following details</div>
+        <FormikStep label='Staff Info'>
           <div className='Multi-step__layout'>
             <div className='Multi-step__layout-form-group'>
               <div className='Multi-step__layout-form-group--label'>First Name</div>
@@ -99,41 +116,17 @@ const CreateTeamMultiStep = () => {
                 name='role'
               >
                 <option>Select Staff Role</option>
-                <option value='Male'>Admin</option>
-                <option value='Female'>Role 2</option>
+                <option value='admin'>Admin</option>
+                <option value='coach'>Coach</option>
+                <option value='scout'>Scout</option>
+                <option value='coach'>Others</option>
               </Field>
             </div>
-            <div className='Multi-step__layout-form-group'>
-              <div className='Multi-step__layout-form-group--label'>Phone Number</div>
-              <Field
-                className='Multi-step__layout-form-group--field'
-                type='text'
-                name='phoneNumber'
-              />
-            </div>
-            <div className='Multi-step__layout-form-group'>
-              <div className='Multi-step__layout-form-group--label'>Staff Image</div>
-              <div className='Multi-step__team-image'>
-                <input
-                  id='fileInput'
-                  name='staffImage'
-                  className='Multi-step__team-image--input'
-                  type='file'
-                  accept='image/*'
-                  onChange={handleImageChange}
-                />
-                <label htmlFor='fileInput' className='Multi-step__team-image--label'>
-                  <BackupOutlinedIcon className='Multi-step__team-image--label-icon' />
-                  <div className='Multi-step__team-image--label-text'>
-                    <span className='Multi-step__team-image--label-text-bold'>Click to upload</span>, or drag and drop SVG, PNG, JPG or GIF (max 800x400px)
-                  </div>
-                  <div className='Multi-step__team-image--label-image'>{fileName}</div>
-                </label>
-              </div>
-            </div>
           </div>
-        </div>
+        </FormikStep>
       </FormikStepper>
+      {isActiveConfirmationPopup && <SuccessConfirmationPopup
+        onClose={closeConfirmationPopup} title='Staff added successfully' />}
     </div>
   )
 }

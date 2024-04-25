@@ -1,23 +1,30 @@
 import { FC } from 'react'
-
-import { DashboardLayout } from '../../../component/DashboardLayout/DashboardLayout'
-
-import './Staffs.scss'
 import { FiSearch } from 'react-icons/fi'
 import { Link, useParams } from 'react-router-dom'
 import { FaPlus } from 'react-icons/fa'
-import { Table } from '../../../component/Table/Table'
+import classnames from 'classnames'
+
 import { usePlayers } from '../../../hooks/usePlayers'
+import { AuthenticatedUserData, Staff } from '../../../api'
+
+import { DashboardLayout } from '../../../component/DashboardLayout/DashboardLayout'
+import { Table } from '../../../component/Table/Table'
+
+import './Staffs.scss'
 
 const staffColumns = [
   { key: 'name', title: 'Name' },
   { key: 'email', title: 'Email' },
-  { key: 'role', title: 'Role' },
-  { key: 'dateCreated', title: 'Date Created' },
   {
-    key: 'status',
-    title: 'Status',
-    render: (value: boolean) => <span className={value ? 'active' : 'inactive'}>{value ? 'Active' : 'Inactive'}</span>,
+    key: 'role',
+    title: 'Role',
+    render: (value: string) => <span className='Staffs__role'>{value}</span>,
+  },
+  {
+    key: 'verified',
+    title: 'Verified',
+    render: (value: boolean) => <span
+      className={classnames('Staffs__verification', { 'Staffs__verification--yes': value })}></span>,
   },
   {
     key: 'action',
@@ -26,10 +33,23 @@ const staffColumns = [
   },
 ]
 
-export const Staffs: FC = () => {
+type StaffsProps = {
+  staffs: Staff[]
+  user: AuthenticatedUserData
+}
+
+export const Staffs: FC<StaffsProps> = ({ staffs, user }) => {
   const { teamId } = useParams()
   const { searchPlayerValue, handleSearchInput } = usePlayers()
-  const allStaffs: { [key: string]: string | number | boolean | JSX.Element; }[] = []
+  const filteredStaffs = staffs.filter((item) => item.id !== user.id)
+
+  const allStaffs = filteredStaffs.map(staff => ({
+    name: staff.firstName + ' ' + staff.lastName,
+    email: staff.email,
+    role: staff.role,
+    verified: staff.isEmailVerified,
+    action: `/team/${teamId}/staffs/${staff.id}`,
+  }))
 
   return (
     <DashboardLayout>

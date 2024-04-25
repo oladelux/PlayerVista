@@ -99,7 +99,7 @@ export type RegistrationDetails = {
   role: string
 }
 
-type UserRegistration = {
+export type UserRegistration = {
   id: string
   role: string
   isEmailVerified: boolean
@@ -132,6 +132,7 @@ export type AuthenticatedUserData = {
   name: string
   email: string
   groupId: string
+  teams: string[]
 }
 
 type AuthenticationResult = {
@@ -232,6 +233,27 @@ export type PlayerFormData = {
   contactPersonCountry: string
 }
 
+export type StaffData = {
+  firstName: string
+  lastName: string
+  email: string
+  role: string
+  groupId: string
+  password: string
+  teams: string[]
+}
+
+export type Staff = {
+  id: string
+  firstName: string
+  lastName: string
+  email: string
+  role: string
+  groupId: string
+  isEmailVerified: boolean
+  teams: string[]
+}
+
 export type TeamDataBaseResponse = {
   id: string
   active: boolean
@@ -249,6 +271,16 @@ export type Fixtures = {
 
 export async function register(data: RegistrationDetails): Promise<RegistrationResponse> {
   const res = await apiRequest('/v1/auth/register', 'POST', data)
+  return await res.json()
+}
+
+export async function createStaff(data: StaffData): Promise<Staff> {
+  const res = await apiRequest('/v1/user', 'POST', data)
+  return await res.json()
+}
+
+export async function getStaffs(teamId: string): Promise<Staff[]> {
+  const res = await apiRequest(`/v1/user/staffs/${teamId}`, 'GET')
   return await res.json()
 }
 

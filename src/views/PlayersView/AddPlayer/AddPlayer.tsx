@@ -8,6 +8,7 @@ import { AuthenticatedUserData, PlayerFormData, uploadImageToCloudinary } from '
 import { createNewPlayerThunk, getPlayersThunk } from '../../../store/slices/PlayersSlice'
 import { cloudName, cloudUploadPresets } from '../../../config/constants'
 import { UseUpdates } from '../../../hooks/useUpdates.ts'
+import { getTodayDate } from '../../../services/helper.ts'
 
 import { FormikStep, FormikStepper } from '../../TeamView/CreateTeam/Step'
 import { DashboardLayout } from '../../../component/DashboardLayout/DashboardLayout'
@@ -97,7 +98,7 @@ const AddPlayerMultiStep:FC<AddPlayerMultiStepProps> = ({ logger, user }) => {
           city: '',
           postCode: '',
           country: '',
-          birthDate: '',
+          birthDate: getTodayDate(),
           position: '',
           contactPersonFirstName: '',
           contactPersonLastName: '',

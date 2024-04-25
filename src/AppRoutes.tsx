@@ -25,11 +25,12 @@ import { Staffs } from './views/UserManagementView/Staffs/Staffs'
 import { DashboardLayout } from './component/DashboardLayout/DashboardLayout.tsx'
 import { SingleEventView } from './views/SingleEventView/SingleEventView.tsx'
 import { EventSummary } from './views/SingleEventView/EventSummary/EventSummary.tsx'
+import { AddStaff } from './views/UserManagementView/Staffs/AddStaff/AddStaff.tsx';
 
 export const AppRoutes: FC = () => {
   const controller = useAppController()
 
-  const { user, players, events, logger, logs, teams } = controller
+  const { user, players, events, logger, logs, teams, staffs } = controller
   const accessToken = getCookie('access-token')
 
   if (user.data === undefined && accessToken) {
@@ -66,8 +67,9 @@ export const AppRoutes: FC = () => {
         <Route path={routes.manageTeam} element={<ManageTeam teams={controller.teams} />} />
         <Route path={routes.players} element={<PlayersView players={players} />}/>
         <Route path={routes.addPlayer} element={<AddPlayer user={user.data} logger={logger} />}/>
-        <Route path={routes.singlePlayer} element={<SinglePlayerView/>}/>
-        <Route path={routes.staffs} element={<Staffs />}/>
+        <Route path={routes.singlePlayer} element={<SinglePlayerView />}/>
+        <Route path={routes.staffs} element={<Staffs staffs={staffs} user={user.data} />}/>
+        <Route path={routes.addStaff} element={<AddStaff user={user.data} logger={logger} />}/>
         <Route path={routes.trainingData} element={<TrainingData />}/>
         <Route path={routes.events} element={<EventsView events={events} user={user.data}
           logger={logger} />}/>

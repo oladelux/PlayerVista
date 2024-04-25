@@ -28,11 +28,12 @@ export const SinglePlayerView: FC = () => {
   const isUpdatingPending = loadingUpdatingPlayer === 'pending'
 
   const team = teams.find(team => teamId === team.id)
-  const player = players && teamId && players[teamId]?.find(l => playerId === l.id)
+  const player = players && teamId && players.find(l => playerId === l.id)
+
   const { firstName, lastName, teamCaptain, imageSrc, birthDate, city, contactPersonCity,
     contactPersonCountry, contactPersonFirstName, contactPersonLastName, contactPersonPhoneNumber,
     contactPersonPostCode, contactPersonStreet, country, street, postCode, uniformNumber,
-    position, email, id, phoneNumber} = player || {}
+    position, email, id, phoneNumber } = player || {}
 
   const [updateFormData, setUpdateFormData] = useState<PlayerFormData>({
     firstName: firstName || '',
@@ -54,7 +55,7 @@ export const SinglePlayerView: FC = () => {
     position: position || '',
     postCode: postCode || '',
     street: street || '',
-    uniformNumber: uniformNumber || ''
+    uniformNumber: uniformNumber || '',
   })
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -76,9 +77,9 @@ export const SinglePlayerView: FC = () => {
     id && dispatch(updatePlayerThunk({
       data: {
         ...updateFormData,
-        birthDate: dateValue ? dateValue.toDate() : updateFormData.birthDate
+        birthDate: dateValue ? dateValue.toDate() : updateFormData.birthDate,
       },
-      playerId: id
+      playerId: id,
     })).finally(() => {
       setIsUpdateSuccessful(true)
     })
@@ -86,7 +87,7 @@ export const SinglePlayerView: FC = () => {
 
   useEffect(() => {
     if(teamId){
-      const player = players?.[teamId]?.find(l => playerId === l.id)
+      const player = players?.find(l => playerId === l.id)
       if (player) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { team, id, ...playerWithoutTeamAndId } = player
@@ -153,7 +154,8 @@ export const SinglePlayerView: FC = () => {
                 <div className='Single-player-view__sections-bio-form-input--label'>D.O.B</div>
                 <DatePicker className='Single-player-view__sections-bio-form-input--label-datepicker'
                   name='birthDate'
-                  value={dayjs(updateFormData.birthDate)} onChange={(newValue) => setDateValue(newValue)}
+                  value={dayjs(updateFormData.birthDate)}
+                  onChange={(newValue) => setDateValue(newValue)}
                 />
               </div>
               <div className='Single-player-view__sections-bio-form-input'>
@@ -206,10 +208,6 @@ export const SinglePlayerView: FC = () => {
           <div className='Single-player-view__sections-bio'>
             <div className='Single-player-view__sections-bio-title'>Player Data</div>
             <div className='Single-player-view__sections-bio-form'>
-              <div className='Single-player-view__sections-bio-form-input'>
-                <div className='Single-player-view__sections-bio-form-input--label'>Joining Date</div>
-                <InputField value={updateFormData.position} name='creationDate' onChange={handleInputChange} />
-              </div>
               <div className='Single-player-view__sections-bio-form-input'>
                 <div className='Single-player-view__sections-bio-form-input--label'>Position</div>
                 <SelectPlayerPosition

@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { routes } from '../../constants/routes'
 import { useAppDispatch } from '../../store/types'
 import { getPlayersThunk } from '../../store/slices/PlayersSlice.ts'
+import { getStaffsThunk } from '../../store/slices/StaffSlice.ts'
 import { getEventsThunk } from '../../store/slices/EventsSlice.ts'
 import { setCurrentTeam } from '../../utils/localStorage.ts'
 import { TeamResult } from '../../api'
@@ -35,6 +36,7 @@ export const TeamView: FC<TeamViewProps> = props => {
     setCurrentTeam(teamId)
     dispatch(getPlayersThunk({ teamId }))
     dispatch(getEventsThunk({ teamId }))
+    dispatch(getStaffsThunk({ teamId }))
   }
   return (
     <>

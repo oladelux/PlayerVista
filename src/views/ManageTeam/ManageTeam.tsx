@@ -41,7 +41,7 @@ export const ManageTeam:FC<ManageTeamProps> = props => {
     dateCreated: formatDate(new Date(team.creationYear)),
     homeStadium: team.stadiumName,
     status: team.active,
-    action: `manage-team/${team.id}`,
+    action: `manage-teams/${team.id}`,
   }))
 
   return (
