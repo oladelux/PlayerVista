@@ -1,16 +1,9 @@
 import React, { FC, useState } from 'react'
 import classnames from 'classnames'
-import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
-import { useDispatch, useSelector } from 'react-redux'
+import { Link, useLocation, useParams } from 'react-router-dom'
 import { FaAngleRight, FaAngleDown } from 'react-icons/fa'
 
 import { AppController } from '../../hooks/useAppController'
-import { teamSelector } from '../../store/slices/TeamSlice'
-import { getPlayersThunk } from '../../store/slices/PlayersSlice'
-import { getStaffsThunk } from '../../store/slices/StaffSlice.ts'
-import { AppDispatch } from '../../store/types'
-import { getEventsThunk } from '../../store/slices/EventsSlice.ts'
-import { setCurrentTeam } from '../../utils/localStorage.ts'
 
 import DashboardIcon from '../../assets/images/icons/dashboard.svg'
 import DashboardActiveIcon from '../../assets/images/icons/dashboard-active.svg'
@@ -132,11 +125,8 @@ type SidebarProps = {
 }
 
 export const Sidebar: FC<SidebarProps> = props => {
-  const dispatch = useDispatch<AppDispatch>()
   const { pathname } = useLocation()
   const { teamId } = useParams()
-  const { teams } = useSelector(teamSelector)
-  const navigate = useNavigate()
 
   const sideBarTabs: SideBarTabsType[] = [
     {
@@ -195,37 +185,9 @@ export const Sidebar: FC<SidebarProps> = props => {
   const activeSidebarMenu = activeTab ||
     (browserActiveTab && browserActiveTab.tabType) || sidebarMenu[0]
 
-  const activeTeamName = teams.find((team) => team.id === teamId)?.teamName
-
-  const handleTeamChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const id = e.target.value
-    navigate(`/team/${id}`)
-    setCurrentTeam(id)
-    dispatch(getPlayersThunk({ teamId: id }))
-    dispatch(getEventsThunk({ teamId: id }))
-    dispatch(getStaffsThunk({ teamId: id }))
-  }
-
   return (
     <div className='Sidebar'>
       <div className='Sidebar__nav'>
-        <div className='Sidebar__nav-search'>
-          <form>
-            <div className='Sidebar__nav-search-title'>Team</div>
-            <select name='team' className='Sidebar__nav-search-select' onChange={handleTeamChange}>
-              { activeTeamName && (
-                <option value={teamId}>{activeTeamName}</option>
-              )}
-              {teams.map((team) => (
-                team.id !== teamId && (
-                  <option key={team.id} value={team.id}>
-                    {team.teamName}
-                  </option>
-                )
-              ))}
-            </select>
-          </form>
-        </div>
         {sideBarTabs.map(item => (
           <SidebarMenu
             key={item.tabName}

@@ -1,13 +1,56 @@
 @use '../../assets/styles/colors';
+@use '../../assets/styles/fonts';
 
 .Dashboard {
+  &__notification {
+    padding: 20px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    background-color: colors.$color-dark-blue3;
+    color: colors.$color-dark-blue;
+    margin-bottom: 20px;
+
+    &-content {
+      margin: 0 40px;
+
+      &--title {
+        font-family: fonts.$font-bold;
+        padding: 3px;
+      }
+
+      &--text {
+        padding-top: 5px;
+
+        &-bold {
+          font-family: fonts.$font-bold;
+        }
+      }
+
+      &--action {
+        padding-top: 8px;
+        display: flex;
+        font-family: fonts.$font-bold;
+
+        &-link {
+          display: flex;
+          align-items: center;
+          color: colors.$color-dark-blue;
+          text-decoration: none;
+          margin-right: 30px;
+
+          &--icon {
+            width: 20px !important;
+            margin-right: 8px;
+          }
+        }
+      }
+    }
+  }
   &__content {
     display: grid;
     grid-template-columns: 3fr 2fr;
     column-gap: 20px;
-
-    &-first {
-    }
 
     &-second {
       background-image: url('../../assets/images/versus.jpg');

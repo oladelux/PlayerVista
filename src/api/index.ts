@@ -131,8 +131,11 @@ export type AuthenticatedUserData = {
   role: string
   name: string
   email: string
+  firstName: string
+  lastName: string
   groupId: string
   teams: string[]
+  isEmailVerified: boolean
 }
 
 type AuthenticationResult = {
