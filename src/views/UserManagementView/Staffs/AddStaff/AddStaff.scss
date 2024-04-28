@@ -26,5 +26,9 @@
     .Stepper {
       display: none;
     }
+
+    &--spinner {
+      float: right;
+    }
   }
 }

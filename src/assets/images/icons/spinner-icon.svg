@@ -2,8 +2,8 @@
 <path d="M6 44C6 64.9868 23.0132 82 44 82C64.9868 82 82 64.9868 82 44C82 23.0132 64.9868 6 44 6" stroke="url(#paint0_angular_2579_37332)" stroke-width="12" stroke-linecap="round"/>
 <defs>
 <radialGradient id="paint0_angular_2579_37332" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(44 44) rotate(-90) scale(30)">
-<stop stop-color="#FF9900"/>
-<stop offset="0.741992" stop-color="#FF9900" stop-opacity="0.3"/>
+<stop stop-color="#37003c"/>
+<stop offset="0.741992" stop-color="#37003c" stop-opacity="0.8"/>
 </radialGradient>
 </defs>
 </svg>

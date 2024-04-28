@@ -1,14 +1,16 @@
 import React, { FC, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 import { Field } from 'formik'
 import generator from 'generate-password-ts'
 
 import { useAppDispatch } from '../../../../store/types'
 import { AuthenticatedUserData, StaffData } from '../../../../api'
-import { createStaffThunk } from '../../../../store/slices/StaffSlice.ts'
+import { createStaffThunk, staffSelector } from '../../../../store/slices/StaffSlice.ts'
 import { UseUpdates } from '../../../../hooks/useUpdates.ts'
 
 import { DashboardLayout } from '../../../../component/DashboardLayout/DashboardLayout'
+import { Spinner } from '../../../../component/Spinner/Spinner.tsx'
 import { FormikStep, FormikStepper } from '../../../TeamView/CreateTeam/Step'
 import { SuccessConfirmationPopup } from '../../../../component/SuccessConfirmation/SuccessConfirmation.tsx'
 
@@ -45,7 +47,10 @@ const AddStaffMultiStep: FC<AddStaffProps> = ({ user, logger }) => {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const { teamId } = useParams()
+  const { loadingCreatingStaff } = useSelector(staffSelector)
   const [isActiveConfirmationPopup, setIsActiveConfirmationPopup] = useState(false)
+
+  const isPending = loadingCreatingStaff === 'pending'
 
   const openConfirmationPopup = () => setIsActiveConfirmationPopup(true)
   const closeConfirmationPopup = async () => {
@@ -62,7 +67,7 @@ const AddStaffMultiStep: FC<AddStaffProps> = ({ user, logger }) => {
           email: '',
           role: '',
         }}
-        onSubmit={async (values, { resetForm }) => {
+        onSubmit={async (values, { resetForm, setSubmitting }) => {
           if (teamId) {
             const data: StaffData = {
               ...(values as StaffData),
@@ -74,6 +79,7 @@ const AddStaffMultiStep: FC<AddStaffProps> = ({ user, logger }) => {
             dispatch(createStaffThunk({ data }))
               .unwrap()
               .then(() => {
+                setSubmitting(isPending)
                 logger.setUpdate({ message: 'added a new staff', userId: user.id, groupId: user.groupId })
                 logger.sendUpdates(user.groupId)
                 openConfirmationPopup()
@@ -125,6 +131,7 @@ const AddStaffMultiStep: FC<AddStaffProps> = ({ user, logger }) => {
           </div>
         </FormikStep>
       </FormikStepper>
+      {isPending && <div className='Add-staff__Multi-step--spinner'><Spinner/></div>}
       {isActiveConfirmationPopup && <SuccessConfirmationPopup
         onClose={closeConfirmationPopup} title='Staff added successfully' />}
     </div>
