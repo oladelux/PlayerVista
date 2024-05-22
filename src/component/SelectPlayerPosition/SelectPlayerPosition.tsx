@@ -30,12 +30,14 @@ export const SelectPlayerPosition:FC<SelectPlayerPositionProps> = props => {
       <option value='CB'>CB</option>
       <option value='RB'>RB</option>
       <option value='LB'>LB</option>
-      <option value='WRB'>WRB</option>
-      <option value='WLB'>WLB</option>
+      <option value='LWB'>LWB</option>
+      <option value='RWB'>RWB</option>
       <option value='CDM'>CDM</option>
       <option value='CM'>CM</option>
       <option value='RM'>RM</option>
       <option value='LM'>LM</option>
+      <option value='RW'>RW</option>
+      <option value='LW'>LW</option>
       <option value='CAM'>CAM</option>
       <option value='ST'>ST</option>
       <option value='CF'>CF</option>
