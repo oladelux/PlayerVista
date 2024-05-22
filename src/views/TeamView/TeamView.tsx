@@ -1,5 +1,6 @@
 import { FC } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 
 import { routes } from '../../constants/routes'
 import { useAppDispatch } from '../../store/types'
@@ -7,6 +8,8 @@ import { getPlayersThunk } from '../../store/slices/PlayersSlice.ts'
 import { getStaffsThunk } from '../../store/slices/StaffSlice.ts'
 import { getEventsThunk } from '../../store/slices/EventsSlice.ts'
 import { setCurrentTeam } from '../../utils/localStorage.ts'
+import { teamSelector } from '../../store/slices/TeamSlice.ts'
+import { getReportersThunk } from '../../store/slices/ReporterSlice.ts'
 import { TeamResult } from '../../api'
 
 import { DashboardHeader } from '../../component/DashboardLayout/DashboardLayout'
@@ -29,6 +32,7 @@ const NoTeamView: FC = () => {
 export const TeamView: FC<TeamViewProps> = props => {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
+  const { teams } = useSelector(teamSelector)
   const isTeamsAvailable = props.teams.length > 0
 
   const setActiveTeam = (teamId: string) => {
@@ -37,10 +41,11 @@ export const TeamView: FC<TeamViewProps> = props => {
     dispatch(getPlayersThunk({ teamId }))
     dispatch(getEventsThunk({ teamId }))
     dispatch(getStaffsThunk({ teamId }))
+    dispatch(getReportersThunk({ teamId }))
   }
   return (
     <>
-      <DashboardHeader />
+      <DashboardHeader teams={teams}/>
       <div className='Team-view'>
         { isTeamsAvailable ?
           <div className='Team-view__team'>

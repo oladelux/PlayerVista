@@ -13,6 +13,9 @@ import { clearPlayerState, getPlayersThunk } from '../store/slices/PlayersSlice.
 import { clearEventState, getEventsThunk } from '../store/slices/EventsSlice.ts'
 import { clearLocalStorage, setCurrentTeam } from '../utils/localStorage.ts'
 import { clearStaffState, getStaffsThunk } from '../store/slices/StaffSlice.ts'
+import { clearReporterState, getReportersThunk } from '../store/slices/ReporterSlice.ts'
+
+export type AuthenticationHook = ReturnType<typeof useAuthentication>
 
 export function useAuthentication (
   user: UserHook,
@@ -24,6 +27,7 @@ export function useAuthentication (
 
   const [loggingIn, setLoggingIn] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [emailVerificationSent, setEmailVerificationSent] = useState(false)
 
   async function register(data: RegistrationDetails) {
     setIsSubmitting(true)
@@ -61,6 +65,7 @@ export function useAuthentication (
           dispatch(getPlayersThunk({ teamId: userData.teams[0] }))
           dispatch(getEventsThunk({ teamId: userData.teams[0] }))
           dispatch(getStaffsThunk({ teamId: userData.teams[0] }))
+          dispatch(getReportersThunk({ teamId: userData.teams[0] }))
           navigate(`/team/${userData.teams[0]}`)
         }
       })
@@ -82,6 +87,7 @@ export function useAuthentication (
           dispatch(clearPlayerState())
           dispatch(clearEventState())
           dispatch(clearStaffState())
+          dispatch(clearReporterState())
           navigate(routes.login)
         })
         .catch(e => {
@@ -94,11 +100,31 @@ export function useAuthentication (
     }
   }
 
+  function sendEmailVerification() {
+    api.sendEmailVerification()
+      .then(() => {
+        setEmailVerificationSent(true)
+
+        setTimeout(() => {
+          setEmailVerificationSent(false)
+        }, 3000)
+      })
+      .catch(e => {
+        if (e instanceof ApiError) {
+          console.error({ message: 'sending email verification failed', reason: e })
+        } else {
+          console.error('Unhandled error sending email verification', e)
+        }
+      })
+  }
+
   return {
     isSubmitting,
     register,
     loggingIn,
     loginUser,
     logout,
+    sendEmailVerification,
+    emailVerificationSent,
   }
 }

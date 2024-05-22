@@ -19,7 +19,7 @@ type HeatMapProps = {
   playerLocations: LocationData[]
   heatSectors: HeatSectorsType[]
   summaryStatsColumns: Column[]
-  teamPlayers: {select: string, num: string, position: string, name: string}[]
+  teamPlayers: {select: string, num: number, position: string, name: string}[]
 }
 
 export const HeatMap: FC<HeatMapProps> = ({
@@ -73,10 +73,10 @@ export const HeatMap: FC<HeatMapProps> = ({
               <ReferenceArea y1={0} y2={0.1} x1={36} x2={80 - 36} fill='black' fillOpacity={1} stroke='black'/>
               <ReferenceArea y1={119.9} y2={120} x1={36} x2={80 - 36} fill='black' fillOpacity={1} stroke='black'/>
               <ReferenceArea x1={0} x2={80} y1={0} y2={120} fillOpacity={0} stroke='black'/>
-              <XAxis type='number' dataKey='y' hide domain={[0, 80]}/>
+              <XAxis type='number' dataKey='y' hide domain={[0, 80]} />
               <YAxis type='number' dataKey='x' hide domain={[0, 120]}/>
               <Tooltip cursor={{ strokeDasharray: '3 3' }}/>
-              <Scatter name='Heatmap' data={playerLocations} fill='#777777'/>
+              <Scatter name='Heatmap' data={playerLocations} fill='#777777' onClick={() => { console.log('check') }}/>
             </ScatterChart>
           </div>
         </div>

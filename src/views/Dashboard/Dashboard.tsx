@@ -2,8 +2,10 @@ import { FC } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined'
 import SendIcon from '@mui/icons-material/Send'
+import { Snackbar } from '@mui/material'
 
 import { AuthenticatedUserData, Fixtures, LogType, TeamResult } from '../../api'
+import { AuthenticationHook } from '../../hooks/useAuthentication.ts'
 
 import { DashboardLayout } from '../../component/DashboardLayout/DashboardLayout'
 import { Card } from '../../component/Card/Card'
@@ -21,11 +23,13 @@ type DashboardProps = {
   teams: TeamResult[]
   applicationLogs: LogType[]
   user: AuthenticatedUserData
+  authentication: AuthenticationHook
 }
 
 export const Dashboard: FC<DashboardProps> = props => {
   const { teamId } = useParams()
   const currentTeam = props.teams.find((team) => team.id === teamId)
+  const { sendEmailVerification, emailVerificationSent } = props.authentication
 
   return (
     <DashboardLayout>
@@ -47,8 +51,8 @@ export const Dashboard: FC<DashboardProps> = props => {
               <div className='Dashboard__notification-content--action'>
                 <Link to='#' className='Dashboard__notification-content--action-link'>
                   <EmailOutlinedIcon className='Dashboard__notification-content--action-link--icon'/>Change email</Link>
-                <Link to='#' className='Dashboard__notification-content--action-link'>
-                  <SendIcon className='Dashboard__notification-content--action-link--icon'/> Resend link</Link>
+                <div onClick={sendEmailVerification} className='Dashboard__notification-content--action-link'>
+                  <SendIcon className='Dashboard__notification-content--action-link--icon'/> Resend link</div>
               </div>
             </div>
           </div>
@@ -70,6 +74,11 @@ export const Dashboard: FC<DashboardProps> = props => {
           </Card>
         </div>
       </div>
+      <Snackbar
+        open={emailVerificationSent}
+        message='Email sent'
+        className='Dashboard__snackbar'
+      />
     </DashboardLayout>
   )
 }

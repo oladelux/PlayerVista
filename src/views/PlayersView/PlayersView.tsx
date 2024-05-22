@@ -33,6 +33,10 @@ type PlayersViewProps = {
   players: Player[]
 }
 
+const predefinedOrder = [
+  'GK', 'LB', 'LWB', 'CB', 'RWB', 'RB', 'CDM', 'CM', 'LM', 'RM', 'CAM', 'LW', 'RW', 'CF', 'ST',
+]
+
 export const PlayersView:FC<PlayersViewProps> = ({ players }) => {
   const { teamId } = useParams()
   const { searchPlayerValue, handleSearchInput } = usePlayers()
@@ -61,6 +65,10 @@ export const PlayersView:FC<PlayersViewProps> = ({ players }) => {
     action: `/team/${teamId}/players/${player.id}`,
   }))
 
+  const sortedTeamPlayers = formattedPlayers.sort((a, b) => {
+    return predefinedOrder.indexOf(a.position) - predefinedOrder.indexOf(b.position)
+  })
+
   return (
     <DashboardLayout>
       <div className='Players-view'>
@@ -83,7 +91,7 @@ export const PlayersView:FC<PlayersViewProps> = ({ players }) => {
           </Link>
         </div>
         <div className='Players-view__content'>
-          <Table columns={playerColumns} data={formattedPlayers} />
+          <Table columns={playerColumns} data={sortedTeamPlayers} />
         </div>
       </div>
     </DashboardLayout>

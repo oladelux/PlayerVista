@@ -11,6 +11,8 @@ import TeamsIcon from '../../assets/images/icons/teams.svg'
 import TeamsActiveIcon from '../../assets/images/icons/teams-active.svg'
 import UserManagementIcon from '../../assets/images/icons/user-management.svg'
 import UserManagementActiveIcon from '../../assets/images/icons/user-management-active.svg'
+import ReporterIcon from '../../assets/images/icons/reporter.svg'
+import ReporterActiveIcon from '../../assets/images/icons/reporter-active.svg'
 import EventIcon from '../../assets/images/icons/event.svg'
 import EventActiveIcon from '../../assets/images/icons/event-active.svg'
 import SettingsIcon from '../../assets/images/icons/settingsIcon.svg'
@@ -24,8 +26,8 @@ type SidebarMenuProps = {
   isActive: boolean
 }
 
-type TabType = 'DASHBOARD' | 'TEAM MANAGEMENT' | 'STAFF MANAGEMENT' | 'EVENT' | 'MESSAGE'
-const sidebarMenu = ['DASHBOARD', 'TEAM MANAGEMENT', 'STAFF MANAGEMENT', 'EVENT', 'MESSAGE']
+type TabType = 'DASHBOARD' | 'TEAM MANAGEMENT' | 'STAFF MANAGEMENT' | 'EVENT' | 'MESSAGE' | 'REPORTERS'
+const sidebarMenu = ['DASHBOARD', 'TEAM MANAGEMENT', 'STAFF MANAGEMENT', 'EVENT', 'MESSAGE', 'REPORTERS']
 
 export type SideBarTabsType = {
   /**
@@ -159,6 +161,13 @@ export const Sidebar: FC<SidebarProps> = props => {
       image: UserManagementIcon,
       activeImage: UserManagementActiveIcon,
       link: `/team/${teamId}/staffs`,
+    },
+    {
+      tabName: 'Reporters',
+      tabType: 'REPORTERS',
+      image: ReporterIcon,
+      activeImage: ReporterActiveIcon,
+      link: `/team/${teamId}/reporters`,
     },
     {
       tabName: 'Event',

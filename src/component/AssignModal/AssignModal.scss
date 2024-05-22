@@ -1,0 +1,37 @@
+@use '../../assets/styles/colors';
+@use '../../assets/styles/fonts';
+
+.Assign-match {
+  &__wrapper {
+    width: 600px;
+    background-color: colors.$color-white;
+    padding: 20px;
+
+    &-title {
+      margin-bottom: 20px;
+    }
+
+    &-list {
+      border: 1px solid colors.$color-border-line;
+      padding: 15px;
+      border-radius: 10px;
+
+      &-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 15px;
+
+        &__actions {
+          .css-byenzh-MuiButtonBase-root-MuiSwitch-switchBase.Mui-checked {
+            color: colors.$color-dark-blue;
+          }
+
+          .css-byenzh-MuiButtonBase-root-MuiSwitch-switchBase.Mui-checked+.MuiSwitch-track {
+            background-color: colors.$color-dark-blue;
+          }
+        }
+      }
+    }
+  }
+}

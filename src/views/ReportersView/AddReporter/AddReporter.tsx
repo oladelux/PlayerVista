@@ -4,17 +4,17 @@ import { useSelector } from 'react-redux'
 import { Field } from 'formik'
 import generator from 'generate-password-ts'
 
-import { useAppDispatch } from '../../../../store/types'
-import { AuthenticatedUserData, StaffData } from '../../../../api'
-import { createStaffThunk, staffSelector } from '../../../../store/slices/StaffSlice.ts'
-import { UseUpdates } from '../../../../hooks/useUpdates.ts'
+import { useAppDispatch } from '../../../store/types'
+import { AuthenticatedUserData, ReporterData } from '../../../api'
+import { createReporterThunk, reporterSelector } from '../../../store/slices/ReporterSlice.ts'
+import { UseUpdates } from '../../../hooks/useUpdates.ts'
 
-import { DashboardLayout } from '../../../../component/DashboardLayout/DashboardLayout'
-import { Spinner } from '../../../../component/Spinner/Spinner.tsx'
-import { FormikStep, FormikStepper } from '../../../TeamView/CreateTeam/Step'
-import { SuccessConfirmationPopup } from '../../../../component/SuccessConfirmation/SuccessConfirmation.tsx'
+import { DashboardLayout } from '../../../component/DashboardLayout/DashboardLayout'
+import { Spinner } from '../../../component/Spinner/Spinner.tsx'
+import { FormikStep, FormikStepper } from '../../TeamView/CreateTeam/Step'
+import { SuccessConfirmationPopup } from '../../../component/SuccessConfirmation/SuccessConfirmation.tsx'
 
-import './AddStaff.scss'
+import './AddReporter.scss'
 
 const password = generator.generate({
   length: 10,
@@ -24,62 +24,62 @@ const password = generator.generate({
   strict: true,
 })
 
-type AddStaffProps = {
+type AddReporterProps = {
   logger: UseUpdates
   user: AuthenticatedUserData
 }
 
-export const AddStaff: FC<AddStaffProps> = ({ logger, user }) => {
+export const AddReporter: FC<AddReporterProps> = ({ logger, user }) => {
   return (
     <DashboardLayout>
-      <div className='Add-staff'>
-        <div className='Add-staff__header'>
-          <div className='Add-staff__header-title'>Hello Admin,</div>
-          <div className='Add-staff__header-sub-title'>Let’s add a new staff</div>
+      <div className='Add-reporter'>
+        <div className='Add-reporter__header'>
+          <div className='Add-reporter__header-title'>Hello Admin,</div>
+          <div className='Add-reporter__header-sub-title'>Let’s add a new reporter</div>
         </div>
-        <AddStaffMultiStep user={user} logger={logger} />
+        <AddReporterMultiStep user={user} logger={logger} />
       </div>
     </DashboardLayout>
   )
 }
 
-const AddStaffMultiStep: FC<AddStaffProps> = ({ user, logger }) => {
+const AddReporterMultiStep: FC<AddReporterProps> = ({ user, logger }) => {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const { teamId } = useParams()
-  const { loadingCreatingStaff } = useSelector(staffSelector)
+  const { loadingCreatingReporter } = useSelector(reporterSelector)
   const [isActiveConfirmationPopup, setIsActiveConfirmationPopup] = useState(false)
 
-  const isPending = loadingCreatingStaff === 'pending'
+  const isPending = loadingCreatingReporter === 'pending'
 
   const openConfirmationPopup = () => setIsActiveConfirmationPopup(true)
   const closeConfirmationPopup = async () => {
     setIsActiveConfirmationPopup(false)
-    navigate(`/team/${teamId}/staffs`)
+    navigate(`/team/${teamId}/reporters`)
   }
 
   return (
-    <div className='Add-staff__Multi-step Multi-step'>
+    <div className='Add-reporter__Multi-step Multi-step'>
       <FormikStepper
         initialValues={{
           firstName: '',
           lastName: '',
           email: '',
-          role: '',
+          role: 'reporter',
         }}
         onSubmit={async (values, { resetForm, setSubmitting }) => {
           if (teamId) {
-            const data: StaffData = {
-              ...(values as StaffData),
+            const data: ReporterData = {
+              ...(values as ReporterData),
               groupId: user.groupId,
               password: password,
               teams: [teamId],
             }
-            dispatch(createStaffThunk({ data }))
+            dispatch(createReporterThunk({ data }))
               .unwrap()
               .then(() => {
                 setSubmitting(isPending)
-                logger.setUpdate({ message: 'added a new staff', userId: user.id, groupId: user.groupId })
+                logger.setUpdate({ message: 'added a new reporter', userId: user.id, groupId: user.groupId })
                 logger.sendUpdates(user.groupId)
                 openConfirmationPopup()
                 resetForm()
@@ -87,7 +87,7 @@ const AddStaffMultiStep: FC<AddStaffProps> = ({ user, logger }) => {
           } }
         }
       >
-        <FormikStep label='Staff Info'>
+        <FormikStep label='Reporter Info'>
           <div className='Multi-step__layout'>
             <div className='Multi-step__layout-form-group'>
               <div className='Multi-step__layout-form-group--label'>First Name</div>
@@ -113,26 +113,12 @@ const AddStaffMultiStep: FC<AddStaffProps> = ({ user, logger }) => {
                 name='email'
               />
             </div>
-            <div className='Multi-step__layout-form-group'>
-              <div className='Multi-step__layout-form-group--label'>Role</div>
-              <Field
-                className='Multi-step__layout-form-group--field'
-                as='select'
-                name='role'
-              >
-                <option>Select Staff Role</option>
-                <option value='admin'>Admin</option>
-                <option value='coach'>Coach</option>
-                <option value='scout'>Scout</option>
-                <option value='coach'>Others</option>
-              </Field>
-            </div>
           </div>
         </FormikStep>
       </FormikStepper>
-      {isPending && <div className='Add-staff__Multi-step--spinner'><Spinner/></div>}
+      {isPending && <div className='Add-reporter__Multi-step--spinner'><Spinner/></div>}
       {isActiveConfirmationPopup && <SuccessConfirmationPopup
-        onClose={closeConfirmationPopup} title='Staff added successfully' />}
+        onClose={closeConfirmationPopup} title='Reporter added successfully' />}
     </div>
   )
 }

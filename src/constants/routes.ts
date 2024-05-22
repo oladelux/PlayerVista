@@ -1,6 +1,7 @@
 export enum Routes {
   HOME='/',
   LOGIN = '/login',
+  EMAIL_VERIFICATION = '/verify-email/:token',
   TEAM = '/team',
   CREATE_TEAM = '/team/create-team',
   MANAGE_TEAM = '/team/:teamId/manage-teams',
@@ -11,6 +12,8 @@ export enum Routes {
   SINGLE_PLAYER = '/team/:teamId/players/:playerId',
   STAFFS = '/team/:teamId/staffs',
   ADD_STAFF = '/team/:teamId/staffs/add-staff',
+  REPORTERS = '/team/:teamId/reporters',
+  ADD_REPORTERS = '/team/:teamId/reporters/add-reporter',
   TRAINING_DATA = '/team/:teamId/training-data',
   EVENTS = '/team/:teamId/events',
   SINGLE_EVENT = '/team/:teamId/events/:eventId',
@@ -25,6 +28,7 @@ export enum Routes {
 export const routes = {
   home: Routes.HOME,
   login: Routes.LOGIN,
+  emailVerification: Routes.EMAIL_VERIFICATION,
   team: Routes.TEAM,
   manageTeam: Routes.MANAGE_TEAM,
   dashboardCreateTeam: Routes.DASHBOARD_CREATE_TEAM,
@@ -33,6 +37,8 @@ export const routes = {
   dashboard: Routes.DASHBOARD,
   players: Routes.PLAYERS,
   addPlayer: Routes.ADD_PLAYER,
+  reporters: Routes.REPORTERS,
+  addReporter: Routes.ADD_REPORTERS,
   singlePlayer: Routes.SINGLE_PLAYER,
   staffs: Routes.STAFFS,
   addStaff: Routes.ADD_STAFF,

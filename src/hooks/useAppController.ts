@@ -14,6 +14,8 @@ import { getCurrentTeam } from '../utils/localStorage.ts'
 import { getPlayersThunk } from '../store/slices/PlayersSlice.ts'
 import { getEventsThunk } from '../store/slices/EventsSlice.ts'
 import { getStaffsThunk, staffSelector } from '../store/slices/StaffSlice.ts'
+import { useCountdown } from './useCountdown.ts'
+import { getReportersThunk, reporterSelector } from '../store/slices/ReporterSlice.ts'
 
 export type AppController = ReturnType<typeof useAppController>
 let didInit = false
@@ -24,11 +26,13 @@ export function useAppController () {
   const { teams } = useSelector(teamSelector)
   const { logs } = useSelector(settingsSelector)
   const { staffs } = useSelector(staffSelector)
+  const { reporters } = useSelector(reporterSelector)
   const currentTeam = getCurrentTeam()
   const user = useUser()
+  const countdown = useCountdown(user.refreshUserData)
   const logger = useUpdates()
   const { players } = usePlayers()
-  const { events } = useEvents()
+  const events = useEvents()
   const authentication = useAuthentication(user, async (userData) => {
     await dispatch(getTeamsThunk())
     await dispatch(getApplicationLogsThunk({ groupId: userData.groupId }))
@@ -47,6 +51,7 @@ export function useAppController () {
             await dispatch(getPlayersThunk({ teamId: currentTeam }))
             await dispatch(getEventsThunk({ teamId: currentTeam }))
             await dispatch(getStaffsThunk({ teamId: currentTeam }))
+            await dispatch(getReportersThunk({ teamId: currentTeam }))
           }
         })
         .then(() => {
@@ -57,12 +62,14 @@ export function useAppController () {
 
   return {
     user,
+    countdown,
     loading,
     authentication,
     team,
     players,
     teams,
     staffs,
+    reporters,
     events,
     logger,
     logs,

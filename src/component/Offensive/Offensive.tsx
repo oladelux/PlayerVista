@@ -11,8 +11,8 @@ export type OffensiveData = {
   goals: number
   assist: number
   shots: number
-  shotsOnTarget: number
-  shotsOffTarget: number
+  shotsOnTarget: string | number
+  shotsOffTarget: string | number
 }
 
 const offensiveColumns = [
@@ -23,6 +23,7 @@ const offensiveColumns = [
   { key: 'goals', title: 'G', placeholder: 'Goals' },
   { key: 'assist', title: 'A', placeholder: 'Assists' },
   { key: 'shots', title: 'S', placeholder: 'Total Shots' },
+  { key: 'cmp', title: 'Cmp', placeholder: 'Completed Passes' },
   { key: 'shotsOnTarget', title: 'S.ON', placeholder: 'Shots On Target' },
   { key: 'shotsOffTarget', title: 'S.OFF', placeholder: 'Shots Off Target' },
 ]

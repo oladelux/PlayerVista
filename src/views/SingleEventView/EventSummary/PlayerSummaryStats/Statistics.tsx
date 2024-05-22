@@ -1,7 +1,7 @@
 import { FC, useState } from 'react'
 
-import { EventData, getPlayerActions } from '../../../../utils/players.ts'
-import { Player } from '../../../../api'
+import { convertSecondsToGameMinute, getPlayerActions } from '../../../../utils/players.ts'
+import { Player, PlayerPerformance } from '../../../../api'
 
 import { TabButton } from '../../../../component/TabButton/TabButton.tsx'
 import { TabContent } from '../../../../component/TabContent/TabContent.tsx'
@@ -10,29 +10,32 @@ import { Defensive, DefensiveData } from '../../../../component/Defensive/Defens
 
 type StatisticsProps = {
   players: Player[]
-  footballEventsData: EventData[]
+  performance: PlayerPerformance[]
 }
 
 const tabCategory = ['Offensive', 'Defensive']
 
-export const Statistics:FC<StatisticsProps> = ({ players, footballEventsData }) => {
+export const Statistics:FC<StatisticsProps> = ({ players, performance }) => {
   const [selectedCategory, setSelectedCategory] = useState('')
-  const data = getPlayerActions(players, footballEventsData)
+  const data = getPlayerActions(players, performance)
 
   const offensiveData: OffensiveData[] = data.map(item => {
     const actions = item.actions || {}
-    const shotOnTarget = actions.shots?.find(shot => shot.type === 'shotsOnTarget')
-    const shotOffTarget = actions.shots?.find(shot => shot.type === 'shotsOffTarget')
+    const shotOnTarget = actions.shots.filter(shot => shot.value === 'ON_TARGET').length
+    const shotOffTarget = actions.shots.filter(shot => shot.value === 'OFF_TARGET').length
+    const completedPasses = actions.pass.filter(item => item.value === 'SUCCESSFUL').length
+
     return ({
       number: item.jerseyNum,
       name: item.name,
       position: item.position,
-      minutePlayed: 90,
-      goals: actions.goals?.value || 0,
-      shots: shotOnTarget && shotOffTarget &&(shotOnTarget.value + shotOffTarget.value) || 0,
-      assist: actions.assist?.value || 0,
-      shotsOnTarget: shotOnTarget?.value || 0,
-      shotsOffTarget: shotOffTarget?.value || 0,
+      minutePlayed: convertSecondsToGameMinute(item.minutePlayed) || 0,
+      goals: actions?.goals.length || 0,
+      shots: shotOnTarget + shotOffTarget,
+      assist: actions?.assists.length || 0,
+      shotsOnTarget: shotOnTarget || 0,
+      shotsOffTarget: shotOffTarget || 0,
+      cmp: completedPasses || 0,
     })
   })
 
@@ -42,13 +45,13 @@ export const Statistics:FC<StatisticsProps> = ({ players, footballEventsData }) 
       number: item.jerseyNum,
       name: item.name,
       position: item.position,
-      minutePlayed: 90,
-      totalTackles: actions.totalTackles?.value || 0,
-      interceptions: actions.interceptions?.value || 0,
-      clearance: actions.clearance?.value || 0,
-      blockedShots: actions.blockedShots?.value || 0,
-      aerialDuels: actions.aerialDuels?.value || 0,
-      fouls: actions.fouls?.value || 0,
+      minutePlayed: convertSecondsToGameMinute(item.minutePlayed) || 0,
+      totalTackles: actions.tackles.length || 0,
+      interceptions: actions.interceptions.length || 0,
+      clearance: actions.clearance.length || 0,
+      blockedShots: actions.blockedShots.length || 0,
+      aerialDuels: actions.aerialDuels.length || 0,
+      fouls: actions.fouls.length || 0,
     })
   })
 

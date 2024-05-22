@@ -5,6 +5,7 @@ import AddIcon from '@mui/icons-material/Add'
 import { TeamResult, Event } from '../../api'
 import { formatDate } from '../../services/helper.ts'
 import { formatSingleEventDate, formatSingleEventTime } from '../../utils/date.ts'
+import { EventsHook } from '../../hooks/useEvents.ts'
 
 import { DashboardLayout } from '../../component/DashboardLayout/DashboardLayout.tsx'
 import { Button } from '../../component/Button/Button.tsx'
@@ -14,7 +15,7 @@ import ClubLogo from '../../assets/images/club.png'
 import './SingleEventView.scss'
 
 type SingleEventViewProps = {
-  events: Record<string, Event[]>
+  events: EventsHook
   teams: TeamResult[]
 }
 
@@ -26,7 +27,7 @@ export const SingleEventView: FC<SingleEventViewProps> = props => {
 
   const isEvent = useMemo(() => {
     if(teamId) {
-      return events[teamId] && events[teamId].find(event => event.id === eventId)
+      return events.events[teamId] && events.events[teamId].find(event => event.id === eventId)
     }
   }, [teamId, events, eventId])
 
@@ -38,14 +39,14 @@ export const SingleEventView: FC<SingleEventViewProps> = props => {
 
   const isMatches = useMemo(() => {
     if(teamId) {
-      return events[teamId] && events[teamId].filter(event =>
+      return events.events[teamId] && events.events[teamId].filter(event =>
         event.type === 'match' && new Date(event.startDate) > now)
     }
   }, [teamId, events])
 
   const isTraining = useMemo(() => {
     if(teamId) {
-      return events[teamId] && events[teamId].filter(event =>
+      return events.events[teamId] && events.events[teamId].filter(event =>
         event.type === 'training' && new Date(event.startDate) > now)
     }
   }, [teamId, events])
@@ -157,9 +158,7 @@ const SingleMatch: FC<SingleMatchProps> = props => {
               <div className='Single-event__wrapper-content-match-board__home--name'>{isTeam.teamName}</div>
             </div>
             <div className='Single-event__wrapper-content-match-board__score'>
-              <div className='Single-event__wrapper-content-match-board__score--home'>0</div>
-              <div className='Single-event__wrapper-content-match-board__score--divider'>-</div>
-              <div className='Single-event__wrapper-content-match-board__score--away'>0</div>
+              vs
             </div>
             <div className='Single-event__wrapper-content-match-board__away'>
               <div className='Single-event__wrapper-content-match-board__away--media'>
@@ -168,7 +167,8 @@ const SingleMatch: FC<SingleMatchProps> = props => {
               <div className='Single-event__wrapper-content-match-board__away--name'>{isEvent.opponent}</div>
             </div>
           </div>
-          <Button className='Single-event__wrapper-content-match-btn'> <AddIcon/> Add Statistics</Button>
+          {/*<Button className='Single-event__wrapper-content-match-btn'>
+          <AddIcon/> Add Statistics</Button>*/}
         </div>
       </div>
       <div className='Single-event__wrapper-similar'>

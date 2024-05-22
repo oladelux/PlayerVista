@@ -38,6 +38,7 @@
           color: colors.$color-dark-blue;
           text-decoration: none;
           margin-right: 30px;
+          cursor: pointer;
 
           &--icon {
             width: 20px !important;
@@ -57,6 +58,12 @@
       background-repeat: no-repeat;
       background-position: center;
       background-size: cover;
+    }
+  }
+  &__snackbar {
+    .MuiSnackbarContent-root {
+      background-color: colors.$color-dark-blue3;
+      color: colors.$color-dark-blue;
     }
   }
 }

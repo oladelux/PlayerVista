@@ -1,7 +1,11 @@
-import { FC, useState } from 'react'
+import { FC, useEffect, useMemo, useState } from 'react'
+import { useParams } from 'react-router-dom'
 import LinearProgress from '@mui/material/LinearProgress'
 
-import { Player } from '../../../api'
+import { Player, TeamResult } from '../../../api'
+import { getPerformanceDataThunk } from '../../../store/slices/PlayerPerformanceSlice.ts'
+import { useAppDispatch } from '../../../store/types.ts'
+import { EventsHook } from '../../../hooks/useEvents.ts'
 
 import { DashboardLayout } from '../../../component/DashboardLayout/DashboardLayout.tsx'
 import { TabButton } from '../../../component/TabButton/TabButton.tsx'
@@ -12,16 +16,38 @@ import ClubLogo from '../../../assets/images/club.png'
 
 import './EventSummary.scss'
 
-const tabCategory = ['Summary', 'Player Stats']
+const tabCategory = ['Player Stats']
 
 type EventSummaryProps = {
   players: Player[]
+  events: EventsHook
+  teams: TeamResult[]
 }
 
-export const EventSummary:FC<EventSummaryProps> = ({ players }) => {
+export const EventSummary:FC<EventSummaryProps> = ({ players, events, teams }) => {
   const [selectedCategory, setSelectedCategory] = useState('')
+  const { teamId, eventId } = useParams()
+  const dispatch = useAppDispatch()
 
   const activeCategory = selectedCategory || tabCategory[0]
+
+  const isEvent = useMemo(() => {
+    if(teamId) {
+      return events.events[teamId] && events.events[teamId].find(event => event.id === eventId)
+    }
+  }, [teamId, events, eventId])
+
+  const isTeam = useMemo(() => {
+    if(teams) {
+      return teams.find(team => team.id === teamId)
+    }
+  }, [teamId, teams])
+
+  useEffect(() => {
+    if(eventId) {
+      dispatch(getPerformanceDataThunk({ eventId }))
+    }
+  }, [ eventId ])
 
   return (
     <DashboardLayout>
@@ -29,20 +55,18 @@ export const EventSummary:FC<EventSummaryProps> = ({ players }) => {
         <div className='Event-summary__header'>
           <div className='Event-summary__header-home'>
             <div className='Event-summary__header-home--media'>
-              <img src={ClubLogo} alt='club-logo' />
+              <img src={isTeam?.logo} width={64} alt='club-logo' />
             </div>
             <div className='Event-summary__header-home--name'>
-              Team A
+              {isTeam?.teamName}
             </div>
           </div>
           <div className='Event-summary__header-score'>
-            <div className='Event-summary__header-score--home'>0</div>
-            <div className='Event-summary__header-score--divider'>:</div>
-            <div className='Event-summary__header-score--away'>0</div>
+            vs
           </div>
           <div className='Event-summary__header-away'>
             <div className='Event-summary__header-away--name'>
-              Team B
+              {isEvent?.opponent}
             </div>
             <div className='Event-summary__header-away--media'>
               <img src={ClubLogo} alt='club-logo'/>
@@ -63,7 +87,7 @@ export const EventSummary:FC<EventSummaryProps> = ({ players }) => {
           <div className='Event-summary__content-section'>
             {tabCategory.map(category =>
               <TabContent key={category} isActive={activeCategory === category}>
-                {category === 'Summary' && <SummaryContent />}
+                {/*{category === 'Summary' && <SummaryContent />}*/}
                 {category === 'Player Stats' && <PlayerSummaryStats players={players} />}
               </TabContent>,
             )}

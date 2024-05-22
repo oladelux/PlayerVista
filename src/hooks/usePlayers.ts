@@ -1,14 +1,12 @@
 import { FormEvent, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 
-import { AppDispatch } from '../store/types'
 import { playersSelector } from '../store/slices/PlayersSlice'
 
 /**
  * Hook to manage players.
  */
 export const usePlayers = () => {
-  const dispatch = useDispatch<AppDispatch>()
   const [searchPlayerValue, setSearchPlayerValue] = useState('')
   const { players } = useSelector(playersSelector)
 

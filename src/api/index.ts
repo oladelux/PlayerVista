@@ -257,6 +257,21 @@ export type Staff = {
   teams: string[]
 }
 
+export type ReporterData = {
+  firstName: string
+  lastName: string
+  email: string
+  role: string
+  groupId: string
+  password: string
+  teams: string[]
+  eventId?: string
+}
+
+export type Reporter = Staff & {
+  eventId: string
+}
+
 export type TeamDataBaseResponse = {
   id: string
   active: boolean
@@ -287,6 +302,28 @@ export async function getStaffs(teamId: string): Promise<Staff[]> {
   return await res.json()
 }
 
+export async function createReporter(data: ReporterData): Promise<Reporter> {
+  const res = await apiRequest('/v1/reporter', 'POST', data)
+  return await res.json()
+}
+
+export async function getReporters(teamId: string): Promise<Reporter[]> {
+  const res = await apiRequest(`/v1/reporter/team/${teamId}`, 'GET')
+  return await res.json()
+}
+
+export async function assignReporter(
+  data: { eventId: string }, reporterId: string): Promise<Reporter> {
+  const res = await apiRequest(`/v1/reporter/id/assign/${reporterId}`, 'PATCH', data)
+  return await res.json()
+}
+
+export async function retractReporter(
+  data: { eventId: string }, reporterId: string): Promise<Reporter> {
+  const res = await apiRequest(`/v1/reporter/id/retract/${reporterId}`, 'PATCH', data)
+  return await res.json()
+}
+
 export async function loginAuthentication(data: AuthenticationCredentials):
   Promise<AuthenticationResult> {
   const res = await apiRequest('/v1/auth/login', 'POST', data)
@@ -295,6 +332,14 @@ export async function loginAuthentication(data: AuthenticationCredentials):
 
 export function logout(data: AuthRefreshToken) {
   return apiRequest('/v1/auth/logout', 'POST', data)
+}
+
+export function sendEmailVerification() {
+  return apiRequest('/v1/auth/send-verification-email', 'POST')
+}
+
+export function verifyEmail(token: string) {
+  return apiRequest(`/v1/auth/verify-email?token=${token}`, 'POST')
 }
 
 export async function getAuthenticatedUser(): Promise<AuthenticatedUserData> {
@@ -439,5 +484,49 @@ export type LogsResponse = BaseApiResponse & LogApiResponse
 
 export async function getLogs(groupId: string): Promise<LogsResponse> {
   const res = await apiRequest(`/v1/log?groupId=${groupId}`, 'GET')
+  return await res.json()
+}
+
+type Action = {
+  type?: string
+  x: number
+  y: number
+  value?: string
+  timestamp: number
+}
+
+type HeatmapEntry = {
+  x: number
+  y: number
+  timestamp: number
+}
+
+export type PlayerActions = {
+  shots: Action[]
+  tackles: Action[]
+  goals: Action[]
+  pass: Action[]
+  assists: Action[]
+  interceptions: Action[]
+  clearance: Action[]
+  blockedShots: Action[]
+  aerialDuels: Action[]
+  fouls: Action[]
+}
+
+export type PlayerPerformance = {
+  eventId: string
+  playerId: string
+  jerseyNumber: number
+  firstName: string
+  lastName: string
+  position: string
+  minutePlayed: number
+  heatmap: HeatmapEntry[]
+  actions: PlayerActions
+}
+
+export async function getPerformanceData(eventId: string): Promise<PlayerPerformance[]> {
+  const res = await apiRequest(`/v1/performance/${eventId}`, 'GET')
   return await res.json()
 }

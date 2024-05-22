@@ -1,0 +1,40 @@
+@use '../../assets/styles/colors';
+@use '../../assets/styles/fonts';
+
+.Email-verification {
+  background-color: colors.$color-background;
+  height: calc(100vh - 80px);
+  padding: 20px;
+
+  &__wrapper {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    &-title {
+      font-family: fonts.$font-bold;
+      font-size: 28px;
+      text-transform: capitalize;
+      color: colors.$color-dark-blue;
+      margin-bottom: 15px;
+    }
+
+    &-text {
+      color: colors.$color-dark-blue;
+      font-size: 1.15em;
+
+      &--link {
+        color: colors.$color-dark-blue;
+        font-family: fonts.$font-bold;
+      }
+    }
+
+    &-failed {
+      margin-top: 20px;
+      color: colors.$color-dark-blue;
+      font-size: 1.25em;
+    }
+  }
+}

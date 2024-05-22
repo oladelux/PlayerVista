@@ -1,12 +1,12 @@
 import React, { FC } from 'react'
-import { useParams } from 'react-router-dom'
 import TrendingUpIcon from '@mui/icons-material/TrendingUp'
 import TrendingDownIcon from '@mui/icons-material/TrendingDown'
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward'
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward'
 
-import { AuthenticatedUserData, Event } from '../../api'
+import { AuthenticatedUserData } from '../../api'
 import { UseUpdates } from '../../hooks/useUpdates.ts'
+import { useEvents } from '../../hooks/useEvents.ts'
 
 import { DashboardLayout } from '../../component/DashboardLayout/DashboardLayout'
 import { EventCalender } from '../../component/EventCalender/EventCalender.tsx'
@@ -14,17 +14,12 @@ import { EventCalender } from '../../component/EventCalender/EventCalender.tsx'
 import './EventsView.scss'
 
 type EventsViewProps = {
-  events: Record<string, Event[]>
   logger: UseUpdates
   user: AuthenticatedUserData
 }
 
 export const EventsView: FC<EventsViewProps> = props => {
-  const { teamId } = useParams()
-
-  const currentEvents = teamId && Object.prototype.hasOwnProperty.call(props.events, teamId)
-    ? props.events[teamId]
-    : []
+  const { currentEvents } = useEvents()
 
   return (
     <DashboardLayout>

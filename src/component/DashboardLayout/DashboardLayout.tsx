@@ -5,12 +5,13 @@ import { FiArrowLeft } from 'react-icons/fi'
 import Person2Icon from '@mui/icons-material/Person2'
 
 import { useAppController } from '../../hooks/useAppController'
-import { teamSelector } from '../../store/slices/TeamSlice.ts'
 import { TeamResult } from '../../api'
 import { setCurrentTeam } from '../../utils/localStorage.ts'
 import { getPlayersThunk } from '../../store/slices/PlayersSlice.ts'
 import { getEventsThunk } from '../../store/slices/EventsSlice.ts'
 import { getStaffsThunk } from '../../store/slices/StaffSlice.ts'
+import { getReportersThunk } from '../../store/slices/ReporterSlice.ts'
+import { teamSelector } from '../../store/slices/TeamSlice.ts'
 import { AppDispatch } from '../../store/types.ts'
 
 import { Sidebar } from '../Sidebar/SidebarMenu'
@@ -34,6 +35,7 @@ export const DashboardHeader: FC<DashboardHeaderProps> = ({ teams }) => {
     dispatch(getPlayersThunk({ teamId: id }))
     dispatch(getEventsThunk({ teamId: id }))
     dispatch(getStaffsThunk({ teamId: id }))
+    dispatch(getReportersThunk({ teamId: id }))
   }
 
   return (
@@ -64,11 +66,7 @@ export const DashboardHeader: FC<DashboardHeaderProps> = ({ teams }) => {
   )
 }
 
-type DashboardLayoutProps = {
-  teams: TeamResult[]
-}
-
-export const DashboardLayout: FC<PropsWithChildren<DashboardLayoutProps>> = props => {
+export const DashboardLayout: FC<PropsWithChildren> = props => {
   const controller = useAppController()
   const { pathname } = useLocation()
   const { teams } = useSelector(teamSelector)

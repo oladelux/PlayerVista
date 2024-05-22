@@ -57,6 +57,7 @@ const EventFormModal: FC<EventFormModalProps> = ({ onClose, startDate, logger, u
                 opponent: values.opponent,
                 info: values.info,
               }
+              console.log('data', data)
               teamId &&
                 await dispatch(createEventThunk({ data, teamId }))
                   .unwrap()
