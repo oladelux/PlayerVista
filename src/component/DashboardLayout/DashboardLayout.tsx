@@ -42,7 +42,7 @@ export const DashboardHeader: FC<DashboardHeaderProps> = ({ teams }) => {
     <div className='Dashboard-Layout__header'>
       <div className='Dashboard-Layout__header-media'>LOGO</div>
       <div className='Dashboard-Layout__header-nav'>
-        <form className='Dashboard-Layout__header-nav-form'>
+        {teamId && <form className='Dashboard-Layout__header-nav-form'>
           <select name='team' className='Dashboard-Layout__header-nav-form--select' onChange={handleTeamChange}>
             {activeTeamName && (
               <option value={teamId}>{activeTeamName}</option>
@@ -57,7 +57,7 @@ export const DashboardHeader: FC<DashboardHeaderProps> = ({ teams }) => {
               ))
               : <option>Select team</option>}
           </select>
-        </form>
+        </form>}
         <div className='Dashboard-Layout__header-nav-profile'>
           <Person2Icon/>
         </div>
