@@ -7,6 +7,7 @@ import ConnectWithoutContactOutlinedIcon from '@mui/icons-material/ConnectWithou
 import { routes } from '../../constants/routes'
 
 import Metrics from '../../assets/images/metrics.png'
+import PlayerVistaLogo from '../../assets/images/icons/playervista.png'
 
 import Sponsor1 from '../../assets/images/sponsor1.png'
 import Sponsor2 from '../../assets/images/sponsor2.png'
@@ -18,7 +19,9 @@ import './Home.scss'
 const HomeHeader = () => {
   return (
     <div className='Home__header'>
-      <div className='Home__header-logo'>PlayerVista</div>
+      <div className='Home__header-logo'>
+        <img className='Home__header-logo-img' src={PlayerVistaLogo} alt='playervista' width={100}/>
+      </div>
       <div className='Home__header-nav'>
         <Link to={routes.login} className='Home__header-nav--link'>Sign in</Link>
         <Link to={routes.signUp} className='Home__header-nav--get-started'>Get Started</Link>

@@ -16,6 +16,8 @@ import { AppDispatch } from '../../store/types.ts'
 
 import { Sidebar } from '../Sidebar/SidebarMenu'
 
+import PlayerVistaLogo from '../../assets/images/icons/playervista.png'
+
 import './DashboardLayout.scss'
 
 type DashboardHeaderProps = {
@@ -40,7 +42,9 @@ export const DashboardHeader: FC<DashboardHeaderProps> = ({ teams }) => {
 
   return (
     <div className='Dashboard-Layout__header'>
-      <div className='Dashboard-Layout__header-media'>LOGO</div>
+      <div className='Dashboard-Layout__header-media'>
+        <img src={PlayerVistaLogo} alt='playervista' width={150} />
+      </div>
       <div className='Dashboard-Layout__header-nav'>
         {teamId && <form className='Dashboard-Layout__header-nav-form'>
           <select name='team' className='Dashboard-Layout__header-nav-form--select' onChange={handleTeamChange}>

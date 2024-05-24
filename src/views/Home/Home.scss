@@ -12,7 +12,7 @@
     padding: 40px 80px;
 
     @include mixins.mobile {
-      padding: 20px 15px;
+      padding: 20px 10px;
     }
 
     @include mixins.tablet {
@@ -53,6 +53,23 @@
         @include mixins.tablet {
           font-size: 1em;
           padding: 8px 15px;
+        }
+      }
+    }
+
+    &-logo {
+      max-width: 100%;
+      display: flex;
+      align-items: center;
+
+      &-img {
+        vertical-align: middle;
+        width: 150px;
+        max-width: 100%;
+        display: inline-block;
+
+        @include mixins.mobile {
+          width: 110px;
         }
       }
     }
