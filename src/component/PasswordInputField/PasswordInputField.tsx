@@ -47,6 +47,7 @@ export const PasswordInputField: FC<PasswordInputFieldProps> = props => {
         name={props.name}
         placeholder={props.placeholder}
         onChange={props.onChange}
+        autoComplete='off'
       />
       <div className='Password-input-field__toggle' onClick={togglePasswordVisibility}>
         {showPassword ? <FaRegEyeSlash /> : <FaRegEye />}
