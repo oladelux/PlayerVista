@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 
 import { useAppDispatch } from '../store/types.ts'
@@ -16,12 +16,11 @@ const EMAIL_VERIFICATION_TIMEOUT = 5000
 export type CountdownHook = ReturnType<typeof useCountdown>
 
 export const useCountdown = (
-  refreshUserData: () => Promise<AuthenticatedUserData | undefined>,
+  refreshUserData: () => Promise<AuthenticatedUserData | undefined>, token: string | undefined,
 ) => {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const { teams } = useSelector(teamSelector)
-  const { token } = useParams()
   const [secondsRemaining, setSecondsRemaining] = useState(Math
     .floor(EMAIL_VERIFICATION_TIMEOUT / 1000))
   const [emailVerified, setEmailVerified] = useState(false)
@@ -40,7 +39,6 @@ export const useCountdown = (
             await dispatch(getStaffsThunk({ teamId: teams[0].id }))
             await dispatch(getReportersThunk({ teamId: teams[0].id }))
             navigate(`/team/${teams[0].id}`)
-            console.log('Inside Navigation function')
           })
           .catch((error) => {
             console.error('Error verifying email:', error)
@@ -57,17 +55,20 @@ export const useCountdown = (
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      if (secondsRemaining > 0) {
-        setSecondsRemaining(secondsRemaining - 1)
-      } else {
-        clearInterval(intervalId)
-        navigateToDashboard()
-      }
+      setSecondsRemaining((prev) => {
+        if (prev > 0) {
+          return prev - 1
+        } else {
+          clearInterval(intervalId)
+          navigateToDashboard()
+          return 0
+        }
+      })
 
     }, 1000)
 
     return () => clearInterval(intervalId)
-  }, [ secondsRemaining ])
+  }, [])
 
   return {
     secondsRemaining,

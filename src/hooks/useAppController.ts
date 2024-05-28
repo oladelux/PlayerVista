@@ -14,7 +14,6 @@ import { getCurrentTeam } from '../utils/localStorage.ts'
 import { getPlayersThunk } from '../store/slices/PlayersSlice.ts'
 import { getEventsThunk } from '../store/slices/EventsSlice.ts'
 import { getStaffsThunk, staffSelector } from '../store/slices/StaffSlice.ts'
-import { useCountdown } from './useCountdown.ts'
 import { getReportersThunk, reporterSelector } from '../store/slices/ReporterSlice.ts'
 
 export type AppController = ReturnType<typeof useAppController>
@@ -29,7 +28,6 @@ export function useAppController () {
   const { reporters } = useSelector(reporterSelector)
   const currentTeam = getCurrentTeam()
   const user = useUser()
-  const countdown = useCountdown(user.refreshUserData)
   const logger = useUpdates()
   const { players } = usePlayers()
   const events = useEvents()
@@ -62,7 +60,6 @@ export function useAppController () {
 
   return {
     user,
-    countdown,
     loading,
     authentication,
     team,

@@ -42,7 +42,6 @@ export const AppRoutes: FC = () => {
     teams,
     staffs,
     reporters,
-    countdown,
   } = controller
   const accessToken = getCookie('access-token')
 
@@ -100,7 +99,7 @@ export const AppRoutes: FC = () => {
         <Route path={routes.logout} element={<MyAccount/>}/>
         <Route path={routes.login} element={<Login controller={controller} />} />
         <Route path={routes.emailVerification} element={<EmailVerification teams={teams}
-          user={user.data} countdown={countdown} />} />
+          user={user.data} userHook={user} />} />
       </Routes>
     </>
   )
