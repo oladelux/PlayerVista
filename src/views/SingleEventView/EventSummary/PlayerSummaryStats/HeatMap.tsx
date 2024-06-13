@@ -76,7 +76,7 @@ export const HeatMap: FC<HeatMapProps> = ({
               <XAxis type='number' dataKey='y' hide domain={[0, 80]} />
               <YAxis type='number' dataKey='x' hide domain={[0, 120]}/>
               <Tooltip cursor={{ strokeDasharray: '3 3' }}/>
-              <Scatter name='Heatmap' data={playerLocations} fill='#777777' onClick={() => { console.log('check') }}/>
+              <Scatter name='Heatmap' data={playerLocations} fill='#777777' />
             </ScatterChart>
           </div>
         </div>

@@ -58,11 +58,10 @@ export const Home = () => {
       <HomeHeader />
       <div className='Home__hero'>
         <div className='Home__hero-title'>
-          Discover PlayerVista: Your All-in-One Football Management Solution!
+          Track. Analyze. Improve.
         </div>
         <div className='Home__hero-text'>
-          Effortless Team Coordination, Tactical Mastery, and Unparalleled Insights.
-          Your Journey to Championship Glory Starts Here!
+          The Ultimate Tool for Player Performance Analysis
         </div>
         <Link to='#' className='Home__hero-link'>Schedule demo</Link>
       </div>
@@ -81,26 +80,25 @@ export const Home = () => {
         <div className='Home__features-list'>
           <div className='Home__features-list--item'>
             <DashboardOutlinedIcon className='Home__features-list--item-icon' />
-            <div className='Home__features-list--item-title'>Intuitive Dashboard</div>
-            <div className='Home__features-list--item-text'>Real-time updates on team performance and upcoming events.
+            <div className='Home__features-list--item-title'>Real-time Tracking</div>
+            <div className='Home__features-list--item-text'>Monitor player movements live.
             </div>
           </div>
           <div className='Home__features-list--item'>
             <PersonIcon className='Home__features-list--item-icon' />
-            <div className='Home__features-list--item-title'>Players Profile</div>
-            <div className='Home__features-list--item-text'>Individual player profiles with detailed statistics and
-              performance history.
+            <div className='Home__features-list--item-title'>Detailed Analytics</div>
+            <div className='Home__features-list--item-text'>Get comprehensive performance metrics.
             </div>
           </div>
           <div className='Home__features-list--item'>
             <EventAvailableIcon className='Home__features-list--item-icon' />
-            <div className='Home__features-list--item-title'>Tactical Planning</div>
-            <div className='Home__features-list--item-text'>Virtual strategy board for coaches to plan tactics and formations.</div>
+            <div className='Home__features-list--item-title'>Customizable Reports</div>
+            <div className='Home__features-list--item-text'>Generate tailored reports for teams and individuals.</div>
           </div>
           <div className='Home__features-list--item'>
             <ConnectWithoutContactOutlinedIcon className='Home__features-list--item-icon' />
-            <div className='Home__features-list--item-title'>Communication Hub</div>
-            <div className='Home__features-list--item-text'>Instant messaging, announcement broadcasts, and notification features.</div>
+            <div className='Home__features-list--item-title'>Affordable Solutions</div>
+            <div className='Home__features-list--item-text'>Designed for amateur clubs and individual players.</div>
           </div>
         </div>
       </div>
