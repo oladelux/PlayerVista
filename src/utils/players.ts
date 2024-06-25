@@ -13,6 +13,19 @@ export type HeatSectorsType = {
   y2: number
 }
 
+const convertLandscapeToPortraitOnXAxis = (data: number) => {
+  const fieldHeight = 80
+  const computeValue = (120) / (120 - data)
+  return (fieldHeight) / (computeValue)
+}
+
+const convertLandscapeToPortraitOnYAxis = (data: number) => {
+  const fieldHeight = 120
+  const computeValue = (200) / (200 - data)
+  const xScaleFactor = (120) / (computeValue)
+  return fieldHeight - xScaleFactor
+}
+
 export const getPositionalData = (events: PlayerPerformance[], playerId: string) => {
   const playerEvents = events.find(evt => evt.playerId === playerId)
 
@@ -20,7 +33,12 @@ export const getPositionalData = (events: PlayerPerformance[], playerId: string)
     return []
   }
 
-  return playerEvents.heatmap.map(point => ({ x: point.x, y: point.y }))
+  return playerEvents.heatmap.map(point => {
+    return {
+      x: convertLandscapeToPortraitOnYAxis(point.y),
+      y: convertLandscapeToPortraitOnXAxis(point.x),
+    }
+  })
 }
 
 export const getHeatmapSectors = (

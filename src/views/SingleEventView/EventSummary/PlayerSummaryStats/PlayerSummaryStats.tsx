@@ -1,5 +1,5 @@
 import { Player } from '../../../../api'
-import { ChangeEvent, FC, useEffect, useState } from 'react'
+import { ChangeEvent, FC, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { Radio } from '@mui/material'
 
@@ -41,7 +41,6 @@ export const PlayerSummaryStats:FC<PlayerSummaryStatsProps> = ({ players }) => {
   const currentHeatSectors = getHeatmapSectors(currentLocations, 4, 4)
 
   const [selectedPlayer, setSelectedPlayer] = useState<string>(currentPlayerId)
-  const [scale, setScale] = useState<number>(0)
   const [playerLocations, setPlayerLocations] = useState<LocationData[]>(currentLocations)
   const [heatSectors, setHeatSectors] = useState<HeatSectorsType[]>(currentHeatSectors)
 
@@ -71,10 +70,6 @@ export const PlayerSummaryStats:FC<PlayerSummaryStatsProps> = ({ players }) => {
     { key: 'name', title: 'Name' },
   ]
 
-  useEffect(() => {
-    setScale(window.innerWidth <= 500 ? 4.5 : 5)
-  }, [])
-
   if(performance.length === 0){
     return 'No player data available'
   }
@@ -82,7 +77,6 @@ export const PlayerSummaryStats:FC<PlayerSummaryStatsProps> = ({ players }) => {
   return (
     <div className='Player-summary'>
       <HeatMap
-        scale={scale}
         playerLocations={playerLocations}
         heatSectors={heatSectors}
         summaryStatsColumns={summaryStatsColumns}

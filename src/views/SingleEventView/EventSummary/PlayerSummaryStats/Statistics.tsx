@@ -21,8 +21,8 @@ export const Statistics:FC<StatisticsProps> = ({ players, performance }) => {
 
   const offensiveData: OffensiveData[] = data.map(item => {
     const actions = item.actions || {}
-    const shotOnTarget = actions.shots.filter(shot => shot.value === 'ON_TARGET').length
-    const shotOffTarget = actions.shots.filter(shot => shot.value === 'OFF_TARGET').length
+    const shotOnTarget = actions.shots.filter(shot => shot.value === 'SUCCESSFUL').length
+    const shotOffTarget = actions.shots.filter(shot => shot.value === 'NOT_SUCCESSFUL').length
     const completedPasses = actions.pass.filter(item => item.value === 'SUCCESSFUL').length
 
     return ({
@@ -41,6 +41,7 @@ export const Statistics:FC<StatisticsProps> = ({ players, performance }) => {
 
   const defensiveData: DefensiveData[] = data.map(item => {
     const actions = item.actions || {}
+    console.log(actions)
     return ({
       number: item.jerseyNum,
       name: item.name,
@@ -49,8 +50,8 @@ export const Statistics:FC<StatisticsProps> = ({ players, performance }) => {
       totalTackles: actions.tackles.length || 0,
       interceptions: actions.interceptions.length || 0,
       clearance: actions.clearance.length || 0,
-      blockedShots: actions.blockedShots.length || 0,
-      aerialDuels: actions.aerialDuels.length || 0,
+      blockedShots: actions.blocked_shots.length || 0,
+      aerialDuels: actions.aerial_duels.length || 0,
       fouls: actions.fouls.length || 0,
     })
   })

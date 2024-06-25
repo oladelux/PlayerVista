@@ -509,8 +509,8 @@ export type PlayerActions = {
   assists: Action[]
   interceptions: Action[]
   clearance: Action[]
-  blockedShots: Action[]
-  aerialDuels: Action[]
+  blocked_shots: Action[]
+  aerial_duels: Action[]
   fouls: Action[]
 }
 

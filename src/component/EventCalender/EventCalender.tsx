@@ -74,15 +74,6 @@ export const EventCalender:FC<EventCalenderProps> = props => {
         }
       })
       setEvents(newEvents)
-      /*const lastMonthMatchData = filterEventsByMonth(newEvents, 'match', now.getMonth() - 1)
-      const thisMonthMatchData = filterEventsByMonth(newEvents, 'match', now.getMonth())
-      setLastMonthMatches(lastMonthMatchData)
-      setThisMonthMatches(thisMonthMatchData)
-
-      const lastMonthTrainingData = filterEventsByMonth(newEvents, 'training', now.getMonth() - 1)
-      const thisMonthTrainingData = filterEventsByMonth(newEvents, 'training', now.getMonth())
-      setLastMonthTrainings(lastMonthTrainingData)
-      setThisMonthTrainings(thisMonthTrainingData)*/
     }
   }, [props.events])
 
