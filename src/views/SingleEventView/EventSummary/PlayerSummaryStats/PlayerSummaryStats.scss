@@ -15,13 +15,13 @@
   &__wrapper {
     display: flex;
     justify-content: space-around;
+    align-items: center;
 
     &-field {
       padding: 0 20px;
 
       &-chart {
         width: 100%;
-        height: 100%;
         border: 1px solid colors.$color-border-line;
         background-color: #3C8031;
       }
