@@ -1,5 +1,6 @@
 @use '../../assets/styles/colors';
 @use '../../assets/styles/fonts';
+@use '../../assets/styles/mixins';
 
 .Team-view {
   background-color: colors.$color-background;
@@ -17,11 +18,15 @@
     grid-template-columns: repeat(4, 1fr);
     column-gap: 10px;
 
+    @include mixins.mobile {
+      grid-template-columns: repeat(1, 1fr);
+    }
+
     &-card {
       text-decoration: none;
       background-color: colors.$color-white;
       padding: 15px;
-      height: 150px;
+      min-height: 150px;
       border-radius: 8px;
       cursor: pointer;
       display: flex;

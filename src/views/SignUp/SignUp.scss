@@ -1,4 +1,5 @@
 @use '../../assets/styles/colors';
+@use '../../assets/styles/mixins';
 @use '../../assets/styles/fonts';
 
 .Sign-up {
@@ -12,6 +13,10 @@
     background-position: center;
     background-repeat: no-repeat;
     width: 40%;
+
+    @include mixins.mobile {
+      display: none;
+    }
 
     &-overlay {
       background-color: colors.$color-hero-background;
@@ -58,6 +63,10 @@
     justify-content: center;
     align-items: center;
 
+    @include mixins.mobile {
+      width: 100%;
+    }
+
     &-title {
       font-size: 2.2em;
       line-height: 47px;
@@ -74,6 +83,11 @@
     &-body {
       width: 50%;
       margin-bottom: 10px;
+
+      @include mixins.mobile {
+        width: 100%;
+        padding: 20px;
+      }
 
       &-flex {
         display: grid;
