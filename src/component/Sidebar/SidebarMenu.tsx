@@ -162,13 +162,13 @@ export const Sidebar: FC<SidebarProps> = props => {
       activeImage: UserManagementActiveIcon,
       link: `/team/${teamId}/staffs`,
     },
-    {
+/*    {
       tabName: 'Reporters',
       tabType: 'REPORTERS',
       image: ReporterIcon,
       activeImage: ReporterActiveIcon,
       link: `/team/${teamId}/reporters`,
-    },
+    },*/
     {
       tabName: 'Event',
       tabType: 'EVENT',
