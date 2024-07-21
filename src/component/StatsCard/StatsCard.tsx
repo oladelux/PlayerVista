@@ -114,24 +114,12 @@ export const StatsCard: FC<StatsCardProps> = props => {
             <div className='Stats-card__header-info-data-value'>26.9</div>
             <div className='Stats-card__header-info-data-title'>Average age</div>
           </div>
-          <div className='Stats-card__header-info-data'>
-            <div className='Stats-card__header-info-data-value'>26.9</div>
-            <div className='Stats-card__header-info-data-title'>Average age</div>
-          </div>
-          <div className='Stats-card__header-info-data'>
-            <div className='Stats-card__header-info-data-value'>26.9</div>
-            <div className='Stats-card__header-info-data-title'>Average age</div>
-          </div>
-          <div className='Stats-card__header-info-data'>
-            <div className='Stats-card__header-info-data-value'>26.9</div>
-            <div className='Stats-card__header-info-data-title'>Average age</div>
-          </div>
         </div>
       </div>
       <div className='Stats-card__content'>
         <div className='Stats-card__content-overview'>
           <div className='Stats-card__content-overview--title'>Team Overview</div>
-          <div className='Stats-card__content-trends--radar-chart'>
+          {/*<div className='Stats-card__content-trends--radar-chart'>
             <ResponsiveContainer width='100%' height='100%'>
               <RadarChart cx='50%' cy='50%' outerRadius='80%' data={pieData}>
                 <PolarGrid gridType='circle' radialLines={false} fill='#37003C'/>
@@ -146,11 +134,11 @@ export const StatsCard: FC<StatsCardProps> = props => {
                 <PolarRadiusAxis />
               </RadarChart>
             </ResponsiveContainer>
-          </div>
+          </div>*/}
         </div>
         <div className='Stats-card__content-trends'>
           <div className='Stats-card__content-trends--title'>Team Trends</div>
-          <div className='Stats-card__content-trends--line-chart'>
+          {/* <div className='Stats-card__content-trends--line-chart'>
             <LineChart
               width={600}
               height={350}
@@ -181,7 +169,7 @@ export const StatsCard: FC<StatsCardProps> = props => {
                 activeDot={{ stroke: '#37003C' }}
               />
             </LineChart>
-          </div>
+          </div>*/}
         </div>
       </div>
     </div>

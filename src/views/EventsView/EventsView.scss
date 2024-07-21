@@ -56,49 +56,6 @@
         color: colors.$color-dark-blue;
         font-family: fonts.$font-bold;
       }
-
-      &-info {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-
-        &-metric {
-          display: flex;
-          align-items: center;
-          font-size: 0.875em;
-          color: colors.$color-dark-blue;
-
-          &--value {
-            display: flex;
-            align-items: center;
-            &-up {
-              color: colors.$color-green;
-            }
-
-            &-down {
-              color: colors.$color-red;
-            }
-          }
-
-          &--text {
-            padding: 0 6px;
-          }
-        }
-
-        &-media {
-          &--icon {
-            font-size: 3.5em !important;
-
-            &-up {
-              color: colors.$color-green;
-            }
-
-            &-down {
-              color: colors.$color-red;
-            }
-          }
-        }
-      }
     }
   }
 }
