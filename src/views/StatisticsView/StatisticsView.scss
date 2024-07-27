@@ -1,0 +1,12 @@
+@use '../../assets/styles/colors';
+@use '../../assets/styles/fonts';
+
+.Statistics-view {
+  background-color: rgb(255, 255, 255);
+  min-height: calc(100vh - 197px);
+  padding: 40px 50px;
+}
+
+.Event-card {
+  border: 1px solid colors.$color-border-line;
+}

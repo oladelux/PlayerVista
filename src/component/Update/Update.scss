@@ -32,9 +32,10 @@
       display: flex;
       align-items: center;
       border-bottom: 1px solid colors.$color-border-line;
+      padding: 5px 0;
 
       &--date {
-        font-weight: 800;
+        font-weight: 600;
         font-size: 0.875em;
         color: colors.$color-dark-purple;
         width: 15%;
