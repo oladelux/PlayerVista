@@ -13,19 +13,22 @@ export const useEvents = () => {
   const { teamId } = useParams()
   const currentTimestamp = new Date().getTime()
 
-  const currentEvents = teamId && Object.prototype.hasOwnProperty.call(events, teamId)
-    ? events[teamId]
-    : []
-
-  const matches = currentEvents.filter(event => event.type === 'match')
+  const matches = events.filter(event => event.type === 'match')
   const scheduledMatches = matches.filter(match => {
     const matchTimestamp = new Date(match.startDate).getTime()
     return matchTimestamp > currentTimestamp
   })
 
+  function getTeamEvent(year: number) {
+    teamId && console.log('year', teamId)
+    return events.filter(
+      (event) => new Date(event.startDate).getFullYear() === year,
+    )
+  }
+
   return {
     events,
-    currentEvents,
     scheduledMatches,
+    getTeamEvent,
   }
 }

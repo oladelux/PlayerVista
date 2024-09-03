@@ -2,9 +2,9 @@ import { FC, useMemo } from 'react'
 import { FaPlus } from 'react-icons/fa'
 import { FiSearch } from 'react-icons/fi'
 
-import { Player } from '../../api'
-import { calculateAge } from '../../services/helper'
-import { usePlayers } from '../../hooks/usePlayers'
+import { Player } from '@/api'
+import { calculateAge } from '@/services/helper.ts'
+import { usePlayers } from '@/hooks/usePlayers.ts'
 
 import { Link, useParams } from 'react-router-dom'
 import { DashboardLayout } from '../../component/DashboardLayout/DashboardLayout'

@@ -237,7 +237,7 @@ const CreateTeamMultiStep: FC<DashboardCreateTeamProps> = ({ logger, user }) => 
                 />
                 <Field
                   className='Multi-step__layout-form-group--2__field'
-                  type='text'
+                  type='tel'
                   name='headCoachContact'
                   placeholder='Phone Number'
                 />
@@ -254,7 +254,7 @@ const CreateTeamMultiStep: FC<DashboardCreateTeamProps> = ({ logger, user }) => 
                 />
                 <Field
                   className='Multi-step__layout-form-group--2__field'
-                  type='text'
+                  type='tel'
                   name='assistantCoachContact'
                   placeholder='Phone Number'
                 />
@@ -271,7 +271,7 @@ const CreateTeamMultiStep: FC<DashboardCreateTeamProps> = ({ logger, user }) => 
                 />
                 <Field
                   className='Multi-step__layout-form-group--2__field'
-                  type='text'
+                  type='tel'
                   name='medicalPersonnelContact'
                   placeholder='Phone Number'
                 />
@@ -288,7 +288,7 @@ const CreateTeamMultiStep: FC<DashboardCreateTeamProps> = ({ logger, user }) => 
                 />
                 <Field
                   className='Multi-step__layout-form-group--2__field'
-                  type='text'
+                  type='tel'
                   name='kitManagerContact'
                   placeholder='Phone Number'
                 />
@@ -305,7 +305,7 @@ const CreateTeamMultiStep: FC<DashboardCreateTeamProps> = ({ logger, user }) => 
                 />
                 <Field
                   className='Multi-step__layout-form-group--2__field'
-                  type='text'
+                  type='tel'
                   name='mediaManagerContact'
                   placeholder='Phone Number'
                 />
@@ -322,7 +322,7 @@ const CreateTeamMultiStep: FC<DashboardCreateTeamProps> = ({ logger, user }) => 
                 />
                 <Field
                   className='Multi-step__layout-form-group--2__field'
-                  type='text'
+                  type='tel'
                   name='logisticsCoordinatorContact'
                   placeholder='Phone Number'
                 />
@@ -353,7 +353,7 @@ const CreateTeamMultiStep: FC<DashboardCreateTeamProps> = ({ logger, user }) => 
                 />
                 <Field
                   className='Multi-step__layout-form-group--3__field'
-                  type='text'
+                  type='string'
                   name='postcode'
                   placeholder='Postcode'
                 />

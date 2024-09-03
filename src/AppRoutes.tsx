@@ -1,48 +1,48 @@
-import { FC } from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { FC } from 'react'
+import { Navigate, Route, Routes } from 'react-router-dom'
 
-import { routes } from "./constants/routes";
-import { useAppController } from "./hooks/useAppController";
-import { getCookie } from "./services/cookies";
+import { routes } from './constants/routes'
+import { useAppController } from './hooks/useAppController'
+import { getCookie } from './services/cookies'
 
-import { Home } from "./views/Home/Home";
-import { Login } from "./views/Login/Login";
-import { Dashboard } from "./views/Dashboard/Dashboard";
-import { PlayersView } from "./views/PlayersView/PlayersView";
-import { SinglePlayerView } from "./views/SinglePlayerView/SinglePlayerView";
-import { TrainingData } from "./views/TrainingData/TrainingData";
-import { EventsView } from "./views/EventsView/EventsView";
-import { MyAccount } from "./views/MyAccount/MyAccount";
-import { Spinner } from "./component/Spinner/Spinner";
-import { AddPlayer } from "./views/PlayersView/AddPlayer/AddPlayer";
-import { SignUp } from "./views/SignUp/SignUp";
-import { ForgotPassword } from "./views/ForgotPassword/ForgotPassword";
-import { ChangePasswordView } from "./views/ChangePasswordView/ChangePasswordView";
-import { TeamView } from "./views/TeamView/TeamView";
+import { Home } from './views/Home/Home'
+import { Login } from './views/Login/Login'
+import { Dashboard } from './views/Dashboard/Dashboard'
+import { PlayersView } from './views/PlayersView/PlayersView'
+import { SinglePlayerView } from './views/SinglePlayerView/SinglePlayerView'
+import { TrainingData } from './views/TrainingData/TrainingData'
+import { EventsView } from './views/EventsView/EventsView'
+import { MyAccount } from './views/MyAccount/MyAccount'
+import { Spinner } from './component/Spinner/Spinner'
+import { AddPlayer } from './views/PlayersView/AddPlayer/AddPlayer'
+import { SignUp } from './views/SignUp/SignUp'
+import { ForgotPassword } from './views/ForgotPassword/ForgotPassword'
+import { ChangePasswordView } from './views/ChangePasswordView/ChangePasswordView'
+import { TeamView } from './views/TeamView/TeamView'
 import {
   CreateTeam,
   DashboardCreateTeam,
-} from "./views/TeamView/CreateTeam/CreateTeam";
-import { ManageTeam } from "./views/ManageTeam/ManageTeam";
-import { Staffs } from "./views/UserManagementView/Staffs/Staffs";
-import { DashboardLayout } from "./component/DashboardLayout/DashboardLayout.tsx";
-import { SingleEventView } from "./views/SingleEventView/SingleEventView.tsx";
-import { EventSummary } from "./views/SingleEventView/EventSummary/EventSummary.tsx";
-import { AddStaff } from "./views/UserManagementView/Staffs/AddStaff/AddStaff.tsx";
-import { EmailVerification } from "./views/EmailVerification/EmailVerification.tsx";
-import { ReportersView } from "./views/ReportersView/ReportersView.tsx";
-import { AddReporter } from "./views/ReportersView/AddReporter/AddReporter.tsx";
-import { StatisticsView } from "./views/StatisticsView/StatisticsView.tsx";
+} from './views/TeamView/CreateTeam/CreateTeam'
+import { ManageTeam } from './views/ManageTeam/ManageTeam'
+import { Staffs } from './views/UserManagementView/Staffs/Staffs'
+import { DashboardLayout } from './component/DashboardLayout/DashboardLayout.tsx'
+import { SingleEventView } from './views/SingleEventView/SingleEventView.tsx'
+import { EventSummary } from './views/SingleEventView/EventSummary/EventSummary.tsx'
+import { AddStaff } from './views/UserManagementView/Staffs/AddStaff/AddStaff.tsx'
+import { EmailVerification } from './views/EmailVerification/EmailVerification.tsx'
+import { ReportersView } from './views/ReportersView/ReportersView.tsx'
+import { AddReporter } from './views/ReportersView/AddReporter/AddReporter.tsx'
+import { StatisticsView } from './views/StatisticsView/StatisticsView.tsx'
 
 export const AppRoutes: FC = () => {
-  const controller = useAppController();
+  const controller = useAppController()
 
   const { user, players, events, logger, logs, teams, staffs, reporters } =
-    controller;
-  const accessToken = getCookie("access-token");
+    controller
+  const accessToken = getCookie('access-token')
 
   if (user.data === undefined && accessToken) {
-    return <Spinner />;
+    return <Spinner />
   }
 
   if (!user.data) {
@@ -63,10 +63,10 @@ export const AppRoutes: FC = () => {
             path={routes.changePassword}
             element={<ChangePasswordView />}
           />
-          <Route path="*" element={<Navigate replace to={routes.login} />} />
+          <Route path='*' element={<Navigate replace to={routes.login} />} />
         </Routes>
       </>
-    );
+    )
   }
 
   return (
@@ -121,7 +121,7 @@ export const AppRoutes: FC = () => {
         />
         <Route
           path={routes.statistics}
-          element={<StatisticsView events={events.events} />}
+          element={<StatisticsView teamEvent={events.getTeamEvent} />}
         />
         <Route path={routes.singlePlayer} element={<SinglePlayerView />} />
         <Route
@@ -175,5 +175,5 @@ export const AppRoutes: FC = () => {
         />
       </Routes>
     </>
-  );
-};
+  )
+}

@@ -7,7 +7,7 @@ import {
   getPlayers, Player,
   PlayerDataResponse,
   PlayerFormData, updatePlayer,
-} from '../../api'
+} from '@/api'
 
 type InitialPlayersState = {
   players: Player[]

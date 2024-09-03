@@ -5,13 +5,13 @@ import {
   ClientError, Event,
   EventFormData, addEvent, EventDataResponse, getEvents, SingleEventType,
   getSingleEvent, updateEvent,
-} from '../../api'
+} from '@/api'
 
 type InitialEventsState = {
   /**
    * The team's event
    */
-  events: Record<string, Event[]>
+  events: Event[]
   /**
    * The selected team event
    */
@@ -35,7 +35,7 @@ type InitialEventsState = {
 }
 
 const initialState: InitialEventsState = {
-  events: {},
+  events: [],
   selectedEvent: undefined,
   loadingCreatingNewEventStatus: 'idle',
   loadingGettingEventsStatus: 'idle',
@@ -119,7 +119,7 @@ export const eventsSlice = createSlice({
       state.loadingGettingEventsStatus = 'idle'
       state.loadingGettingSingleEvent = 'idle'
       state.loadingUpdatingEvent = 'idle'
-      state.events = {}
+      state.events = []
       state.selectedEvent = undefined
     },
   },
@@ -128,12 +128,12 @@ export const eventsSlice = createSlice({
       .addCase(createEventThunk.pending, state => {
         state.loadingCreatingNewEventStatus = 'pending'
       })
-      .addCase(createEventThunk.fulfilled, (state, action) => {
+      .addCase(createEventThunk.fulfilled, (state) => {
         state.loadingCreatingNewEventStatus = 'succeeded'
-        const { teamId } = action.meta.arg
+        /*const { teamId } = action.meta.arg
         if (action.payload) {
           state.events[teamId].push(action.payload)
-        }
+        }*/
       })
       .addCase(createEventThunk.rejected, (state, action) => {
         if (
@@ -147,12 +147,10 @@ export const eventsSlice = createSlice({
         state.loadingGettingEventsStatus = 'pending'
       })
       .addCase(getEventsThunk.fulfilled, (state, action) => {
-        const { arg } = action.meta
-        const { teamId } = arg
         state.loadingGettingEventsStatus = 'succeeded'
 
         if (action.payload) {
-          state.events[teamId] = action.payload.results
+          state.events = action.payload.results
         }
       })
       .addCase(getEventsThunk.rejected, (state, action) => {
