@@ -511,7 +511,19 @@ export type PlayerActions = {
   clearance: Action[]
   blocked_shots: Action[]
   aerial_duels: Action[]
+  aerial_clearance: Action[]
   fouls: Action[]
+  saves: Action[]
+  mistakes: Action[]
+  recoveries: Action[]
+  blocks: Action[]
+  yellow_cards: Action[]
+  red_cards: Action[]
+  offside: Action[]
+  corner_kick: Action[]
+  freekick: Action[]
+  dribble: Action[]
+  penalty: Action[]
 }
 
 export type PlayerPerformance = {
