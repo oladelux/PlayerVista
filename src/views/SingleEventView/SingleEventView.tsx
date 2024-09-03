@@ -1,85 +1,83 @@
-import { FC, useMemo } from "react";
-import { Link, useParams } from "react-router-dom";
-import AddIcon from "@mui/icons-material/Add";
+import { FC, useMemo } from 'react'
+import { useParams } from 'react-router-dom'
 
-import { TeamResult, Event } from "../../api";
-import { formatDate } from "../../services/helper.ts";
+import { TeamResult, Event } from '@/api'
+import { formatDate } from '@/services/helper.ts'
 import {
   formatSingleEventDate,
   formatSingleEventTime,
-} from "../../utils/date.ts";
-import { EventsHook } from "../../hooks/useEvents.ts";
+} from '@/utils/date.ts'
+import { EventsHook } from '@/hooks/useEvents.ts'
 
-import { DashboardLayout } from "../../component/DashboardLayout/DashboardLayout.tsx";
-import { Button } from "../../component/Button/Button.tsx";
+import { DashboardLayout } from '../../component/DashboardLayout/DashboardLayout.tsx'
 
-import ClubLogo from "../../assets/images/club.png";
+import ClubLogo from '../../assets/images/club.png'
 
-import "./SingleEventView.scss";
+import './SingleEventView.scss'
 
 type SingleEventViewProps = {
   events: EventsHook;
   teams: TeamResult[];
 };
 
-const now = new Date();
+const now = new Date()
 
 export const SingleEventView: FC<SingleEventViewProps> = (props) => {
-  const { events, teams } = props;
-  const { teamId, eventId } = useParams();
+  const { events, teams } = props
+  const { teamId, eventId } = useParams()
 
   const isEvent = useMemo(() => {
     if (teamId) {
       return (
-        events.events[teamId] &&
-        events.events[teamId].find((event) => event.id === eventId)
-      );
+        events.events &&
+        events.events.find((event) => event.id === eventId)
+      )
     }
-  }, [teamId, events, eventId]);
+  }, [teamId, events, eventId])
 
   const isTeam = useMemo(() => {
     if (teams) {
-      return teams.find((team) => team.id === teamId);
+      return teams.find((team) => team.id === teamId)
     }
-  }, [teamId, teams]);
+  }, [teamId, teams])
 
   const isMatches = useMemo(() => {
     if (teamId) {
       return (
-        events.events[teamId] &&
-        events.events[teamId].filter(
-          (event) => event.type === "match" && new Date(event.startDate) > now
+        events.events &&
+        events.events.filter(
+          (event) => event.type === 'match' && new Date(event.startDate) > now,
         )
-      );
+      )
     }
-  }, [teamId, events]);
+  }, [teamId, events])
 
   const isTraining = useMemo(() => {
     if (teamId) {
       return (
-        events.events[teamId] &&
-        events.events[teamId].filter(
+        events.events &&
+        events.events.filter(
           (event) =>
-            event.type === "training" && new Date(event.startDate) > now
+            event.type === 'training' && new Date(event.startDate) > now,
         )
-      );
+      )
     }
-  }, [teamId, events]);
+  }, [teamId, events])
 
   return (
     <DashboardLayout>
-      <div className="Single-event">
-        <div className="Single-event__header">
-          <div className="Single-event__header-title">Event Updates</div>
+      <div className='Single-event'>
+        <div className='Single-event__header'>
+          <div className='Single-event__header-title'>Event Updates</div>
         </div>
-        {isEvent && isTeam && isTraining && isEvent.type === "training" && (
+        {isEvent && isTeam && isTraining && isEvent.type === 'training' && (
           <SingleTraining
             isEvent={isEvent}
             isTeam={isTeam}
             isTraining={isTraining}
           />
         )}
-        {isEvent && isTeam && isMatches && isEvent.type === "match" && (
+        {isEvent && isTeam && isMatches && isEvent.type === 'match' && (
           <SingleMatch
             isEvent={isEvent}
             isTeam={isTeam}
@@ -88,8 +86,8 @@ export const SingleEventView: FC<SingleEventViewProps> = (props) => {
         )}
       </div>
     </DashboardLayout>
-  );
-};
+  )
+}
 
 type SingleTrainingProps = {
   isEvent: Event;
@@ -98,53 +96,53 @@ type SingleTrainingProps = {
 };
 
 const SingleTraining: FC<SingleTrainingProps> = (props) => {
-  const { isEvent, isTeam, isTraining } = props;
+  const { isEvent, isTeam, isTraining } = props
   return (
-    <div className="Single-event__wrapper">
-      <div className="Single-event__wrapper-content">
-        <div className="Single-event__wrapper-content-header">
-          <div className="Single-event__wrapper-content-header-nav">
+    <div className='Single-event__wrapper'>
+      <div className='Single-event__wrapper-content'>
+        <div className='Single-event__wrapper-content-header'>
+          <div className='Single-event__wrapper-content-header-nav'>
             Training
           </div>
         </div>
-        <div className="Single-event__wrapper-content-match">
-          <div className="Single-event__wrapper-content-match-info">
+        <div className='Single-event__wrapper-content-match'>
+          <div className='Single-event__wrapper-content-match-info'>
             {`${formatDate(isEvent.startDate)} - ${isEvent.eventLocation}`}
           </div>
-          <div className="Single-event__wrapper-content-match-board">
-            <div className="Single-event__wrapper-content-match-board__home">
-              <div className="Single-event__wrapper-content-match-board__home--media">
-                <img src={isTeam.logo} alt="club-logo" />
+          <div className='Single-event__wrapper-content-match-board'>
+            <div className='Single-event__wrapper-content-match-board__home'>
+              <div className='Single-event__wrapper-content-match-board__home--media'>
+                <img src={isTeam.logo} alt='club-logo' />
               </div>
-              <div className="Single-event__wrapper-content-match-board__home--name">
+              <div className='Single-event__wrapper-content-match-board__home--name'>
                 {isTeam.teamName}
               </div>
-              <div className="Single-event__wrapper-content-match-board__home--time">
+              <div className='Single-event__wrapper-content-match-board__home--time'>
                 {formatSingleEventTime(isEvent.startDate)}
               </div>
             </div>
           </div>
         </div>
       </div>
-      <div className="Single-event__wrapper-similar">
-        <div className="Single-event__wrapper-similar-title">
+      <div className='Single-event__wrapper-similar'>
+        <div className='Single-event__wrapper-similar-title'>
           Scheduled Trainings
         </div>
-        <div className="Single-event__wrapper-similar-list">
+        <div className='Single-event__wrapper-similar-list'>
           {isTraining.map((training) => (
             <div
               key={training.id}
-              className="Single-event__wrapper-similar-list__item
-                  Single-event__wrapper-similar-list__item--training"
+              className='Single-event__wrapper-similar-list__item
+                  Single-event__wrapper-similar-list__item--training'
             >
-              <div className="Single-event__wrapper-similar-list__item--date">
+              <div className='Single-event__wrapper-similar-list__item--date'>
                 {formatSingleEventDate(training.startDate)}
               </div>
-              <div className="Single-event__wrapper-similar-list__item--info">
-                <div className="Single-event__wrapper-similar-list__item--info-address">
+              <div className='Single-event__wrapper-similar-list__item--info'>
+                <div className='Single-event__wrapper-similar-list__item--info-address'>
                   {training.eventLocation}
                 </div>
-                <div className="Single-event__wrapper-similar-list__item--info-address">
+                <div className='Single-event__wrapper-similar-list__item--info-address'>
                   {formatSingleEventTime(training.startDate)}
                 </div>
               </div>
@@ -153,8 +151,8 @@ const SingleTraining: FC<SingleTrainingProps> = (props) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 type SingleMatchProps = {
   isEvent: Event;
@@ -163,36 +161,35 @@ type SingleMatchProps = {
 };
 
 const SingleMatch: FC<SingleMatchProps> = (props) => {
-  const { teamId, eventId } = useParams();
-  const { isEvent, isTeam, isMatches } = props;
+  const { isEvent, isTeam, isMatches } = props
 
   return (
-    <div className="Single-event__wrapper">
-      <div className="Single-event__wrapper-content">
-        <div className="Single-event__wrapper-content-header">
-          <div className="Single-event__wrapper-content-header-nav">Match</div>
+    <div className='Single-event__wrapper'>
+      <div className='Single-event__wrapper-content'>
+        <div className='Single-event__wrapper-content-header'>
+          <div className='Single-event__wrapper-content-header-nav'>Match</div>
         </div>
-        <div className="Single-event__wrapper-content-match">
-          <div className="Single-event__wrapper-content-match-info">
+        <div className='Single-event__wrapper-content-match'>
+          <div className='Single-event__wrapper-content-match-info'>
             {`${formatDate(isEvent.startDate)} - ${isEvent.eventLocation}`}
           </div>
-          <div className="Single-event__wrapper-content-match-board">
-            <div className="Single-event__wrapper-content-match-board__home">
-              <div className="Single-event__wrapper-content-match-board__home--media">
-                <img src={isTeam.logo} alt="club-logo" />
+          <div className='Single-event__wrapper-content-match-board'>
+            <div className='Single-event__wrapper-content-match-board__home'>
+              <div className='Single-event__wrapper-content-match-board__home--media'>
+                <img src={isTeam.logo} alt='club-logo' />
               </div>
-              <div className="Single-event__wrapper-content-match-board__home--name">
+              <div className='Single-event__wrapper-content-match-board__home--name'>
                 {isTeam.teamName}
               </div>
             </div>
-            <div className="Single-event__wrapper-content-match-board__score">
+            <div className='Single-event__wrapper-content-match-board__score'>
               vs
             </div>
-            <div className="Single-event__wrapper-content-match-board__away">
-              <div className="Single-event__wrapper-content-match-board__away--media">
-                <img src={ClubLogo} alt="club-logo" />
+            <div className='Single-event__wrapper-content-match-board__away'>
+              <div className='Single-event__wrapper-content-match-board__away--media'>
+                <img src={ClubLogo} alt='club-logo' />
               </div>
-              <div className="Single-event__wrapper-content-match-board__away--name">
+              <div className='Single-event__wrapper-content-match-board__away--name'>
                 {isEvent.opponent}
               </div>
             </div>
@@ -201,29 +198,29 @@ const SingleMatch: FC<SingleMatchProps> = (props) => {
           <AddIcon/> Add Statistics</Button>*/}
         </div>
       </div>
-      <div className="Single-event__wrapper-similar">
-        <div className="Single-event__wrapper-similar-title">
+      <div className='Single-event__wrapper-similar'>
+        <div className='Single-event__wrapper-similar-title'>
           Scheduled match
         </div>
-        <div className="Single-event__wrapper-similar-list">
+        <div className='Single-event__wrapper-similar-list'>
           {isMatches.map((match) => (
             <div
               key={match.id}
               className={`Single-event__wrapper-similar-list__item 
                   Single-event__wrapper-similar-list__item--${match.location}`}
             >
-              <div className="Single-event__wrapper-similar-list__item--date">
+              <div className='Single-event__wrapper-similar-list__item--date'>
                 {formatSingleEventDate(match.startDate)}
               </div>
-              <div className="Single-event__wrapper-similar-list__item--info">
-                <div className="Single-event__wrapper-similar-list__item--info-title">
+              <div className='Single-event__wrapper-similar-list__item--info'>
+                <div className='Single-event__wrapper-similar-list__item--info-title'>
                   {match.opponent}
                 </div>
-                <div className="Single-event__wrapper-similar-list__item--info-address">
+                <div className='Single-event__wrapper-similar-list__item--info-address'>
                   {match.eventLocation}
                 </div>
               </div>
-              <div className="Single-event__wrapper-similar-list__item--location">
+              <div className='Single-event__wrapper-similar-list__item--location'>
                 {match.location}
               </div>
             </div>
@@ -231,5 +228,5 @@ const SingleMatch: FC<SingleMatchProps> = (props) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
