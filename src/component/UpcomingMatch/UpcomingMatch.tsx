@@ -1,10 +1,9 @@
 import React, { FC } from 'react'
-import { useParams } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 
-import { eventsSelector } from '../../store/slices/EventsSlice.ts'
-import { Event, TeamResult } from '../../api'
-import { formatSingleEventDate, formatSingleEventTime } from '../../utils/date.ts'
+import { eventsSelector } from '@/store/slices/EventsSlice.ts'
+import { Event, TeamResult } from '@/api'
+import { formatSingleEventDate, formatSingleEventTime } from '@/utils/date.ts'
 
 import ClubLogo from '../../assets/images/club.png'
 
@@ -33,11 +32,9 @@ type UpcomingMatchProps = {
 }
 
 export const UpcomingMatch:FC<UpcomingMatchProps> = props => {
-  const { teamId } = useParams()
   const { events } = useSelector(eventsSelector)
 
-  const currentTeamEvents = events[teamId!]
-  const upcomingFixture = findUpcomingFixture(currentTeamEvents)
+  const upcomingFixture = findUpcomingFixture(events)
 
   return (
     <div className='Upcoming-match'>
