@@ -5,7 +5,7 @@ import { convertSecondsToGameMinute, getPlayerActions } from '@/utils/players.ts
 import { Player, PlayerActions } from '@/api'
 import { useSelector } from 'react-redux'
 import { getPerformanceDataThunk, playerPerformanceSelector } from '@/store/slices/PlayerPerformanceSlice.ts'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { useAppDispatch } from '@/store/types.ts'
 
 interface GeneralStatsProps {
@@ -133,7 +133,9 @@ export const GeneralStats: FC<GeneralStatsProps> = ({ players }) => {
                   <TableCell className='border-r'>{matchData?.minutePlayed ?
                     convertSecondsToGameMinute(matchData.minutePlayed) : 0}
                   </TableCell>
-                  <TableCell className='border-r'>{`${player.firstName} ${player.lastName}`}</TableCell>
+                  <TableCell className='border-r'>
+                    <Link to={`${player.id}`}>{`${player.firstName} ${player.lastName}`}</Link>
+                  </TableCell>
                   {renderPlayerActions(matchData?.actions)}
                 </TableRow>
               )

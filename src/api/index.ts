@@ -487,7 +487,7 @@ export async function getLogs(groupId: string): Promise<LogsResponse> {
   return await res.json()
 }
 
-type Action = {
+export type Action = {
   type?: string
   x: number
   y: number

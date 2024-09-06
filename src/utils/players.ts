@@ -1,4 +1,7 @@
-import { Player, PlayerActions, PlayerPerformance } from '../api'
+import { Player, PlayerActions, PlayerPerformance } from '@/api'
+
+export type PlayerPositionType = 'GK' | 'LB' | 'LCB' | 'RCB' | 'CB' | 'RB'
+  | 'LWB' | 'RWB' | 'DM' | 'CDM' | 'CM' | 'CAM' | 'LCM' | 'RCM' | 'LM' | 'RM' | 'RW' | 'LW' | 'ST' | 'CF'
 
 export type LocationData = {
   x: number
@@ -103,6 +106,58 @@ export const getPlayerActions = (players: Player[], events: PlayerPerformance[])
   })
 }
 
+export const getPlayerActionsForSinglePlayer = (events: PlayerPerformance[], playerId?: string) => {
+  if(!playerId) {
+    return null
+  }
+  // Find the specific player's performance data
+  const playerEvent = events.find(event => event.playerId === playerId)
+
+  if (!playerEvent) {
+    return null
+  }
+
+  // Retrieve the player's actions and minutes played
+  const actions = playerEvent.actions
+  const minutePlayed = playerEvent.minutePlayed
+
+  // Return the player's data
+  return {
+    playerId: playerId,
+    minutePlayed: minutePlayed,
+    actions: actions,
+  }
+}
 export const convertSecondsToGameMinute = (seconds: number) => {
   return Math.floor(seconds / 60) + 1
+}
+
+type PositionType = {
+  [key in PlayerPositionType]: {
+    x: number
+    y: number
+  }
+}
+
+export const positionData: PositionType = {
+  'GK': { x: 5, y: 40 },
+  'LB': { x: 20, y: 10 },
+  'LCB': { x: 20, y: 25 },
+  'RCB': { x: 20, y: 55 },
+  'CB': { x: 20, y: 40 },
+  'RB': { x: 20, y: 70 },
+  'LWB': { x: 40, y: 5 },
+  'RWB': { x: 40, y: 75 },
+  'CDM': { x: 40, y: 40 },
+  'DM': { x: 60, y: 75 },
+  'CM': { x: 60, y: 40 },
+  'CAM': { x: 80, y: 40 },
+  'LCM': { x: 60, y: 30 },
+  'RCM': { x: 60, y: 50 },
+  'LM': { x: 60, y: 10 },
+  'RM': { x: 60, y: 70 },
+  'RW': { x: 90, y: 70 },
+  'LW': { x: 90, y: 10 },
+  'ST': { x: 110, y: 40 },
+  'CF': { x: 110, y: 40 },
 }
