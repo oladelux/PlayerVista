@@ -9,7 +9,7 @@ import { getPerformanceDataThunk, playerPerformanceSelector } from '@/store/slic
 import { useAppDispatch } from '@/store/types.ts'
 import { useSelector } from 'react-redux'
 import { getPlayerActionsForSinglePlayer } from '@/utils/players.ts'
-import { Progress } from '@/components/ui/progress.tsx';
+import { Progress } from '@/components/ui/progress.tsx'
 
 type PlayerEventStatsProps = {
   players: Player[]
