@@ -79,9 +79,6 @@ export const Login: FC<LoginProps> = props => {
         <div className='Login__form-footer'>
           <Link to={routes.forgotPassword} className='Login__form-footer-forgot-password'>Forgot Password?</Link>
         </div>
-        <div className='Login__form-sign-up'>
-          Don’t have an account? <Link to={routes.signUp} className='Login__form-sign-up--bold'>Sign Up</Link>
-        </div>
       </div>
     </div>
   )

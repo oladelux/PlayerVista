@@ -1,6 +1,7 @@
 export enum Routes {
   HOME='/',
   LOGIN = '/login',
+  DEMO_BOOKING = 'https://calendly.com/admin-playervista/demo-book',
   EMAIL_VERIFICATION = '/verify-email/:token',
   TEAM = '/team',
   CREATE_TEAM = '/team/create-team',
@@ -22,7 +23,7 @@ export enum Routes {
   PLAYER_EVENT_STATS = '/team/:teamId/event/:eventId/stats/:playerId',
   ACCOUNT= '/dashboard/my-account',
   LOGOUT = '/logout',
-  SIGN_UP = '/sign-up',
+  SIGN_UP = '/onboard',
   FORGOT_PASSWORD = '/forgot-password',
   CHANGE_PASSWORD = '/change-password'
 }
@@ -30,6 +31,7 @@ export enum Routes {
 export const routes = {
   home: Routes.HOME,
   login: Routes.LOGIN,
+  demoBooking: Routes.DEMO_BOOKING,
   emailVerification: Routes.EMAIL_VERIFICATION,
   team: Routes.TEAM,
   manageTeam: Routes.MANAGE_TEAM,

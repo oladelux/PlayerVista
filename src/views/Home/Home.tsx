@@ -24,7 +24,7 @@ const HomeHeader = () => {
       </div>
       <div className='Home__header-nav'>
         <Link to={routes.login} className='Home__header-nav--link'>Sign in</Link>
-        <Link to={routes.signUp} className='Home__header-nav--get-started'>Get Started</Link>
+        <Link to={routes.demoBooking} className='Home__header-nav--get-started'>Book a Demo</Link>
       </div>
     </div>
   )
@@ -58,14 +58,14 @@ export const Home = () => {
       <HomeHeader />
       <div className='Home__hero'>
         <div className='Home__hero-title'>
-          Track. Analyze. Improve.
+          Empower Your Team with Affordable Player Tracking
         </div>
         <div className='Home__hero-text'>
-          The Ultimate Tool for Player Performance Analysis
+          Affordable player tracking for teams, scouts, and media.
         </div>
-        <Link to='#' className='Home__hero-link'>Schedule demo</Link>
+        <Link to={routes.demoBooking} className='Home__hero-link'>Schedule demo</Link>
       </div>
-      <div className='Home__content'>
+      {/*<div className='Home__content'>
         <img src={Metrics} className='Home__content-img' alt='metrics'/>
         <div className='Home__content-sponsors'>
           <img src={Sponsor1} className='Home__content-sponsors-img' alt='sponsor'/>
@@ -73,7 +73,7 @@ export const Home = () => {
           <img src={Sponsor3} className='Home__content-sponsors-img' alt='sponsor'/>
           <img src={Sponsor4} className='Home__content-sponsors-img' alt='sponsor'/>
         </div>
-      </div>
+      </div>*/}
       <div className='Home__features'>
         <div className='Home__features-title'>What we provide</div>
         <div className='Home__features-text'>The amazing features we offer our users</div>
@@ -81,7 +81,7 @@ export const Home = () => {
           <div className='Home__features-list--item'>
             <DashboardOutlinedIcon className='Home__features-list--item-icon' />
             <div className='Home__features-list--item-title'>Real-time Tracking</div>
-            <div className='Home__features-list--item-text'>Monitor player movements live.
+            <div className='Home__features-list--item-text'>Access live player stats during matches.
             </div>
           </div>
           <div className='Home__features-list--item'>
