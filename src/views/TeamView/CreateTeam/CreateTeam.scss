@@ -1,15 +1,23 @@
 @use '../../../assets/styles/colors';
 @use '../../../assets/styles/fonts';
+@use '../../../assets/styles/mixins';
 
 .Create-team {
   background-color: colors.$color-background;
   min-height: calc(100vh - 115px);
   padding: 20px;
 
+  @include mixins.mobile {
+    padding: 0;
+  }
+
   &__content {
-    padding: 45px;
     background-color: colors.$color-white;
     height: 100%;
+
+    @include mixins.mobile {
+      padding: 15px 15px 40px;
+    }
 
     &-header {
       &-title {
@@ -54,6 +62,10 @@
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     column-gap: 20px;
+
+    @include mixins.mobile {
+      grid-template-columns: 1fr;
+    }
 
     &-form-group {
       margin-bottom: 10px;
@@ -129,6 +141,7 @@
   }
 
   &__team {
+
     &-title {
       padding: 15px 0;
       color: colors.$color-dark-purple;
@@ -137,6 +150,11 @@
 
     &-image {
       width: 200px;
+      margin: auto;
+
+      @include mixins.mobile {
+        margin: auto;
+      }
 
       &--input {
         display: none;
@@ -182,6 +200,10 @@
     display: flex;
     justify-content: space-between;
 
+    @include mixins.mobile {
+      justify-content: space-between;
+    }
+
     &--back {
       padding: 18px 70px;
       background-color: colors.$color-white;
@@ -190,6 +212,10 @@
       font-size: 0.875em;
       border: 1px solid colors.$color-dark-purple;
       border-radius: 8px;
+
+      @include mixins.mobile {
+        padding: 10px 20px;
+      }
     }
 
     &--submit {
@@ -200,6 +226,10 @@
       font-size: 0.875em;
       border: none;
       border-radius: 8px;
+
+      @include mixins.mobile {
+        padding: 10px 20px;
+      }
     }
   }
 }

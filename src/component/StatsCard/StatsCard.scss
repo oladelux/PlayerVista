@@ -1,8 +1,13 @@
 @use '../../assets/styles/colors';
 @use '../../assets/styles/fonts';
+@use '../../assets/styles/mixins';
 
 .Stats-card {
   padding: 20px;
+
+    @include mixins.mobile {
+        padding: 10px;
+    }
 
   &__title {
     font-family: fonts.$font-bold;
@@ -16,6 +21,11 @@
     column-gap: 20px;
     padding: 25px 0;
     border-bottom: 1px solid colors.$color-border-line;
+
+    @include mixins.mobile {
+      grid-template-columns: 1fr;
+      gap: 15px;
+    }
 
     &-basic {
       display: flex;
@@ -40,6 +50,10 @@
       grid-template-columns: repeat(2, 1fr);
       align-content: center;
       text-align: center;
+
+        @include mixins.mobile {
+            padding: 10px;
+        }
 
       &-data {
         padding: 0 5px;
@@ -69,6 +83,12 @@
     grid-template-columns: 2fr 3fr;
     column-gap: 20px;
 
+    @include mixins.mobile {
+      grid-template-columns: 1fr;
+      gap: 15px;
+      padding: 10px 0;
+    }
+
     &-overview, &-trends {
       height: 450px;
       border-radius: 8px;
@@ -79,6 +99,10 @@
         color: colors.$color-dark-purple;
         font-family: fonts.$font-regular;
         padding: 10px 20px;
+
+        @include mixins.mobile {
+          padding: 10px;
+        }
       }
 
       &--radar-chart {

@@ -1,9 +1,14 @@
 @use '../../assets/styles/colors';
+@use '../../assets/styles/mixins';
 
 .Table {
   border: 1px solid colors.$color-border-line;
   border-radius: 10px;
   padding: 10px 20px 20px;
+
+    @include mixins.mobile {
+        padding: 10px 5px;
+    }
 
   &__container {
     width: 100%;
@@ -20,6 +25,10 @@
           font-size: 0.875em;
           color: colors.$color-text;
           cursor: pointer;
+
+          @include mixins.mobile {
+            padding: 5px 10px;
+          }
         }
       }
     }
@@ -32,6 +41,10 @@
           font-size: 0.875em;
           color: colors.$color-text;
           border-bottom: 1px solid colors.$color-border-line;
+
+          @include mixins.mobile {
+            padding: 20px 10px;
+          }
         }
       }
 

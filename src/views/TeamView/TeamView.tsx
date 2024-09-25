@@ -48,9 +48,9 @@ export const TeamView: FC<TeamViewProps> = props => {
       <DashboardHeader teams={teams}/>
       <div className='Team-view'>
         { isTeamsAvailable ?
-          <div className='Team-view__team'>
+          <div className='flex flex-col md:flex-row gap-3'>
             {props.teams.map(team => (
-              <div key={team.id} onClick={() => setActiveTeam(team.id)} className='Team-view__team-card'>
+              <div key={team.id} onClick={() => setActiveTeam(team.id)} className='Team-view__team-card md:w-1/4'>
                 <div className='Team-view__team-card--media' >
                   <img className='Team-view__team-card--media-image' src={team.logo} alt='team-logo'/>
                 </div>

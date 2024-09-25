@@ -19,6 +19,8 @@ import { Sidebar } from '../Sidebar/SidebarMenu'
 import PlayerVistaLogo from '../../assets/images/icons/playervista.png'
 
 import './DashboardLayout.scss'
+import { useMediaQuery } from '@mui/material';
+import { MobileNav } from '@/component/MobileNav/MobileNav.tsx';
 
 type DashboardHeaderProps = {
   teams: TeamResult[]
@@ -75,6 +77,7 @@ export const DashboardLayout: FC<PropsWithChildren> = props => {
   const { pathname } = useLocation()
   const { teams } = useSelector(teamSelector)
   const navigate = useNavigate()
+  const isMobile = useMediaQuery('(max-width:767px)')
 
   // Check if the current route matches the team dashboard pattern
   const isTeamDashboard = /^\/team\/[a-zA-Z0-9_-]+$/i.test(pathname)
@@ -84,9 +87,10 @@ export const DashboardLayout: FC<PropsWithChildren> = props => {
       <DashboardHeader teams={teams}/>
       <div className='Dashboard-Layout__wrapper'>
         <div className='Dashboard-Layout__wrapper-content'>
-          <div className='Dashboard-Layout__wrapper-content--sidebar'>
-            <Sidebar controller={controller} />
-          </div>
+          {!isMobile && <div className='Dashboard-Layout__wrapper-content--sidebar'>
+            <Sidebar controller={controller}/>
+          </div>}
+          {isMobile && <MobileNav/>}
           <div className='Dashboard-Layout__wrapper-content--current-body'>
             {!isTeamDashboard &&
               <div className='Dashboard-Layout__wrapper-content--current-body-back' onClick={() => navigate(-1)}>

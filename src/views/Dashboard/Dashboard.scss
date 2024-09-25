@@ -1,5 +1,6 @@
 @use '../../assets/styles/colors';
 @use '../../assets/styles/fonts';
+@use '../../assets/styles/mixins';
 
 .Dashboard {
   &__notification {
@@ -52,6 +53,10 @@
     display: grid;
     grid-template-columns: 3fr 2fr;
     column-gap: 20px;
+
+    @include mixins.mobile {
+      grid-template-columns: 1fr;
+    }
 
     &-second {
       background-image: url('../../assets/images/versus.jpg');

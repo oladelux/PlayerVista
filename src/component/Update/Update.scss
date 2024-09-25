@@ -1,7 +1,12 @@
 @use '../../assets/styles/colors';
+@use '../../assets/styles/mixins';
 
 .Update {
   padding: 20px;
+
+  @include mixins.mobile {
+    padding: 5px;
+  }
 
   &__header {
     display: flex;
@@ -28,6 +33,10 @@
   &__notifications {
     padding: 15px;
 
+    @include mixins.mobile {
+      padding: 10px;
+    }
+
     &-stack {
       display: flex;
       align-items: center;
@@ -39,6 +48,11 @@
         font-size: 0.875em;
         color: colors.$color-dark-purple;
         width: 15%;
+
+        @include mixins.mobile {
+          width: 20%;
+          font-size: 0.75em;
+        }
       }
 
       &--alerts {
@@ -63,6 +77,11 @@
         width: 10%;
         font-size: 0.75em;
         color: colors.$color-dark-purple;
+
+        @include mixins.mobile {
+          font-size: 0.65em;
+          width: 15%;
+        }
       }
     }
   }

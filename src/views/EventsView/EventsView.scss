@@ -1,5 +1,6 @@
 @use '../../assets/styles/colors';
 @use '../../assets/styles/fonts';
+@use '../../assets/styles/mixins';
 @import 'react-big-calendar/lib/sass/styles';
 
 .rbc-toolbar button.rbc-active, .rbc-toolbar button:focus, .rbc-toolbar button.rbc-active:focus {
@@ -29,6 +30,11 @@
 }
 
 .Events-view {
+
+  @include mixins.mobile {
+    padding-bottom: 40px;
+  }
+
   .rbc-agenda-view {
     background-color: colors.$color-white;
   }
@@ -38,6 +44,11 @@
     grid-template-columns: repeat(3, 1fr);
     column-gap: 30px;
     margin: 45px 0;
+
+    @include mixins.mobile {
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
 
     &-card {
       background-color: colors.$color-white;

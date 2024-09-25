@@ -75,16 +75,16 @@ interface EventCardProps {
 
 const EventCard: FC<EventCardProps> = ({ event, teamId }) => {
   return (
-    <div className='Event-card h-20 flex items-center justify-between px-5 border rounded-lg'>
+    <div className='Event-card h-20 flex items-center justify-between px-2 md:px-5 border rounded-lg'>
       <div className='w-1/5 text-sm'>
         {formatSingleEventDate(event.startDate)}
       </div>
       <div className='w-1/4 font-medium'>vs. {event.opponent}</div>
-      <div className='bg-[#37003c] rounded-lg p-2' title={event.location}>
+      <div className='bg-[#37003c] rounded-lg p-2 ' title={event.location}>
         {event.location === 'Home' ? (
-          <img src={HomeIcon} width={24} alt='home-icon'/>
+          <img src={HomeIcon} width={20} alt='home-icon'/>
         ) : (
-          <img src={AwayIcon} width={24} alt='awayicon' />
+          <img src={AwayIcon} width={20} alt='awayicon' />
         )}
       </div>
       <Link
