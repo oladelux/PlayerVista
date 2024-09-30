@@ -1,6 +1,6 @@
 import {BrowserRouter} from 'react-router-dom'
 
-import Layout from "./component/Layout/Layout"
+import Layout from './component/Layout/Layout'
 import { AppRoutes } from './AppRoutes'
 
 import './App.scss'

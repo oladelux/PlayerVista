@@ -89,7 +89,7 @@ const EventCard: FC<EventCardProps> = ({ event, teamId }) => {
       </div>
       <Link
         className='border-b border-[#37003c] text-sm'
-        to={`/team/${teamId}/event/${event.id}/stats`}
+        to={`/team/${teamId}/statistics/${event.id}`}
       >
         View Stats
       </Link>

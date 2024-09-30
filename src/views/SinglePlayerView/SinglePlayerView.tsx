@@ -111,7 +111,7 @@ export const SinglePlayerView: FC = () => {
   return (
     <DashboardLayout>
       <div className='Single-player-view'>
-        <div className='Single-player-view__header'>
+        <div className='Single-player-view__header border-b border-border-line'>
           <div className='Single-player-view__header-media'>
             <img
               alt='player-image'

@@ -226,16 +226,23 @@ export const Sidebar: FC<SidebarProps> = (props) => {
 
   const [activeTab, setActiveTab] = useState('')
 
-  //This is created to get the active tab if a user just goes directly to a page by its URL
+  const getBasePath = (path: string) => {
+    const segments = path.split('/')
+    return segments.length > 3 ? `/${segments[1]}/${segments[2]}/${segments[3]}` : path
+  }
+
+  const basePath = getBasePath(pathname)
+
   const browserActiveTab = sideBarTabs.find(
     (item) =>
-      item.link === pathname || item.subMenu?.some((l) => l.link === pathname),
+      item.link === basePath || item.subMenu?.some((l) => l.link === basePath),
   )
 
-  const activeSidebarMenu =
-    activeTab ||
-    (browserActiveTab && browserActiveTab.tabType) ||
-    sidebarMenu[0]
+  const activeSidebarMenu = activeTab
+    ? activeTab
+    : browserActiveTab
+      ? browserActiveTab.tabType
+      : sidebarMenu[0]
 
   return (
     <div className='Sidebar'>

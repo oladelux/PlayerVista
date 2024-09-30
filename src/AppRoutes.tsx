@@ -33,7 +33,7 @@ import { EmailVerification } from './views/EmailVerification/EmailVerification.t
 import { ReportersView } from './views/ReportersView/ReportersView.tsx'
 import { AddReporter } from './views/ReportersView/AddReporter/AddReporter.tsx'
 import { StatisticsView } from './views/StatisticsView/StatisticsView.tsx'
-import { PlayerEventStats } from '@/views/SingleEventView/PlayerEventStats/PlayerEventStats.tsx';
+import { PlayerEventStats } from '@/views/SingleEventView/PlayerEventStats/PlayerEventStats.tsx'
 
 export const AppRoutes: FC = () => {
   const controller = useAppController()
