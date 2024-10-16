@@ -2,17 +2,20 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import { AppDispatch } from '../store/types'
 import { getTeamsThunk, teamSelector } from '../store/slices/TeamSlice'
-import { Fixtures } from '../api'
+import { Fixtures } from '@/api'
 
 /**
  * Hook to manage teams.
  */
-export const useTeams = () => {
+export const useTeams = (userId?: string) => {
   const dispatch = useDispatch<AppDispatch>()
   const { teams } = useSelector(teamSelector)
   const teamResult: Fixtures[] = []
+  if (!userId) {
+    return
+  }
 
-  const getTeams = () => dispatch(getTeamsThunk())
+  const getTeams = () => dispatch(getTeamsThunk({ userId }))
 
   return {
     /**

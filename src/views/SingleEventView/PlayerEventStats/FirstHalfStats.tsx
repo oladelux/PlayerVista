@@ -19,14 +19,12 @@ export const FirstHalfStats = ({ stats }: FirstHalfStatsProps) => {
           <IndividualStatCard label='Goals Scored' value='0' />
           <IndividualStatCard label='Assists' value='0' />
           <IndividualStatCard label='Penalties Taken' value='0' />
-          <IndividualStatCard label='Assists' value='0' />
           <IndividualStatCard label='Penalty Won' value='0' />
           <IndividualStatCard label='Possession Lost' value='0' />
           <IndividualStatCard label='Shots on target' value='0' />
           <IndividualStatCard label='Shots off target' value='0' />
           <IndividualStatCard label='Dribbles completed' value='0' />
           <IndividualStatCard label='Dribbles attempted' value='0' />
-          <IndividualStatCard label='Chances created' value='0' />
         </div>
       </TabsContent>
       <TabsContent value='defensive'>

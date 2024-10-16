@@ -76,7 +76,7 @@ export const AppRoutes: FC = () => {
         <Route path={routes.home} element={<Home />} />
         <Route
           path={routes.team}
-          element={<TeamView teams={controller.teams} />}
+          element={<TeamView teams={controller.teams} user={user.data} />}
         />
         <Route
           path={routes.createTeam}
@@ -100,7 +100,6 @@ export const AppRoutes: FC = () => {
           path={routes.dashboard}
           element={
             <Dashboard
-              teamResult={controller.team.teamResult}
               teams={controller.teams}
               applicationLogs={logs}
               user={user.data}
@@ -110,7 +109,7 @@ export const AppRoutes: FC = () => {
         />
         <Route
           path={routes.manageTeam}
-          element={<ManageTeam teams={controller.teams} />}
+          element={<ManageTeam teams={controller.teams} players={controller.allPlayers} />}
         />
         <Route
           path={routes.players}

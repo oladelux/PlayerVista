@@ -1,16 +1,8 @@
 import { FC } from 'react'
-import { TeamResult } from '../../api'
-
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  Legend, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer,
-} from 'recharts'
+import { TeamResult } from '@/api'
 
 import './StatsCard.scss'
+import { usePlayers } from '@/hooks/usePlayers.ts'
 
 const pieData = [
   {
@@ -97,6 +89,8 @@ type StatsCardProps = {
 }
 
 export const StatsCard: FC<StatsCardProps> = props => {
+  const { players } = usePlayers(props.team?.id)
+
   return (
     <div className='Stats-card'>
       <div className='Stats-card__title'>Stats</div>
@@ -107,7 +101,7 @@ export const StatsCard: FC<StatsCardProps> = props => {
         </div>
         <div className='Stats-card__header-info'>
           <div className='Stats-card__header-info-data'>
-            <div className='Stats-card__header-info-data-value'>{props.team?.players.length}</div>
+            <div className='Stats-card__header-info-data-value'>{players.length}</div>
             <div className='Stats-card__header-info-data-title'>Players</div>
           </div>
           <div className='Stats-card__header-info-data'>

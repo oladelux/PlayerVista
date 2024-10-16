@@ -30,18 +30,18 @@ type SidebarMenuProps = {
 
 type TabType =
   | 'DASHBOARD'
-  | 'TEAM MANAGEMENT'
+  | 'TEAM'
   | 'PLAYERS'
-  | 'STAFF MANAGEMENT'
+  | 'STAFF'
   | 'EVENT'
   | 'STATISTICS'
   | 'MESSAGE'
   | 'REPORTERS';
 const sidebarMenu = [
   'DASHBOARD',
-  'TEAM MANAGEMENT',
+  'TEAM',
   'PLAYERS',
-  'STAFF MANAGEMENT',
+  'STAFF',
   'EVENT',
   'STATISTICS',
   'MESSAGE',
@@ -174,15 +174,15 @@ export const Sidebar: FC<SidebarProps> = (props) => {
       link: `/team/${teamId}`,
     },
     {
-      tabName: 'Team Management',
-      tabType: 'TEAM MANAGEMENT',
+      tabName: 'Team',
+      tabType: 'TEAM',
       image: TeamsIcon,
       activeImage: TeamsActiveIcon,
       link: `/team/${teamId}/manage-teams`,
     },
     {
-      tabName: 'Staff Management',
-      tabType: 'STAFF MANAGEMENT',
+      tabName: 'Staff',
+      tabType: 'STAFF',
       image: UserManagementIcon,
       activeImage: UserManagementActiveIcon,
       link: `/team/${teamId}/staffs`,

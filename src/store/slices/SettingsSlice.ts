@@ -58,7 +58,7 @@ export const settingsSlice = createSlice({
         ) {
           state.loadingGettingLogs = 'succeeded'
           if (action.payload) {
-            state.logs = state.logs.concat(action.payload.results)
+            state.logs = action.payload.data
           }
         }
       })

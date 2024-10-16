@@ -3,8 +3,8 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { AsyncThunkLoading, RootState } from '../types'
 import {
   ClientError, Event,
-  EventFormData, addEvent, EventDataResponse, getEvents, SingleEventType,
-  getSingleEvent, updateEvent,
+  EventFormData, addEvent, EventDataResponse, SingleEventType,
+  getSingleEvent, updateEvent, getEventsByTeamId,
 } from '@/api'
 
 type InitialEventsState = {
@@ -48,10 +48,10 @@ const initialState: InitialEventsState = {
  */
 export const createEventThunk = createAsyncThunk<
   Event,
-  { data: EventFormData, teamId: string }
->('events/addEvent', async ({ data, teamId }, { rejectWithValue }) => {
+  { data: EventFormData }
+>('events/addEvent', async ({ data }, { rejectWithValue }) => {
   try {
-    return await addEvent(data, teamId)
+    return await addEvent(data)
   } catch (e) {
     if (e instanceof ClientError) {
       return rejectWithValue(e.message)
@@ -63,12 +63,12 @@ export const createEventThunk = createAsyncThunk<
 /**
  * Gets all events for a team
  */
-export const getEventsThunk = createAsyncThunk<
+export const getEventsByTeamThunk = createAsyncThunk<
   EventDataResponse,
   { teamId: string }
 >('events/getEvents', async ({ teamId }, { rejectWithValue }) => {
   try {
-    return await getEvents(teamId)
+    return await getEventsByTeamId(teamId)
   } catch (e) {
     if (e instanceof ClientError) {
       return rejectWithValue(e.message)
@@ -143,17 +143,17 @@ export const eventsSlice = createSlice({
           console.error('Error creating new event', action.error)
         }
       })
-      .addCase(getEventsThunk.pending, state => {
+      .addCase(getEventsByTeamThunk.pending, state => {
         state.loadingGettingEventsStatus = 'pending'
       })
-      .addCase(getEventsThunk.fulfilled, (state, action) => {
+      .addCase(getEventsByTeamThunk.fulfilled, (state, action) => {
         state.loadingGettingEventsStatus = 'succeeded'
 
         if (action.payload) {
-          state.events = action.payload.results
+          state.events = action.payload.data
         }
       })
-      .addCase(getEventsThunk.rejected, (state, action) => {
+      .addCase(getEventsByTeamThunk.rejected, (state, action) => {
         if (
           state.loadingGettingEventsStatus === 'pending'
         ) {

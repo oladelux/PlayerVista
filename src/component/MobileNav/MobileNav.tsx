@@ -15,8 +15,8 @@ export const MobileNav: FC = () => {
 
   const sideBarTabs = [
     { tabName: 'Dashboard', icon: DashboardIcon, link: `/team/${teamId}` },
-    { tabName: 'Team Management', icon: TeamsIcon, link: `/team/${teamId}/manage-teams` },
-    { tabName: 'Staff Management', icon: UserManagementIcon, link: `/team/${teamId}/staffs` },
+    { tabName: 'Team', icon: TeamsIcon, link: `/team/${teamId}/manage-teams` },
+    { tabName: 'Staff', icon: UserManagementIcon, link: `/team/${teamId}/staffs` },
     { tabName: 'Players', icon: PlayerIcon, link: `/team/${teamId}/players` },
     { tabName: 'Event', icon: EventIcon, link: `/team/${teamId}/events` },
     { tabName: 'Statistics', icon: StatisticsIcon, link: `/team/${teamId}/statistics` },

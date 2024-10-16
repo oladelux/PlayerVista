@@ -7,10 +7,10 @@ import {
   eventsSelector,
   getSingleEventThunk,
   updateEventThunk,
-} from '../../store/slices/EventsSlice.ts'
-import { useAppDispatch } from '../../store/types.ts'
-import { SingleEventType } from '../../api'
-import { combinedDate } from '../../services/helper.ts'
+} from '@/store/slices/EventsSlice.ts'
+import { useAppDispatch } from '@/store/types.ts'
+import { SingleEventType } from '@/api'
+import { combinedDate } from '@/services/helper.ts'
 
 import { FormikStep, FormikStepper } from '../../views/TeamView/CreateTeam/Step.tsx'
 import { CustomFormikDatePicker } from '../FormikWrapper/CustomFormikDatePicker.tsx'
@@ -57,6 +57,7 @@ const SelectedEvent: FC<SelectedEventProps> = props => {
                 info: props.selectedEvent.info,
               }}
               onSubmit={async (values, { resetForm }) => {
+                if(!props.selectedEvent) return
                 const data = {
                   type: values.type,
                   startDate: combinedDate(new Date(values.startDate),
@@ -67,6 +68,8 @@ const SelectedEvent: FC<SelectedEventProps> = props => {
                   eventLocation: values.eventLocation,
                   opponent: values.opponent,
                   info: values.info,
+                  userId: props.selectedEvent.userId,
+                  teamId: props.selectedEvent.teamId,
                 }
                 await dispatch(updateEventThunk({ data, eventId: props.eventId }))
                   .unwrap()
@@ -182,5 +185,10 @@ export const SelectedEventModal: FC<SelectedEventModal> = ({ onClose, id }) => {
   }, [])
 
   return ReactDOM.createPortal(
-    <SelectedEvent onClose={onClose} selectedEvent={selectedEvent} eventId={id}/>, container)
+    <SelectedEvent
+      onClose={onClose}
+      selectedEvent={selectedEvent}
+      eventId={id}
+    />,
+    container)
 }

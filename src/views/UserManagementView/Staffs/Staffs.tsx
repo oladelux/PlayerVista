@@ -41,7 +41,7 @@ type StaffsProps = {
 export const Staffs: FC<StaffsProps> = ({ staffs, user }) => {
   const { teamId } = useParams()
   const { searchPlayerValue, handleSearchInput } = usePlayers()
-  const filteredStaffs = staffs.filter((item) => item.id !== user.id)
+  const filteredStaffs = staffs.filter((item) => item.id !== user.id && item.teamId === teamId)
 
   const allStaffs = filteredStaffs.map(staff => ({
     name: staff.firstName + ' ' + staff.lastName,

@@ -98,7 +98,12 @@ export const EventCalender:FC<EventCalenderProps> = props => {
         />
       }
       {isSelectedEventModal &&
-        <SelectedEventModal onClose={closeSelectedEventModal} id={selectedEvent}/>}
+        <SelectedEventModal
+          onClose={closeSelectedEventModal}
+          id={selectedEvent}
+          user={props.user}
+        />
+      }
     </>
   )
 }

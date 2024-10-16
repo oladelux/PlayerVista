@@ -3,18 +3,18 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { Field } from 'formik'
 import CenterFocusWeakIcon from '@mui/icons-material/CenterFocusWeak'
 
-import { useAppDispatch } from '../../../store/types'
-import { AuthenticatedUserData, PlayerFormData, uploadImageToCloudinary } from '../../../api'
-import { createNewPlayerThunk, getPlayersThunk } from '../../../store/slices/PlayersSlice'
-import { cloudName, cloudUploadPresets } from '../../../config/constants'
-import { UseUpdates } from '../../../hooks/useUpdates.ts'
-import { getTodayDate } from '../../../services/helper.ts'
+import { useAppDispatch } from '@/store/types.ts'
+import { AuthenticatedUserData, PlayerFormData, uploadImageToCloudinary } from '@/api'
+import { createNewPlayerThunk, getPlayersByTeamIdThunk } from '@/store/slices/PlayersSlice.ts'
+import { cloudName, cloudUploadPresets } from '@/config/constants.ts'
+import { UseUpdates } from '@/hooks/useUpdates.ts'
+import { getTodayDate } from '@/services/helper.ts'
 
 import { FormikStep, FormikStepper } from '../../TeamView/CreateTeam/Step'
-import { DashboardLayout } from '../../../component/DashboardLayout/DashboardLayout'
-import { SelectPlayerPositionWithFormik } from '../../../component/SelectPlayerPosition/SelectPlayerPosition.tsx'
-import { CustomFormikDatePicker } from '../../../component/FormikWrapper/CustomFormikDatePicker.tsx'
-import { SuccessConfirmationPopup } from '../../../component/SuccessConfirmation/SuccessConfirmation.tsx'
+import { DashboardLayout } from '@/component/DashboardLayout/DashboardLayout.tsx'
+import { SelectPlayerPositionWithFormik } from '@/component/SelectPlayerPosition/SelectPlayerPosition.tsx'
+import { CustomFormikDatePicker } from '@/component/FormikWrapper/CustomFormikDatePicker.tsx'
+import { SuccessConfirmationPopup } from '@/component/SuccessConfirmation/SuccessConfirmation.tsx'
 
 import './AddPlayer.scss'
 
@@ -55,7 +55,7 @@ const AddPlayerMultiStep:FC<AddPlayerMultiStepProps> = ({ logger, user }) => {
   const openConfirmationPopup = () => setIsActiveConfirmationPopup(true)
   const closeConfirmationPopup = async () => {
     setIsActiveConfirmationPopup(false)
-    teamId && await dispatch(getPlayersThunk({ teamId }))
+    teamId && await dispatch(getPlayersByTeamIdThunk({ teamId }))
     navigate(`/team/${teamId}/players`)
   }
 
@@ -109,13 +109,16 @@ const AddPlayerMultiStep:FC<AddPlayerMultiStepProps> = ({ logger, user }) => {
           contactPersonCountry: '',
         }}
         onSubmit={async (values, { resetForm }) => {
+          if(!teamId) return
           const data: PlayerFormData = {
             ...(values as PlayerFormData),
+            teamId: teamId,
+            userId: user.id,
             birthDate: new Date(values.birthDate),
             imageSrc: imageUrl,
           }
           teamId &&
-            await dispatch(createNewPlayerThunk({ data, teamId }))
+            await dispatch(createNewPlayerThunk({ data }))
               .unwrap()
               .then(() => {
                 logger.setUpdate({ message: 'added a new player', userId: user.id, groupId: user.groupId })

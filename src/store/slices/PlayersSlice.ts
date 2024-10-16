@@ -4,13 +4,14 @@ import { AsyncThunkLoading, RootState } from '../types'
 import {
   addPlayer,
   ClientError,
-  getPlayers, Player,
+  getPlayersByTeamId, getPlayersByUserId, Player,
   PlayerDataResponse,
   PlayerFormData, updatePlayer,
 } from '@/api'
 
 type InitialPlayersState = {
   players: Player[]
+  allPlayers: Player[]
   /**
    * The loading state of creating new player
    */
@@ -20,6 +21,10 @@ type InitialPlayersState = {
    */
   loadingGettingTeamPlayersStatus: AsyncThunkLoading
   /**
+   * The loading state of getting players for a team by user
+   */
+  loadingGettingTeamPlayersByUsersStatus: AsyncThunkLoading
+  /**
    * The loading state of updating a player
    */
   loadingUpdatingPlayer: AsyncThunkLoading
@@ -27,8 +32,10 @@ type InitialPlayersState = {
 
 const initialState: InitialPlayersState = {
   players: [],
+  allPlayers: [],
   loadingCreatingNewPlayerStatus: 'idle',
   loadingGettingTeamPlayersStatus: 'idle',
+  loadingGettingTeamPlayersByUsersStatus: 'idle',
   loadingUpdatingPlayer: 'idle',
 }
 
@@ -37,10 +44,10 @@ const initialState: InitialPlayersState = {
  */
 export const createNewPlayerThunk = createAsyncThunk<
   unknown,
-  { data: PlayerFormData, teamId: string }
->('players/addPlayer', ({ data, teamId }, { rejectWithValue }) => {
+  { data: PlayerFormData }
+>('players/addPlayer', ({ data }, { rejectWithValue }) => {
   try {
-    return addPlayer(data, teamId)
+    return addPlayer(data)
   } catch (e) {
     if (e instanceof ClientError) {
       return rejectWithValue(e.message)
@@ -52,18 +59,21 @@ export const createNewPlayerThunk = createAsyncThunk<
 /**
  * Gets all players for a team
  */
-export const getPlayersThunk = createAsyncThunk<
-  PlayerDataResponse,
+export const getPlayersByTeamIdThunk = createAsyncThunk<
+  undefined | PlayerDataResponse,
   { teamId: string }
->('players/getPlayers', async ({ teamId }, { rejectWithValue }) => {
-  try {
-    return await getPlayers(teamId)
-  } catch (e) {
-    if (e instanceof ClientError) {
-      return rejectWithValue(e.message)
-    }
-    return rejectWithValue('Unexpected error in getting players')
-  }
+>('players/team', ({ teamId }) => {
+  return getPlayersByTeamId(teamId)
+})
+
+/**
+ * Gets all players for a user
+ */
+export const getPlayersByUserIdThunk = createAsyncThunk<
+  undefined | PlayerDataResponse,
+  { userId: string }
+>('players/user', ({ userId }) => {
+  return getPlayersByUserId(userId)
 })
 
 /**
@@ -116,24 +126,6 @@ export const playersSlice = createSlice({
           console.error('Error creating new player', action.error)
         }
       })
-      .addCase(getPlayersThunk.pending, state => {
-        state.loadingGettingTeamPlayersStatus = 'pending'
-      })
-      .addCase(getPlayersThunk.fulfilled, (state, action) => {
-        state.loadingGettingTeamPlayersStatus = 'succeeded'
-
-        if (action.payload) {
-          state.players = action.payload.results
-        }
-      })
-      .addCase(getPlayersThunk.rejected, (state, action) => {
-        if (
-          state.loadingGettingTeamPlayersStatus === 'pending'
-        ) {
-          state.loadingGettingTeamPlayersStatus = 'failed'
-          console.error('Error getting players', action.error)
-        }
-      })
       .addCase(updatePlayerThunk.pending, state => {
         state.loadingUpdatingPlayer = 'pending'
       })
@@ -150,6 +142,48 @@ export const playersSlice = createSlice({
         ) {
           state.loadingUpdatingPlayer = 'failed'
           console.error('Error updating player', action.error)
+        }
+      })
+      .addCase(getPlayersByTeamIdThunk.pending, state => {
+        state.loadingGettingTeamPlayersStatus = 'pending'
+        state.players = []
+      })
+      .addCase(getPlayersByTeamIdThunk.fulfilled, (state, action) => {
+        if (
+          state.loadingGettingTeamPlayersStatus === 'pending'
+        )
+          if (action.payload) {
+            state.loadingCreatingNewPlayerStatus = 'succeeded'
+            state.players = action.payload.data
+          }
+      })
+      .addCase(getPlayersByTeamIdThunk.rejected, (state, action) => {
+        if (
+          state.loadingGettingTeamPlayersStatus === 'pending'
+        ) {
+          state.loadingGettingTeamPlayersStatus = 'failed'
+          console.error('Error getting team players', action.error)
+        }
+      })
+      .addCase(getPlayersByUserIdThunk.pending, state => {
+        state.loadingGettingTeamPlayersByUsersStatus = 'pending'
+        state.allPlayers = []
+      })
+      .addCase(getPlayersByUserIdThunk.fulfilled, (state, action) => {
+        if (
+          state.loadingGettingTeamPlayersByUsersStatus === 'pending'
+        )
+          if (action.payload) {
+            state.loadingGettingTeamPlayersByUsersStatus = 'succeeded'
+            state.allPlayers = action.payload.data
+          }
+      })
+      .addCase(getPlayersByUserIdThunk.rejected, (state, action) => {
+        if (
+          state.loadingGettingTeamPlayersByUsersStatus === 'pending'
+        ) {
+          state.loadingGettingTeamPlayersByUsersStatus = 'failed'
+          console.error('Error getting team players', action.error)
         }
       })
   },

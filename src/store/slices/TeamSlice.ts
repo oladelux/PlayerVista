@@ -3,26 +3,29 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { AsyncThunkLoading, RootState } from '../types'
 import {
   ClientError,
-  createTeam,
-  getTeams,
+  createTeam, getTeam, getTeamsByUser,
   TeamDataResponse,
   TeamFormData,
   TeamResult,
-} from '../../api'
+} from '@/api'
 
 type InitialTeamState = {
   teams: TeamResult[]
+  team: TeamFormData | null
   /**
    * The loading state of creating new team
    */
   loadingCreatingTeamStatus: AsyncThunkLoading
   loadingGettingTeams: AsyncThunkLoading
+  loadingGettingTeam: AsyncThunkLoading
 }
 
 const initialState: InitialTeamState = {
   teams: [],
+  team: null,
   loadingCreatingTeamStatus: 'idle',
   loadingGettingTeams: 'idle',
+  loadingGettingTeam: 'idle',
 }
 
 /**
@@ -43,13 +46,24 @@ export const createTeamThunk = createAsyncThunk<
 })
 
 /**
- * Gets all teams
+ * Gets teams by a user
  */
 export const getTeamsThunk = createAsyncThunk<
-  undefined | TeamDataResponse
->('teams/teams', () => {
-  return getTeams()
+  undefined | TeamDataResponse,
+  { userId: string }
+>('teams/teams', ({ userId }) => {
+  return getTeamsByUser(userId)
 })
+
+/**
+ * Gets a single team
+ */
+export const getTeamThunk = createAsyncThunk<
+  undefined | TeamFormData,
+  { id: string }
+>('teams/team', ({ id }) => {
+  return getTeam(id)
+} )
 
 export const teamSlice = createSlice({
   name: 'teams',
@@ -88,7 +102,7 @@ export const teamSlice = createSlice({
         ) {
           state.loadingGettingTeams = 'succeeded'
           if (action.payload) {
-            state.teams = action.payload.results
+            state.teams = action.payload.data
           }
         }
       })
@@ -98,6 +112,27 @@ export const teamSlice = createSlice({
         ) {
           state.loadingGettingTeams = 'failed'
           console.error('Error getting teams', action.error)
+        }
+      })
+      .addCase(getTeamThunk.pending, state => {
+        state.loadingGettingTeam = 'pending'
+      })
+      .addCase(getTeamThunk.fulfilled, (state, action) => {
+        if (
+          state.loadingGettingTeam === 'pending'
+        ) {
+          state.loadingGettingTeam = 'succeeded'
+          if (action.payload) {
+            state.team = action.payload
+          }
+        }
+      })
+      .addCase(getTeamThunk.rejected, (state, action) => {
+        if (
+          state.loadingGettingTeam === 'pending'
+        ) {
+          state.loadingGettingTeam = 'failed'
+          console.error('Error getting team', action.error)
         }
       })
   },

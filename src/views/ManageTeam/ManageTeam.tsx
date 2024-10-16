@@ -1,10 +1,10 @@
 import { FC, useState } from 'react'
 import { FiSearch } from 'react-icons/fi'
 import { FaPlus } from 'react-icons/fa'
-import {Link, useParams} from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 
-import { TeamResult } from '../../api'
-import { formatDate } from '../../services/helper'
+import { Player, TeamResult } from '@/api'
+import { formatDate } from '@/services/helper.ts'
 
 import { DashboardLayout } from '../../component/DashboardLayout/DashboardLayout'
 import { Table } from '../../component/Table/Table'
@@ -13,6 +13,7 @@ import './ManageTeam.scss'
 
 type ManageTeamProps = {
   teams: TeamResult[]
+  players: Player[]
 }
 
 const columns = [
@@ -32,12 +33,12 @@ const columns = [
   },
 ]
 
-export const ManageTeam:FC<ManageTeamProps> = props => {
+export const ManageTeam:FC<ManageTeamProps> = ({ teams, players }) => {
   const { teamId } = useParams()
   const [searchQuery, setSearchQuery] = useState('')
-  const data = props.teams.map(team => ({
+  const data = teams.map(team => ({
     name: team.teamName,
-    noOfPlayers: team.players.length,
+    noOfPlayers: players.filter(player => player.teamId === team.id).length,
     dateCreated: formatDate(new Date(team.creationYear)),
     homeStadium: team.stadiumName,
     status: team.active,

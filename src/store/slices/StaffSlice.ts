@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 
-import { ClientError, createStaff, getStaffs, Staff, StaffData } from '../../api'
+import { ClientError, createStaff, getStaffs, Staff, StaffData, StaffDataResponse } from '../../api'
 import { AsyncThunkLoading, RootState } from '../types.ts'
 
 type InitialStaffState = {
@@ -42,11 +42,11 @@ export const createStaffThunk = createAsyncThunk<
  * Gets all staffs
  */
 export const getStaffsThunk = createAsyncThunk<
-  Staff[],
-  { teamId: string }
->('staffs/getStaffs', async ({ teamId }, { rejectWithValue }) => {
+  StaffDataResponse,
+  { groupId: string }
+>('staffs/getStaffs', async ({ groupId }, { rejectWithValue }) => {
   try {
-    return await getStaffs(teamId)
+    return await getStaffs(groupId)
   } catch (e) {
     if (e instanceof ClientError) {
       return rejectWithValue(e.message)
@@ -91,7 +91,7 @@ export const staffSlice = createSlice({
       .addCase(getStaffsThunk.fulfilled, (state, action) => {
         state.loadingGettingStaff = 'succeeded'
         if(action.payload) {
-          state.staffs = action.payload
+          state.staffs = action.payload.data
         }
       })
       .addCase(getStaffsThunk.rejected, (state, action) => {

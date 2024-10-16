@@ -1,14 +1,24 @@
-import { FormEvent, useState } from 'react'
+import { FormEvent, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 
-import { playersSelector } from '../store/slices/PlayersSlice'
+import { getPlayersByTeamIdThunk, playersSelector } from '../store/slices/PlayersSlice'
+import { useAppDispatch } from '@/store/types.ts'
+import { useUser } from '@/hooks/useUser.ts'
 
 /**
  * Hook to manage players.
  */
-export const usePlayers = () => {
+export const usePlayers = (teamId?: string) => {
+  const dispatch = useAppDispatch()
+  const { data } = useUser()
   const [searchPlayerValue, setSearchPlayerValue] = useState('')
   const { players } = useSelector(playersSelector)
+
+  useEffect(() => {
+    if (teamId) {
+      dispatch(getPlayersByTeamIdThunk({ teamId }))
+    }
+  }, [data, dispatch, teamId])
 
   /**
    * Event handler for search value changes with a minimum length requirement.

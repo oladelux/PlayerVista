@@ -11,10 +11,10 @@ import { useEvents } from './useEvents.ts'
 import { useUpdates } from './useUpdates.ts'
 import { getApplicationLogsThunk, settingsSelector } from '../store/slices/SettingsSlice.ts'
 import { getCurrentTeam } from '../utils/localStorage.ts'
-import { getPlayersThunk } from '../store/slices/PlayersSlice.ts'
-import { getEventsThunk } from '../store/slices/EventsSlice.ts'
+import { getEventsByTeamThunk } from '../store/slices/EventsSlice.ts'
 import { getStaffsThunk, staffSelector } from '../store/slices/StaffSlice.ts'
 import { getReportersThunk, reporterSelector } from '../store/slices/ReporterSlice.ts'
+import { getPlayersByTeamIdThunk, getPlayersByUserIdThunk, playersSelector } from '@/store/slices/PlayersSlice.ts'
 
 export type AppController = ReturnType<typeof useAppController>
 let didInit = false
@@ -23,6 +23,7 @@ export function useAppController () {
   const dispatch = useDispatch<AppDispatch>()
 
   const { teams } = useSelector(teamSelector)
+  const { allPlayers } = useSelector(playersSelector)
   const { logs } = useSelector(settingsSelector)
   const { staffs } = useSelector(staffSelector)
   const { reporters } = useSelector(reporterSelector)
@@ -32,10 +33,11 @@ export function useAppController () {
   const { players } = usePlayers()
   const events = useEvents()
   const authentication = useAuthentication(user, async (userData) => {
-    await dispatch(getTeamsThunk())
+    await dispatch(getTeamsThunk({ userId: userData.id }))
+    await dispatch(getPlayersByUserIdThunk({ userId: userData.id }))
     await dispatch(getApplicationLogsThunk({ groupId: userData.groupId }))
   })
-  const team = useTeams()
+  const team = useTeams(user.data?.id)
   const loading = useAppLoading()
 
   useEffect(() => {
@@ -44,11 +46,12 @@ export function useAppController () {
       user.initializeApp()
         .then(async data => {
           if (data) {
-            await dispatch(getTeamsThunk())
+            await dispatch(getTeamsThunk({ userId: data.id }))
             await dispatch(getApplicationLogsThunk({ groupId: data.groupId }))
-            await dispatch(getPlayersThunk({ teamId: currentTeam }))
-            await dispatch(getEventsThunk({ teamId: currentTeam }))
-            await dispatch(getStaffsThunk({ teamId: currentTeam }))
+            await dispatch(getPlayersByUserIdThunk({ userId: data.id }))
+            await dispatch(getPlayersByTeamIdThunk({ teamId: currentTeam }))
+            await dispatch(getEventsByTeamThunk({ teamId: currentTeam }))
+            await dispatch(getStaffsThunk({ groupId: data.groupId }))
             await dispatch(getReportersThunk({ teamId: currentTeam }))
           }
         })
@@ -64,6 +67,7 @@ export function useAppController () {
     authentication,
     team,
     players,
+    allPlayers,
     teams,
     staffs,
     reporters,

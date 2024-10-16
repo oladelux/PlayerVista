@@ -4,23 +4,24 @@ import { useNavigate, useLocation, useParams } from 'react-router-dom'
 import { FiArrowLeft } from 'react-icons/fi'
 import Person2Icon from '@mui/icons-material/Person2'
 
-import { useAppController } from '../../hooks/useAppController'
-import { TeamResult } from '../../api'
-import { setCurrentTeam } from '../../utils/localStorage.ts'
-import { getPlayersThunk } from '../../store/slices/PlayersSlice.ts'
-import { getEventsThunk } from '../../store/slices/EventsSlice.ts'
-import { getStaffsThunk } from '../../store/slices/StaffSlice.ts'
-import { getReportersThunk } from '../../store/slices/ReporterSlice.ts'
-import { teamSelector } from '../../store/slices/TeamSlice.ts'
-import { AppDispatch } from '../../store/types.ts'
+import { useAppController } from '@/hooks/useAppController.ts'
+import { TeamResult } from '@/api'
+import { setCurrentTeam } from '@/utils/localStorage.ts'
+import { getEventsByTeamThunk } from '@/store/slices/EventsSlice.ts'
+import { getStaffsThunk } from '@/store/slices/StaffSlice.ts'
+import { getReportersThunk } from '@/store/slices/ReporterSlice.ts'
+import { teamSelector } from '@/store/slices/TeamSlice.ts'
+import { AppDispatch } from '@/store/types.ts'
 
 import { Sidebar } from '../Sidebar/SidebarMenu'
 
 import PlayerVistaLogo from '../../assets/images/icons/playervista.png'
 
 import './DashboardLayout.scss'
-import { useMediaQuery } from '@mui/material';
-import { MobileNav } from '@/component/MobileNav/MobileNav.tsx';
+import { useMediaQuery } from '@mui/material'
+import { MobileNav } from '@/component/MobileNav/MobileNav.tsx'
+import { getPlayersByTeamIdThunk } from '@/store/slices/PlayersSlice.ts'
+import { useUser } from '@/hooks/useUser.ts'
 
 type DashboardHeaderProps = {
   teams: TeamResult[]
@@ -29,6 +30,7 @@ type DashboardHeaderProps = {
 export const DashboardHeader: FC<DashboardHeaderProps> = ({ teams }) => {
   const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
+  const user = useUser()
   const { teamId } = useParams()
   const activeTeamName = teams ? teams.find((team) => team.id === teamId)?.teamName : ''
 
@@ -36,9 +38,9 @@ export const DashboardHeader: FC<DashboardHeaderProps> = ({ teams }) => {
     const id = e.target.value
     navigate(`/team/${id}`)
     setCurrentTeam(id)
-    dispatch(getPlayersThunk({ teamId: id }))
-    dispatch(getEventsThunk({ teamId: id }))
-    dispatch(getStaffsThunk({ teamId: id }))
+    dispatch(getPlayersByTeamIdThunk({ teamId: id }))
+    dispatch(getEventsByTeamThunk({ teamId: id }))
+    user.data && dispatch(getStaffsThunk({ groupId: user.data.groupId }))
     dispatch(getReportersThunk({ teamId: id }))
   }
 

@@ -4,12 +4,12 @@ import { useSelector } from 'react-redux'
 
 import { useAppDispatch } from '../store/types.ts'
 import { setCurrentTeam } from '../utils/localStorage.ts'
-import { getPlayersThunk } from '../store/slices/PlayersSlice.ts'
-import { getEventsThunk } from '../store/slices/EventsSlice.ts'
+import { getEventsByTeamThunk } from '../store/slices/EventsSlice.ts'
 import { getStaffsThunk } from '../store/slices/StaffSlice.ts'
 import { teamSelector } from '../store/slices/TeamSlice.ts'
 import { getReportersThunk } from '../store/slices/ReporterSlice.ts'
-import { AuthenticatedUserData, verifyEmail } from '../api'
+import { AuthenticatedUserData, verifyEmail } from '@/api'
+import { getPlayersByTeamIdThunk } from '@/store/slices/PlayersSlice.ts'
 
 const EMAIL_VERIFICATION_TIMEOUT = 5000
 
@@ -34,9 +34,9 @@ export const useCountdown = (
             await refreshUserData()
             setEmailVerified(true)
             setCurrentTeam(teams[0].id)
-            await dispatch(getPlayersThunk({ teamId: teams[0].id }))
-            await dispatch(getEventsThunk({ teamId: teams[0].id }))
-            await dispatch(getStaffsThunk({ teamId: teams[0].id }))
+            await dispatch(getPlayersByTeamIdThunk({ teamId: teams[0].id }))
+            await dispatch(getEventsByTeamThunk({ teamId: teams[0].id }))
+            await dispatch(getStaffsThunk({ groupId: teams[0].id }))
             await dispatch(getReportersThunk({ teamId: teams[0].id }))
             navigate(`/team/${teams[0].id}`)
           })

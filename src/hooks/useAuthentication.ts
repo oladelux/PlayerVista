@@ -5,12 +5,12 @@ import * as api from '../api'
 import { ApiError, AuthenticationCredentials, RegistrationDetails } from '../api'
 import { routes } from '../constants/routes'
 import { UserHook } from './useUser'
-import { addCookie, getCookie, removeCookie } from '../services/cookies'
+import { addCookie, removeCookie } from '../services/cookies'
 import { useAppDispatch } from '../store/types.ts'
 import { clearSettingsState } from '../store/slices/SettingsSlice.ts'
 import { clearTeamState } from '../store/slices/TeamSlice.ts'
-import { clearPlayerState, getPlayersThunk } from '../store/slices/PlayersSlice.ts'
-import { clearEventState, getEventsThunk } from '../store/slices/EventsSlice.ts'
+import { clearPlayerState, getPlayersByTeamIdThunk } from '../store/slices/PlayersSlice.ts'
+import { clearEventState, getEventsByTeamThunk } from '../store/slices/EventsSlice.ts'
 import { clearLocalStorage, setCurrentTeam } from '../utils/localStorage.ts'
 import { clearStaffState, getStaffsThunk } from '../store/slices/StaffSlice.ts'
 import { clearReporterState, getReportersThunk } from '../store/slices/ReporterSlice.ts'
@@ -23,7 +23,6 @@ export function useAuthentication (
 ) {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
-  const refreshToken = getCookie('refresh-token')
 
   const [loggingIn, setLoggingIn] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -51,8 +50,8 @@ export function useAuthentication (
     setLoggingIn(true)
     api.loginAuthentication(data)
       .then(async res => {
-        addCookie('access-token', res.tokens.access.token, res.tokens.access.expires)
-        addCookie('refresh-token', res.tokens.refresh.token, res.tokens.refresh.expires)
+        addCookie('access-token', res.token, res.tokenExpires.toString())
+        addCookie('refresh-token', res.refreshToken, res.tokenExpires.toString())
         const userData = await user.refreshUserData()
         if (!userData) {
           throw new Error('Unexpected no user data after logging in')
@@ -61,12 +60,12 @@ export function useAuthentication (
         if(userData.role === 'admin') {
           navigate(routes.team)
         } else {
-          setCurrentTeam(userData.teams[0])
-          dispatch(getPlayersThunk({ teamId: userData.teams[0] }))
-          dispatch(getEventsThunk({ teamId: userData.teams[0] }))
-          dispatch(getStaffsThunk({ teamId: userData.teams[0] }))
-          dispatch(getReportersThunk({ teamId: userData.teams[0] }))
-          navigate(`/team/${userData.teams[0]}`)
+          setCurrentTeam(userData.teamId)
+          dispatch(getPlayersByTeamIdThunk({ teamId: userData.teamId }))
+          dispatch(getEventsByTeamThunk({ teamId: userData.teamId }))
+          dispatch(getStaffsThunk({ groupId: userData.groupId }))
+          dispatch(getReportersThunk({ teamId: userData.teamId }))
+          navigate(`/team/${userData.teamId}`)
         }
       })
       .catch(e => {
@@ -76,28 +75,26 @@ export function useAuthentication (
   }
 
   function logout() {
-    if(refreshToken) {
-      api.logout({ refreshToken })
-        .then(() => {
-          removeCookie('access-token')
-          removeCookie('refresh-token')
-          clearLocalStorage()
-          dispatch(clearSettingsState())
-          dispatch(clearTeamState())
-          dispatch(clearPlayerState())
-          dispatch(clearEventState())
-          dispatch(clearStaffState())
-          dispatch(clearReporterState())
-          navigate(routes.login)
-        })
-        .catch(e => {
-          if (e instanceof ApiError) {
-            console.error({ message: 'Logout failed', reason: e })
-          } else {
-            console.error('Unhandled error logging out', e)
-          }
-        })
-    }
+    api.logout()
+      .then(() => {
+        removeCookie('access-token')
+        removeCookie('refresh-token')
+        clearLocalStorage()
+        dispatch(clearSettingsState())
+        dispatch(clearTeamState())
+        dispatch(clearPlayerState())
+        dispatch(clearEventState())
+        dispatch(clearStaffState())
+        dispatch(clearReporterState())
+        navigate(routes.login)
+      })
+      .catch(e => {
+        if (e instanceof ApiError) {
+          console.error({ message: 'Logout failed', reason: e })
+        } else {
+          console.error('Unhandled error logging out', e)
+        }
+      })
   }
 
   function sendEmailVerification() {

@@ -1,22 +1,17 @@
 import { DashboardLayout } from '@/component/DashboardLayout/DashboardLayout.tsx'
 import { useParams } from 'react-router-dom'
 import { FC, useEffect, useMemo } from 'react'
-import { Action, Player, PlayerActions, TeamResult } from '@/api'
+import { Player, TeamResult } from '@/api'
 import { EventsHook } from '@/hooks/useEvents.ts'
-import { PlayerFieldPosition } from '@/views/SingleEventView/PlayerEventStats/PlayerFieldPosition.tsx'
-import { Table, TableBody, TableRow, TableHead, TableHeader, TableCell } from '@/components/ui/table.tsx'
 import { getPerformanceDataThunk, playerPerformanceSelector } from '@/store/slices/PlayerPerformanceSlice.ts'
 import { useAppDispatch } from '@/store/types.ts'
 import { useSelector } from 'react-redux'
-import { getPlayerActionsForSinglePlayer } from '@/utils/players.ts'
-import { Progress } from '@/components/ui/progress.tsx'
+import { getFilteredActions, getPlayerActionsForSinglePlayer } from '@/utils/players.ts'
 import { Button } from '@/component/Button/Button.tsx'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { FiDownload } from 'react-icons/fi'
 import { calculateAge } from '@/services/helper.ts'
-import { NumberStatCard } from '@/component/NumberStatCard/NumberStatCard.tsx';
-import { IndividualStatCard } from '@/component/IndividualStatCard/IndividualStatCard.tsx';
-import { FirstHalfStats } from '@/views/SingleEventView/PlayerEventStats/FirstHalfStats.tsx';
+import { FirstHalfStats } from '@/views/SingleEventView/PlayerEventStats/FirstHalfStats.tsx'
 
 type PlayerEventStatsProps = {
   players: Player[]
@@ -24,54 +19,11 @@ type PlayerEventStatsProps = {
   teams: TeamResult[]
 }
 
-const getStatTitle = (type: string) => {
-  switch (type) {
-    case 'pass':
-      return 'Passes Attempted/Completed'
-    case 'tackles':
-      return 'Tackling Attempted/completed'
-    case 'aerial_duels':
-      return 'Aerial Duel Attempted/Won'
-    case 'goals':
-      return 'Goals'
-    case 'shots':
-      return 'Total Shots/On Target'
-    case 'assists':
-      return 'Assists'
-    case 'interceptions':
-      return 'Interceptions'
-    case 'clearance':
-      return 'Clearance'
-    case 'touch':
-      return 'Touches'
-    case 'blocked_shots':
-      return 'Blocked Shots'
-    case 'duels':
-      return 'Duels/Won'
-    case 'fouls':
-      return 'Fouls'
-    default:
-      return type
-  }
-}
-const statsTypes = ['shots', 'tackles', 'pass', 'goals', 'assists', 'interceptions',
-  'clearance', 'touch', 'blocked_shots', 'aerial_duels', 'fouls', 'duels']
-const isValidActionType = (type: string): type is keyof PlayerActions => {
-  return [
-    'shots', 'tackles', 'goals', 'pass', 'assists', 'interceptions', 'clearance',
-    'blocked_shots', 'aerial_duels', 'aerial_clearance', 'fouls', 'saves',
-    'mistakes', 'recoveries', 'blocks', 'yellow_cards', 'red_cards', 'offside',
-    'corner_kick', 'freekick', 'dribble', 'penalty',
-  ].includes(type)
-}
-
 export const PlayerEventStats:FC<PlayerEventStatsProps> = ({ players, teams }) => {
   const { teamId, eventId, playerId } = useParams()
   const dispatch = useAppDispatch()
   const { performance } = useSelector(playerPerformanceSelector)
   const data = getPlayerActionsForSinglePlayer(performance, playerId)
-
-  console.log('data', data)
 
   const isTeam = useMemo(() => {
     if(teams) {
@@ -85,76 +37,19 @@ export const PlayerEventStats:FC<PlayerEventStatsProps> = ({ players, teams }) =
     }
   }, [playerId, players])
 
-  const renderStatsRow = (type: string, action?: PlayerActions) => {
-    if(!action || !isValidActionType(type)) {
-      return null
-    }
-    const playerActions: Action[] = action[type]
-    const title = getStatTitle(type)
-    const fullMatchAttempted = playerActions.length ?? 0
-    const fullMatchCompleted = playerActions.filter(action => action.value === 'SUCCESSFUL').length ?? 0
-
-    // First half stats
-    const firstHalfActions = playerActions
-      .filter(action => action.timestamp >= 0 && action.timestamp < 45)
-    const firstHalfAttempted = firstHalfActions.length ?? 0
-    const firstHalfCompleted = firstHalfActions
-      .filter(action => action.value === 'SUCCESSFUL').length ?? 0
-
-    // Second half stats
-    const secondHalfActions = playerActions
-      .filter(action => action.timestamp >= 45 && action.timestamp <= 90)
-    const secondHalfAttempted = secondHalfActions.length ?? 0
-    const secondHalfCompleted = secondHalfActions.filter(action => action.value === 'SUCCESSFUL').length ?? 0
-
-    if(type === 'goals' || type === 'assists' || type === 'interceptions'
-      || type === 'clearance' || type === 'fouls' || type === 'blocked_shots') {
-      return (
-        <TableRow key={title}>
-          <TableCell>{title}</TableCell>
-          <TableCell>{fullMatchAttempted}</TableCell>
-          <TableCell>{firstHalfAttempted}</TableCell>
-          <TableCell>{secondHalfAttempted}</TableCell>
-        </TableRow>
-      )
-    }
-
-    const firstHalfPercentage = firstHalfAttempted > 0 ?
-      Math.ceil((firstHalfCompleted / firstHalfAttempted) * 100) : 0
-    const secondHalfPercentage = secondHalfAttempted > 0 ?
-      Math.ceil((secondHalfCompleted / secondHalfAttempted) * 100) : 0
-    const fullMatchPercentage = fullMatchAttempted > 0 ?
-      Math.ceil((fullMatchCompleted / fullMatchAttempted) * 100) : 0
-
-
-    return (
-      <TableRow key={title}>
-        <TableCell>{title}</TableCell>
-        <TableCell>
-          {`${fullMatchAttempted}/${fullMatchCompleted}`}
-          <Progress value={fullMatchPercentage} className='h-1.5'/>
-        </TableCell>
-        <TableCell>
-          {`${firstHalfAttempted}/${firstHalfCompleted}`}
-          <Progress value={firstHalfPercentage} className='h-1.5'/>
-        </TableCell>
-        <TableCell>
-          {`${secondHalfAttempted}/${secondHalfCompleted}`}
-          <Progress value={secondHalfPercentage} className='h-1.5'/>
-        </TableCell>
-      </TableRow>
-    )
-  }
-
   useEffect(() => {
     if (eventId) {
       dispatch(getPerformanceDataThunk({ eventId }))
     }
   }, [dispatch, eventId])
 
-  if(!isPlayer || !isTeam) {
+  if(!isPlayer || !isTeam || !data) {
     return null
   }
+
+  const playerActions = getFilteredActions(data.actions)
+
+  console.log('playerActions', playerActions)
 
   return (
     <DashboardLayout>

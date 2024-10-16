@@ -3,7 +3,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { AsyncThunkLoading, RootState } from '../types'
 import {
   ClientError, getPerformanceData, PlayerPerformance,
-} from '../../api'
+} from '@/api'
 
 type InitialPlayerPerformanceState = {
   performance: PlayerPerformance[]

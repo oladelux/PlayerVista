@@ -1,7 +1,22 @@
-import { Player, PlayerActions, PlayerPerformance } from '@/api'
+import { Action, Player, PlayerActions, PlayerPerformance } from '@/api'
 
 export type PlayerPositionType = 'GK' | 'LB' | 'LCB' | 'RCB' | 'CB' | 'RB'
   | 'LWB' | 'RWB' | 'DM' | 'CDM' | 'CM' | 'CAM' | 'LCM' | 'RCM' | 'LM' | 'RM' | 'RW' | 'LW' | 'ST' | 'CF'
+
+export type PlayerStats = 'shotsOnTarget' | 'shotsOffTarget' | 'tacklesWon' | 'tacklesLost' | 'goals' | 'pass' |
+  'assists' | 'interceptions' | 'clearance' | 'blockedShots' | 'aerialDuels' | 'aerialClearance' |
+  'fouls' | 'saves' | 'mistakes' | 'recoveries' | 'blocks' | 'yellowCards' | 'redCards' | 'offside' |
+  'cornerKick' | 'freekick' | 'dribble' | 'penaltyWon' | 'penaltyTaken' | 'PossessionLost' |
+  'duels' | 'duelsWon' | 'touches' | 'successfulDribble' | 'dribbles' | 'groundDuels' | 'groundDuelsWon' |
+  'foulsConceded' | 'aerialDuelsWon' | 'errors'
+
+export type FilteredActions = {
+  [key in keyof PlayerActions]: {
+    firstHalf: Action[];
+    secondHalf: Action[];
+    fullTime: Action[];
+  };
+}
 
 export type LocationData = {
   x: number
@@ -160,4 +175,22 @@ export const positionData: PositionType = {
   'LW': { x: 90, y: 10 },
   'ST': { x: 110, y: 40 },
   'CF': { x: 110, y: 40 },
+}
+
+const filterActionsByHalf = (actions: Action[]) => {
+  const firstHalf = actions.filter(action => action.timestamp >= 0 && action.timestamp <= 45)
+  const secondHalf = actions.filter(action => action.timestamp >= 46 && action.timestamp <= 90)
+  const fullTime = actions.filter(action => action.timestamp >= 0 && action.timestamp <= 90)
+
+  return { firstHalf, secondHalf, fullTime }
+}
+
+export const getFilteredActions = (playerActions: PlayerActions) => {
+  const filteredActions = {} as FilteredActions
+
+  for (const [key, actions] of Object.entries(playerActions)) {
+    filteredActions[key as keyof PlayerActions] = filterActionsByHalf(actions)
+  }
+
+  return filteredActions
 }

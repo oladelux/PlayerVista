@@ -49,8 +49,8 @@ export const Statistics: FC<StatisticsProps> = ({ players, performance }) => {
       totalTackles: actions.tackles?.length || 0,
       interceptions: actions.interceptions?.length || 0,
       clearance: actions.clearance?.length || 0,
-      blockedShots: actions.blocked_shots?.length || 0,
-      aerialDuels: actions.aerial_duels?.length || 0,
+      blockedShots: actions.blockedShots?.length || 0,
+      aerialDuels: actions.aerialDuels?.length || 0,
       fouls: actions.fouls?.length || 0,
     }
   })

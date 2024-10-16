@@ -3,14 +3,14 @@ import { Field } from 'formik'
 import { useNavigate } from 'react-router-dom'
 import CenterFocusWeakIcon from '@mui/icons-material/CenterFocusWeak'
 
-import { useAppDispatch } from '../../../store/types'
-import { createTeamThunk, getTeamsThunk } from '../../../store/slices/TeamSlice'
-import { AuthenticatedUserData, TeamFormData, TeamResult, uploadImageToCloudinary } from '../../../api'
-import { UseUpdates } from '../../../hooks/useUpdates.ts'
-import { cloudName, cloudUploadPresets } from '../../../config/constants'
+import { useAppDispatch } from '@/store/types.ts'
+import { createTeamThunk, getTeamsThunk } from '@/store/slices/TeamSlice.ts'
+import { AuthenticatedUserData, TeamFormData, TeamResult, uploadImageToCloudinary } from '@/api'
+import { UseUpdates } from '@/hooks/useUpdates.ts'
+import { cloudName, cloudUploadPresets } from '@/config/constants.ts'
 
-import { DashboardHeader } from '../../../component/DashboardLayout/DashboardLayout'
-import { SuccessConfirmationPopup } from '../../../component/SuccessConfirmation/SuccessConfirmation.tsx'
+import { DashboardHeader } from '@/component/DashboardLayout/DashboardLayout.tsx'
+import { SuccessConfirmationPopup } from '@/component/SuccessConfirmation/SuccessConfirmation.tsx'
 import { FormikStep, FormikStepper } from './Step'
 
 import './CreateTeam.scss'
@@ -65,7 +65,7 @@ const CreateTeamMultiStep: FC<DashboardCreateTeamProps> = ({ logger, user }) => 
   const openConfirmationPopup = () => setIsActiveConfirmationPopup(true)
   const closeConfirmationPopup = async () => {
     setIsActiveConfirmationPopup(false)
-    await dispatch(getTeamsThunk())
+    await dispatch(getTeamsThunk({ userId: user.id }))
     navigate('/team')
   }
 
@@ -123,6 +123,7 @@ const CreateTeamMultiStep: FC<DashboardCreateTeamProps> = ({ logger, user }) => 
         onSubmit={async (values, { resetForm }) => {
           const data: TeamFormData = {
             ...(values as TeamFormData),
+            userId: user.id,
             logo: file,
           }
           await dispatch(createTeamThunk({ data }))

@@ -46,6 +46,7 @@ const EventFormModal: FC<EventFormModalProps> = ({ onClose, startDate, logger, u
               opponent: '',
             }}
             onSubmit={async (values, { resetForm }) => {
+              if(!teamId) return
               const data = {
                 type: values.type,
                 startDate: combinedDate(new Date(values.date),
@@ -56,17 +57,17 @@ const EventFormModal: FC<EventFormModalProps> = ({ onClose, startDate, logger, u
                 eventLocation: values.eventLocation,
                 opponent: values.opponent,
                 info: values.info,
+                teamId,
+                userId: user.id,
               }
-              console.log('data', data)
-              teamId &&
-                await dispatch(createEventThunk({ data, teamId }))
-                  .unwrap()
-                  .then(() => {
-                    logger.setUpdate({ message: 'added a new event', userId: user.id, groupId: user.groupId })
-                    logger.sendUpdates(user.groupId)
-                    resetForm()
-                    onClose()
-                  })
+              await dispatch(createEventThunk({ data }))
+                .unwrap()
+                .then(() => {
+                  logger.setUpdate({ message: 'added a new event', userId: user.id, groupId: user.groupId })
+                  logger.sendUpdates(user.groupId)
+                  resetForm()
+                  onClose()
+                })
             }}
           >
             <FormikStep label='Event type'>

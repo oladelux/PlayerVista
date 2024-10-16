@@ -19,7 +19,6 @@ import PointIcon from '../../assets/images/icons/point.png'
 import './Dashboard.scss'
 
 type DashboardProps = {
-  teamResult: Fixtures[]
   teams: TeamResult[]
   applicationLogs: LogType[]
   user: AuthenticatedUserData

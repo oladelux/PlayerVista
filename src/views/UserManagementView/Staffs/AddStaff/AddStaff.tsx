@@ -71,10 +71,11 @@ const AddStaffMultiStep: FC<AddStaffProps> = ({ user, logger }) => {
           if (teamId) {
             const data: StaffData = {
               ...(values as StaffData),
+              teamId,
               groupId: user.groupId,
               password: password,
-              teams: [teamId],
             }
+            console.log(data)
             dispatch(createStaffThunk({ data }))
               .unwrap()
               .then(() => {
