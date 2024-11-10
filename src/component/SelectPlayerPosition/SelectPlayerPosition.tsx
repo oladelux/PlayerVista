@@ -1,5 +1,5 @@
 import { Field } from 'formik'
-import {ChangeEvent, FC} from 'react'
+import { ChangeEvent, FC } from 'react'
 
 type SelectPlayerPositionProps = {
   /**
@@ -15,6 +15,7 @@ type SelectPlayerPositionProps = {
    */
   onChange?: (event: ChangeEvent<HTMLSelectElement>) => void
   value?: string
+  disabled?: boolean
 }
 
 export const SelectPlayerPosition:FC<SelectPlayerPositionProps> = props => {
@@ -24,6 +25,7 @@ export const SelectPlayerPosition:FC<SelectPlayerPositionProps> = props => {
       name={props.name}
       onChange={props.onChange}
       value={props.value}
+      disabled={props.disabled}
     >
       <option>Select Position</option>
       <option value='GK'>GK</option>

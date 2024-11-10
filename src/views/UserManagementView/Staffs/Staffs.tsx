@@ -11,6 +11,9 @@ import { DashboardLayout } from '../../../component/DashboardLayout/DashboardLay
 import { Table } from '../../../component/Table/Table'
 
 import './Staffs.scss'
+import { useSelector } from 'react-redux'
+import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
+import { usePermission } from '@/hooks/usePermission.ts'
 
 const staffColumns = [
   { key: 'name', title: 'Name' },
@@ -40,6 +43,8 @@ type StaffsProps = {
 
 export const Staffs: FC<StaffsProps> = ({ staffs, user }) => {
   const { teamId } = useParams()
+  const { userRole } = useSelector(settingsSelector)
+  const { canCreateStaff } = usePermission(userRole)
   const { searchPlayerValue, handleSearchInput } = usePlayers()
   const filteredStaffs = staffs.filter((item) => item.id !== user.id && item.teamId === teamId)
 
@@ -67,10 +72,10 @@ export const Staffs: FC<StaffsProps> = ({ staffs, user }) => {
               onChange={handleSearchInput}
             />
           </div>
-          <Link to={`/team/${teamId}/staffs/add-staff`} className='Staffs__header-link'>
-            <FaPlus />
+          {canCreateStaff && <Link to={`/team/${teamId}/staffs/add-staff`} className='Staffs__header-link'>
+            <FaPlus/>
             <span className='Staffs__header-link--text'>Add New Staff</span>
-          </Link>
+          </Link>}
         </div>
         <div className='Staffs__content'>
           <Table columns={staffColumns} data={allStaffs} />

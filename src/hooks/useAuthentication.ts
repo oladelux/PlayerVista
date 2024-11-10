@@ -7,13 +7,13 @@ import { routes } from '../constants/routes'
 import { UserHook } from './useUser'
 import { addCookie, removeCookie } from '../services/cookies'
 import { useAppDispatch } from '../store/types.ts'
-import { clearSettingsState } from '../store/slices/SettingsSlice.ts'
+import { clearSettingsState, setActiveTeamId, setUserRole } from '../store/slices/SettingsSlice.ts'
 import { clearTeamState } from '../store/slices/TeamSlice.ts'
 import { clearPlayerState, getPlayersByTeamIdThunk } from '../store/slices/PlayersSlice.ts'
 import { clearEventState, getEventsByTeamThunk } from '../store/slices/EventsSlice.ts'
 import { clearLocalStorage, setCurrentTeam } from '../utils/localStorage.ts'
 import { clearStaffState, getStaffsThunk } from '../store/slices/StaffSlice.ts'
-import { clearReporterState, getReportersThunk } from '../store/slices/ReporterSlice.ts'
+import { clearReporterState } from '../store/slices/ReporterSlice.ts'
 
 export type AuthenticationHook = ReturnType<typeof useAuthentication>
 
@@ -61,10 +61,12 @@ export function useAuthentication (
           navigate(routes.team)
         } else {
           setCurrentTeam(userData.teamId)
+          dispatch(setActiveTeamId({ teamId: userData.teamId }))
+          dispatch(setUserRole({ role: userData.role }))
           dispatch(getPlayersByTeamIdThunk({ teamId: userData.teamId }))
           dispatch(getEventsByTeamThunk({ teamId: userData.teamId }))
           dispatch(getStaffsThunk({ groupId: userData.groupId }))
-          dispatch(getReportersThunk({ teamId: userData.teamId }))
+          // dispatch(getReportersThunk({ teamId: userData.teamId }))
           navigate(`/team/${userData.teamId}`)
         }
       })

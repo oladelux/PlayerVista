@@ -12,6 +12,9 @@ import { EventFormModalPortal } from '../EventFormModal/EventFormModal.tsx'
 import { SelectedEventModal } from '../SelectedEventModal/SelectedEventModal.tsx'
 
 import './EventCalender.scss'
+import { useSelector } from 'react-redux'
+import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
+import { usePermission } from '@/hooks/usePermission.ts'
 
 type NewEvent = {
   start: Date
@@ -29,6 +32,8 @@ type EventCalenderProps = {
 export const EventCalender:FC<EventCalenderProps> = props => {
   const navigate = useNavigate()
   const { teamId } = useParams()
+  const { userRole } = useSelector(settingsSelector)
+  const { canCreateEvent } = usePermission(userRole)
   const [isEventFormModal, setIsEventFormModal] = useState(false)
   const [isSelectedEventModal, setIsSelectedEventModal] = useState(false)
   const [myEvents, setEvents] = useState<CalenderEvents[]>([])
@@ -44,10 +49,12 @@ export const EventCalender:FC<EventCalenderProps> = props => {
   const closeSelectedEventModal = () => setIsSelectedEventModal(false)
 
   const handleCalenderSlot = useCallback(({ start, end }: NewEvent) => {
-    setEventStartDate(start)
-    setEventEndDate(end)
-    openEventFormModal()
-  }, [])
+    if(canCreateEvent){
+      setEventStartDate(start)
+      setEventEndDate(end)
+      openEventFormModal()
+    }
+  }, [canCreateEvent])
 
   const handleSelectSlot = useCallback(
     ({ id, start }: { id: string, start: Date } ) => {
@@ -57,9 +64,10 @@ export const EventCalender:FC<EventCalenderProps> = props => {
         navigate(`/team/${teamId}/events/${id}`)
       } else {
         openSelectedEventModal()
+        console.log('in')
       }
     },
-    [],
+    [navigate, teamId],
   )
 
   useEffect(() => {
@@ -101,7 +109,6 @@ export const EventCalender:FC<EventCalenderProps> = props => {
         <SelectedEventModal
           onClose={closeSelectedEventModal}
           id={selectedEvent}
-          user={props.user}
         />
       }
     </>

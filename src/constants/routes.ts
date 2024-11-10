@@ -25,7 +25,8 @@ export enum Routes {
   LOGOUT = '/logout',
   SIGN_UP = '/onboard',
   FORGOT_PASSWORD = '/forgot-password',
-  CHANGE_PASSWORD = '/change-password'
+  CHANGE_PASSWORD = '/change-password',
+  SETTINGS = '/settings'
 }
 
 export const routes = {
@@ -41,6 +42,7 @@ export const routes = {
   dashboard: Routes.DASHBOARD,
   players: Routes.PLAYERS,
   statistics: Routes.STATISTICS,
+  settings: Routes.SETTINGS,
   addPlayer: Routes.ADD_PLAYER,
   reporters: Routes.REPORTERS,
   addReporter: Routes.ADD_REPORTERS,

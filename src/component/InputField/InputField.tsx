@@ -1,4 +1,4 @@
-import React, {ChangeEvent, FC} from 'react'
+import React, { ChangeEvent, FC } from 'react'
 import cl from 'classnames'
 
 import './InputField.scss'
@@ -34,6 +34,10 @@ type InputFieldProps = {
    * @default set to text
    */
   type?: 'text' | 'number' | 'password'
+  /**
+   * If the input field is read-only
+   */
+  readOnly?: boolean
 }
 
 export const InputField: FC<InputFieldProps> = props => {
@@ -46,6 +50,7 @@ export const InputField: FC<InputFieldProps> = props => {
         name={props.name}
         placeholder={props.placeholder}
         onChange={props.onChange}
+        readOnly={props.readOnly}
       />
       {props.error && <span className='input-field__error'>{props.error}</span>}
     </div>

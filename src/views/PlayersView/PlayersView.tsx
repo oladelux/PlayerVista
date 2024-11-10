@@ -11,6 +11,9 @@ import { DashboardLayout } from '../../component/DashboardLayout/DashboardLayout
 import { Table } from '../../component/Table/Table'
 
 import './PlayersView.scss'
+import { useSelector } from 'react-redux'
+import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
+import { usePermission } from '@/hooks/usePermission.ts'
 
 const playerColumns = [
   { key: 'name', title: 'Name' },
@@ -40,6 +43,8 @@ const predefinedOrder = [
 export const PlayersView:FC<PlayersViewProps> = ({ players }) => {
   const { teamId } = useParams()
   const { searchPlayerValue, handleSearchInput } = usePlayers()
+  const { userRole } = useSelector(settingsSelector)
+  const { canCreatePlayer } = usePermission(userRole)
 
   const filteredPlayers = useMemo(() => {
     return players.filter(player => {
@@ -85,10 +90,10 @@ export const PlayersView:FC<PlayersViewProps> = ({ players }) => {
               onChange={handleSearchInput}
             />
           </div>
-          <Link to={`/team/${teamId}/players/add-player`} className='Players-view__header-link'>
-            <FaPlus />
+          {canCreatePlayer && <Link to={`/team/${teamId}/players/add-player`} className='Players-view__header-link'>
+            <FaPlus/>
             <span className='Players-view__header-link--text'>Add Player</span>
-          </Link>
+          </Link>}
         </div>
         <div className='Players-view__content'>
           <Table columns={playerColumns} data={sortedTeamPlayers} />

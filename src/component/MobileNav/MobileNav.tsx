@@ -1,5 +1,5 @@
 import React, { FC } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 import DashboardIcon from '../../assets/images/icons/dashboard.svg'
 import TeamsIcon from '../../assets/images/icons/teams.svg'
@@ -9,17 +9,19 @@ import PlayerIcon from '../../assets/images/icons/player.svg'
 import StatisticsIcon from '../../assets/images/icons/statistics-icon.svg'
 
 import './MobileNav.scss'
+import { useSelector } from 'react-redux'
+import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
 
 export const MobileNav: FC = () => {
-  const { teamId } = useParams()
+  const { activeTeamId } = useSelector(settingsSelector)
 
   const sideBarTabs = [
-    { tabName: 'Dashboard', icon: DashboardIcon, link: `/team/${teamId}` },
-    { tabName: 'Team', icon: TeamsIcon, link: `/team/${teamId}/manage-teams` },
-    { tabName: 'Staff', icon: UserManagementIcon, link: `/team/${teamId}/staffs` },
-    { tabName: 'Players', icon: PlayerIcon, link: `/team/${teamId}/players` },
-    { tabName: 'Event', icon: EventIcon, link: `/team/${teamId}/events` },
-    { tabName: 'Statistics', icon: StatisticsIcon, link: `/team/${teamId}/statistics` },
+    { tabName: 'Dashboard', icon: DashboardIcon, link: `/team/${activeTeamId}` },
+    { tabName: 'Team', icon: TeamsIcon, link: `/team/${activeTeamId}/manage-teams` },
+    { tabName: 'Staff', icon: UserManagementIcon, link: `/team/${activeTeamId}/staffs` },
+    { tabName: 'Players', icon: PlayerIcon, link: `/team/${activeTeamId}/players` },
+    { tabName: 'Event', icon: EventIcon, link: `/team/${activeTeamId}/events` },
+    { tabName: 'Statistics', icon: StatisticsIcon, link: `/team/${activeTeamId}/statistics` },
   ]
 
   return (

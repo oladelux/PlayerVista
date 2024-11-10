@@ -25,11 +25,18 @@ const initialState: InitialStaffState = {
  * Create a new staff profile
  */
 export const createStaffThunk = createAsyncThunk<
-  Staff,
+  void,
   { data: StaffData }
 >('staff/add-staff', async ({ data }, { rejectWithValue }) => {
   try {
-    return await createStaff(data)
+    const response = await createStaff(data)
+    // Explicitly check if the response is successful (no payload expected)
+    if (response.status === 204) {
+      return // Resolves the thunk as fulfilled with no payload
+    } else {
+      // Handle unexpected successful responses here if needed
+      return rejectWithValue('Unexpected response status')
+    }
   } catch (e) {
     if (e instanceof ClientError) {
       return rejectWithValue(e.message)
@@ -71,11 +78,8 @@ export const staffSlice = createSlice({
       .addCase(createStaffThunk.pending, state => {
         state.loadingCreatingStaff = 'pending'
       })
-      .addCase(createStaffThunk.fulfilled, (state, action) => {
+      .addCase(createStaffThunk.fulfilled, state => {
         state.loadingCreatingStaff = 'succeeded'
-        if(action.payload) {
-          state.staffs.push(action.payload)
-        }
       })
       .addCase(createStaffThunk.rejected, (state, action) => {
         if (

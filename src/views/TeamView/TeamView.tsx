@@ -9,12 +9,13 @@ import { getStaffsThunk } from '@/store/slices/StaffSlice.ts'
 import { getEventsByTeamThunk } from '@/store/slices/EventsSlice.ts'
 import { setCurrentTeam } from '@/utils/localStorage.ts'
 import { getTeamThunk, teamSelector } from '@/store/slices/TeamSlice.ts'
-import { getReportersThunk } from '@/store/slices/ReporterSlice.ts'
 import { AuthenticatedUserData, Player, TeamResult } from '@/api'
+import { setActiveTeamId, settingsSelector } from '@/store/slices/SettingsSlice.ts'
 
 import { DashboardHeader } from '../../component/DashboardLayout/DashboardLayout'
 
 import './TeamView.scss'
+import { usePermission } from '@/hooks/usePermission.ts'
 
 type TeamViewProps = {
   teams: TeamResult[]
@@ -22,10 +23,13 @@ type TeamViewProps = {
 }
 
 const NoTeamView: FC = () => {
+
+  const { userRole } = useSelector(settingsSelector)
+  const { canCreateTeam } = usePermission(userRole)
   return (
     <div className='No-team-view'>
       <div className='No-team-view__title'>You have no team created</div>
-      <Link to={routes.createTeam} className='No-team-view__link'>Create team</Link>
+      {canCreateTeam && <Link to={routes.createTeam} className='No-team-view__link'>Create team</Link>}
     </div>
   )
 }
@@ -40,11 +44,12 @@ export const TeamView: FC<TeamViewProps> = props => {
   const setActiveTeam = (teamId: string) => {
     navigate(`/team/${teamId}`)
     setCurrentTeam(teamId)
+    dispatch(setActiveTeamId({ teamId }))
     dispatch(getTeamThunk({ id: teamId }))
     dispatch(getPlayersByTeamIdThunk({ teamId }))
     dispatch(getEventsByTeamThunk({ teamId }))
     dispatch(getStaffsThunk({ groupId: props.user.groupId }))
-    dispatch(getReportersThunk({ teamId }))
+    // dispatch(getReportersThunk({ teamId }))
   }
 
   useEffect(() => {

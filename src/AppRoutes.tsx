@@ -34,6 +34,7 @@ import { ReportersView } from './views/ReportersView/ReportersView.tsx'
 import { AddReporter } from './views/ReportersView/AddReporter/AddReporter.tsx'
 import { StatisticsView } from './views/StatisticsView/StatisticsView.tsx'
 import { PlayerEventStats } from '@/views/SingleEventView/PlayerEventStats/PlayerEventStats.tsx'
+import { SettingsView } from '@/views/SettingsView/SettingsView.tsx'
 
 export const AppRoutes: FC = () => {
   const controller = useAppController()
@@ -122,6 +123,10 @@ export const AppRoutes: FC = () => {
         <Route
           path={routes.statistics}
           element={<StatisticsView teamEvent={events.getTeamEvent} />}
+        />
+        <Route
+          path={routes.settings}
+          element={<SettingsView user={user.data} logger={logger} />}
         />
         <Route path={routes.singlePlayer} element={<SinglePlayerView />} />
         <Route

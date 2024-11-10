@@ -6,9 +6,11 @@ import { eventsReducer } from './slices/EventsSlice.ts'
 import { staffReducer } from './slices/StaffSlice.ts'
 import { reporterReducer } from './slices/ReporterSlice.ts'
 import { playerPerformanceReducer } from './slices/PlayerPerformanceSlice.ts'
+import { userReducer } from '@/store/slices/UserSlice.ts'
 
 export const rootReducer = combineReducers({
   players: playersReducer,
+  user: userReducer,
   settings: settingsReducer,
   teams: teamReducer,
   events: eventsReducer,

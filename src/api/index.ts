@@ -95,6 +95,7 @@ export type RegistrationDetails = {
   email: string
   password: string
   role: string
+  oldPassword?: string
 }
 
 export type UserRegistration = {
@@ -133,6 +134,7 @@ export type AuthenticatedUserData = {
   groupId: string
   teamId: string
   isEmailVerified: boolean
+  password: string
   createdAt: string
   updatedAt: string
 }
@@ -223,6 +225,14 @@ type StaffApiResponse = {
 
 export type EventDataResponse = BaseApiResponse & EventsApiResponse
 export type StaffDataResponse = BaseApiResponse & StaffApiResponse
+export type RolesResponse = BaseApiResponse & { data: Roles[] }
+
+export type RoleFormData = {
+  name: string
+  permissions: string[]
+  groupId: string
+  createdByUserId: string
+}
 
 export type TeamFormData = {
   userId: string
@@ -326,14 +336,28 @@ export type Fixtures = {
   awayLogo: string
 }
 
+export type UpdateUserData = {
+  firstName: string
+  lastName: string
+  email: string
+  role: string
+  groupId: string
+  teamId: string
+}
+
 export async function register(data: RegistrationDetails): Promise<RegistrationResponse> {
   const res = await apiRequest('/v1/auth/register', 'POST', data)
   return await res.json()
 }
 
-export async function createStaff(data: StaffData): Promise<Staff> {
-  const res = await apiRequest('/auth/staff/register', 'POST', data)
+export async function updateUser(
+  data: Partial<RegistrationDetails>): Promise<AuthenticatedUserData> {
+  const res = await apiRequest('/auth/me', 'PATCH', data)
   return await res.json()
+}
+
+export async function createStaff(data: StaffData): Promise<Response> {
+  return await apiRequest('/auth/staff/register', 'POST', data)
 }
 
 export async function getStaffs(groupId: string): Promise<StaffDataResponse> {
@@ -396,8 +420,46 @@ type UserDetailsResponse = {
   role: string
 }
 
+export type Roles = {
+  id: string
+  groupId: string
+  createdByUserId: string
+  permissions: PermissionsType
+  name: string
+}
+
+export type PermissionsType = [
+  'create_roles',
+  'manage_roles',
+  'create_team',
+  'manage_teams',
+  'create_players',
+  'manage_players',
+  'create_staffs',
+  'manage_staffs',
+  'create_event',
+  'manage_events',
+]
+
 export async function getUserDetails(id: string): Promise<UserDetailsResponse> {
   const res = await apiRequest(`/users/${id}`, 'GET')
+  return await res.json()
+}
+
+export async function getRolesAndPermissions(groupId: string): Promise<RolesResponse> {
+  const res = await apiRequest(`/roles/group/${groupId}`, 'GET')
+  return await res.json()
+}
+
+export async function updateRolePermissions(
+  roleId: string, updatedPermissions: string[]): Promise<Response> {
+  const res = await apiRequest(`/roles/${roleId}/permissions`, 'PATCH', { updatedPermissions,
+  })
+  return await res.json()
+}
+
+export async function createRole(data: RoleFormData): Promise<Response> {
+  const res = await apiRequest('/roles', 'POST', data)
   return await res.json()
 }
 

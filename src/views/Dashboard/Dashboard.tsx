@@ -4,14 +4,13 @@ import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined'
 import SendIcon from '@mui/icons-material/Send'
 import { Snackbar } from '@mui/material'
 
-import { AuthenticatedUserData, Fixtures, LogType, TeamResult } from '../../api'
+import { AuthenticatedUserData, LogType, TeamResult } from '../../api'
 import { AuthenticationHook } from '../../hooks/useAuthentication.ts'
 
 import { DashboardLayout } from '../../component/DashboardLayout/DashboardLayout'
 import { Card } from '../../component/Card/Card'
 import { UpcomingMatch } from '../../component/UpcomingMatch/UpcomingMatch'
 import { StatsCard } from '../../component/StatsCard/StatsCard'
-import { PlayerMetrics } from '../../component/PlayerMetrics/PlayerMetrics'
 import { Update } from '../../component/Update/Update'
 
 import PointIcon from '../../assets/images/icons/point.png'

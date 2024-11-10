@@ -9,7 +9,6 @@ import { TeamResult } from '@/api'
 import { setCurrentTeam } from '@/utils/localStorage.ts'
 import { getEventsByTeamThunk } from '@/store/slices/EventsSlice.ts'
 import { getStaffsThunk } from '@/store/slices/StaffSlice.ts'
-import { getReportersThunk } from '@/store/slices/ReporterSlice.ts'
 import { teamSelector } from '@/store/slices/TeamSlice.ts'
 import { AppDispatch } from '@/store/types.ts'
 
@@ -22,6 +21,8 @@ import { useMediaQuery } from '@mui/material'
 import { MobileNav } from '@/component/MobileNav/MobileNav.tsx'
 import { getPlayersByTeamIdThunk } from '@/store/slices/PlayersSlice.ts'
 import { useUser } from '@/hooks/useUser.ts'
+import { setActiveTeamId, settingsSelector } from '@/store/slices/SettingsSlice.ts'
+import { usePermission } from '@/hooks/usePermission.ts'
 
 type DashboardHeaderProps = {
   teams: TeamResult[]
@@ -38,10 +39,11 @@ export const DashboardHeader: FC<DashboardHeaderProps> = ({ teams }) => {
     const id = e.target.value
     navigate(`/team/${id}`)
     setCurrentTeam(id)
+    dispatch((setActiveTeamId({ teamId: id })))
     dispatch(getPlayersByTeamIdThunk({ teamId: id }))
     dispatch(getEventsByTeamThunk({ teamId: id }))
     user.data && dispatch(getStaffsThunk({ groupId: user.data.groupId }))
-    dispatch(getReportersThunk({ teamId: id }))
+    // dispatch(getReportersThunk({ teamId: id }))
   }
 
   return (
@@ -51,20 +53,21 @@ export const DashboardHeader: FC<DashboardHeaderProps> = ({ teams }) => {
       </div>
       <div className='Dashboard-Layout__header-nav'>
         {teamId && <form className='Dashboard-Layout__header-nav-form'>
-          <select name='team' className='Dashboard-Layout__header-nav-form--select' onChange={handleTeamChange}>
-            {activeTeamName && (
-              <option value={teamId}>{activeTeamName}</option>
-            )}
-            {teams
-              ? teams.map((team) => (
-                team.id !== teamId && (
-                  <option key={team.id} value={team.id}>
-                    {team.teamName}
-                  </option>
-                )
-              ))
-              : <option>Select team</option>}
-          </select>
+          {teams.length > 1 &&
+            <select name='team' className='Dashboard-Layout__header-nav-form--select' onChange={handleTeamChange}>
+              {activeTeamName && (
+                <option value={teamId}>{activeTeamName}</option>
+              )}
+              {teams
+                ? teams.map((team) => (
+                  team.id !== teamId && (
+                    <option key={team.id} value={team.id}>
+                      {team.teamName}
+                    </option>
+                  )
+                ))
+                : <option>Select team</option>}
+            </select>}
         </form>}
         <div className='Dashboard-Layout__header-nav-profile'>
           <Person2Icon/>
@@ -90,7 +93,7 @@ export const DashboardLayout: FC<PropsWithChildren> = props => {
       <div className='Dashboard-Layout__wrapper'>
         <div className='Dashboard-Layout__wrapper-content'>
           {!isMobile && <div className='Dashboard-Layout__wrapper-content--sidebar'>
-            <Sidebar controller={controller}/>
+            <Sidebar controller={controller} />
           </div>}
           {isMobile && <MobileNav/>}
           <div className='Dashboard-Layout__wrapper-content--current-body'>

@@ -10,6 +10,9 @@ import { DashboardLayout } from '../../component/DashboardLayout/DashboardLayout
 import { Table } from '../../component/Table/Table'
 
 import './ManageTeam.scss'
+import { useSelector } from 'react-redux'
+import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
+import { usePermission } from '@/hooks/usePermission.ts'
 
 type ManageTeamProps = {
   teams: TeamResult[]
@@ -34,6 +37,8 @@ const columns = [
 ]
 
 export const ManageTeam:FC<ManageTeamProps> = ({ teams, players }) => {
+  const { userRole } = useSelector(settingsSelector)
+  const { canCreateTeam } = usePermission(userRole)
   const { teamId } = useParams()
   const [searchQuery, setSearchQuery] = useState('')
   const data = teams.map(team => ({
@@ -61,10 +66,10 @@ export const ManageTeam:FC<ManageTeamProps> = ({ teams, players }) => {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          <Link to={`/team/${teamId}/team/create-team`} className='Manage-teams__header-link'>
-            <FaPlus />
+          {canCreateTeam && <Link to={`/team/${teamId}/team/create-team`} className='Manage-teams__header-link'>
+            <FaPlus/>
             <span className='Manage-teams__header-link--text'>Add Team</span>
-          </Link>
+          </Link>}
         </div>
         <div className='Manage-teams__content'>
           <Table columns={columns} data={data} />

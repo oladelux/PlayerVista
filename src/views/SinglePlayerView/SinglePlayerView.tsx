@@ -15,9 +15,13 @@ import { Button } from '../../component/Button/Button.tsx'
 import { SelectPlayerPosition } from '../../component/SelectPlayerPosition/SelectPlayerPosition.tsx'
 
 import './SinglePlayerView.scss'
+import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
+import { usePermission } from '@/hooks/usePermission.ts'
 
 export const SinglePlayerView: FC = () => {
   const dispatch = useAppDispatch()
+  const { userRole } = useSelector(settingsSelector)
+  const { canManagePlayer } = usePermission(userRole)
   const { playerId, teamId } = useParams()
   const { teams } = useSelector(teamSelector)
   const { players, loadingUpdatingPlayer } = useSelector(playersSelector)
@@ -140,39 +144,39 @@ export const SinglePlayerView: FC = () => {
             <div className='Single-player-view__sections-bio-form'>
               <div className='Single-player-view__sections-bio-form-input'>
                 <div className='Single-player-view__sections-bio-form-input--label'>First Name</div>
-                <InputField value={updateFormData.firstName} name='firstName' onChange={handleInputChange} />
+                <InputField value={updateFormData.firstName} name='firstName' onChange={handleInputChange} readOnly={!canManagePlayer} />
               </div>
               <div className='Single-player-view__sections-bio-form-input'>
                 <div className='Single-player-view__sections-bio-form-input--label'>Last Name</div>
-                <InputField value={updateFormData.lastName} name='lastName' onChange={handleInputChange} />
+                <InputField value={updateFormData.lastName} name='lastName' onChange={handleInputChange} readOnly={!canManagePlayer} />
               </div>
               <div className='Single-player-view__sections-bio-form-input'>
                 <div className='Single-player-view__sections-bio-form-input--label'>Email</div>
-                <InputField value={updateFormData.email} name='email' onChange={handleInputChange} />
+                <InputField value={updateFormData.email} name='email' onChange={handleInputChange} readOnly={!canManagePlayer} />
               </div>
               <div className='Single-player-view__sections-bio-form-input'>
                 <div className='Single-player-view__sections-bio-form-input--label'>D.O.B</div>
                 <DatePicker className='Single-player-view__sections-bio-form-input--label-datepicker'
                   name='birthDate'
                   value={dayjs(updateFormData.birthDate)}
-                  onChange={(newValue) => setDateValue(newValue)}
+                  onChange={(newValue) => setDateValue(newValue)} readOnly={!canManagePlayer}
                 />
               </div>
               <div className='Single-player-view__sections-bio-form-input'>
                 <div className='Single-player-view__sections-bio-form-input--label'>Phone Number</div>
-                <InputField value={updateFormData.phoneNumber} name='phoneNumber' onChange={handleInputChange} />
+                <InputField value={updateFormData.phoneNumber} name='phoneNumber' onChange={handleInputChange} readOnly={!canManagePlayer} />
               </div>
               <div className='Single-player-view__sections-bio-form-input'>
                 <div className='Single-player-view__sections-bio-form-input--label'>Street</div>
-                <InputField value={updateFormData.street} name='street' onChange={handleInputChange} />
+                <InputField value={updateFormData.street} name='street' onChange={handleInputChange} readOnly={!canManagePlayer} />
               </div>
               <div className='Single-player-view__sections-bio-form-input'>
                 <div className='Single-player-view__sections-bio-form-input--label'>Postcode</div>
-                <InputField value={updateFormData.postCode} name='postCode' onChange={handleInputChange} />
+                <InputField value={updateFormData.postCode} name='postCode' onChange={handleInputChange} readOnly={!canManagePlayer} />
               </div>
               <div className='Single-player-view__sections-bio-form-input'>
                 <div className='Single-player-view__sections-bio-form-input--label'>Country</div>
-                <InputField value={updateFormData.country} name='country' onChange={handleInputChange} />
+                <InputField value={updateFormData.country} name='country' onChange={handleInputChange} readOnly={!canManagePlayer} />
               </div>
             </div>
           </div>
@@ -181,27 +185,27 @@ export const SinglePlayerView: FC = () => {
             <div className='Single-player-view__sections-bio-form'>
               <div className='Single-player-view__sections-bio-form-input'>
                 <div className='Single-player-view__sections-bio-form-input--label'>First Name</div>
-                <InputField value={updateFormData.contactPersonFirstName} name='contactPersonFirstName' onChange={handleInputChange} />
+                <InputField value={updateFormData.contactPersonFirstName} name='contactPersonFirstName' onChange={handleInputChange} readOnly={!canManagePlayer} />
               </div>
               <div className='Single-player-view__sections-bio-form-input'>
                 <div className='Single-player-view__sections-bio-form-input--label'>Last Name</div>
-                <InputField value={updateFormData.contactPersonLastName} name='contactPersonLastName' onChange={handleInputChange} />
+                <InputField value={updateFormData.contactPersonLastName} name='contactPersonLastName' onChange={handleInputChange} readOnly={!canManagePlayer} />
               </div>
               <div className='Single-player-view__sections-bio-form-input'>
                 <div className='Single-player-view__sections-bio-form-input--label'>Phone Number</div>
-                <InputField value={updateFormData.contactPersonPhoneNumber} name='contactPersonPhoneNumber' onChange={handleInputChange} />
+                <InputField value={updateFormData.contactPersonPhoneNumber} name='contactPersonPhoneNumber' onChange={handleInputChange} readOnly={!canManagePlayer} />
               </div>
               <div className='Single-player-view__sections-bio-form-input'>
                 <div className='Single-player-view__sections-bio-form-input--label'>Street</div>
-                <InputField value={updateFormData.contactPersonStreet} name='contactPersonStreet' onChange={handleInputChange} />
+                <InputField value={updateFormData.contactPersonStreet} name='contactPersonStreet' onChange={handleInputChange} readOnly={!canManagePlayer} />
               </div>
               <div className='Single-player-view__sections-bio-form-input'>
                 <div className='Single-player-view__sections-bio-form-input--label'>Postcode</div>
-                <InputField value={updateFormData.contactPersonPostCode} name='contactPersonPostCode' onChange={handleInputChange} />
+                <InputField value={updateFormData.contactPersonPostCode} name='contactPersonPostCode' onChange={handleInputChange} readOnly={!canManagePlayer} />
               </div>
               <div className='Single-player-view__sections-bio-form-input'>
                 <div className='Single-player-view__sections-bio-form-input--label'>Country</div>
-                <InputField value={updateFormData.contactPersonCountry} name='contactPersonCountry' onChange={handleInputChange} />
+                <InputField value={updateFormData.contactPersonCountry} name='contactPersonCountry' onChange={handleInputChange} readOnly={!canManagePlayer} />
               </div>
             </div>
           </div>
@@ -214,11 +218,12 @@ export const SinglePlayerView: FC = () => {
                   className='Single-player-view__sections-bio-form-input--select'
                   name='position' value={updateFormData.position}
                   onChange={handleInputChange}
+                  disabled={!canManagePlayer}
                 />
               </div>
               <div className='Single-player-view__sections-bio-form-input'>
                 <div className='Single-player-view__sections-bio-form-input--label'>Jersey No.</div>
-                <InputField value={updateFormData.uniformNumber} name='uniformNumber' onChange={handleInputChange} />
+                <InputField value={updateFormData.uniformNumber} name='uniformNumber' onChange={handleInputChange} readOnly={!canManagePlayer} />
               </div>
               <div
                 className='Single-player-view__sections-bio-form-input, Single-player-view__sections-bio-form-input--checkbox'>
@@ -228,6 +233,7 @@ export const SinglePlayerView: FC = () => {
                   type='checkbox'
                   checked={updateFormData.teamCaptain}
                   onChange={handleCheckbox}
+                  readOnly={!canManagePlayer}
                 />
                 <label
                   htmlFor='teamCaptain'
@@ -238,7 +244,8 @@ export const SinglePlayerView: FC = () => {
             </div>
           </div>
         </div>
-        <Button onClick={updatePlayerData} disabled={isUpdatingPending}>Update</Button>
+        {canManagePlayer &&
+          <Button onClick={updatePlayerData} disabled={isUpdatingPending}>Update</Button>}
         {isUpdateSuccessful && <div className='Single-player-view__status'>Player successfully updated !!!</div>}
       </div>
     </DashboardLayout>

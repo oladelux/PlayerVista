@@ -1,6 +1,6 @@
 import React, { FC, useState } from 'react'
 import classnames from 'classnames'
-import { Link, useLocation, useParams } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { FaAngleRight, FaAngleDown } from 'react-icons/fa'
 
 import { AppController } from '@/hooks/useAppController.ts'
@@ -21,6 +21,8 @@ import StatisticsIcon from '../../assets/images/icons/statistics-icon.svg'
 import StatisticsActiveIcon from '../../assets/images/icons/statistics-active-icon.svg'
 
 import './SidebarMenu.scss'
+import { useSelector } from 'react-redux'
+import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
 
 type SidebarMenuProps = {
   menu: SideBarTabsType;
@@ -137,7 +139,7 @@ type SidebarFooterMenuProps = {
 const SidebarFooterMenu: FC<SidebarFooterMenuProps> = (props) => {
   return (
     <div className='Sidebar-footer-menu'>
-      <Link to='' className='Sidebar-footer-menu__nav'>
+      <Link to='/settings' className='Sidebar-footer-menu__nav'>
         <img
           className='Sidebar-footer-menu__nav-image'
           alt='settings-icon'
@@ -163,7 +165,7 @@ type SidebarProps = {
 
 export const Sidebar: FC<SidebarProps> = (props) => {
   const { pathname } = useLocation()
-  const { teamId } = useParams()
+  const { activeTeamId } = useSelector(settingsSelector)
 
   const sideBarTabs: SideBarTabsType[] = [
     {
@@ -171,28 +173,28 @@ export const Sidebar: FC<SidebarProps> = (props) => {
       tabType: 'DASHBOARD',
       image: DashboardIcon,
       activeImage: DashboardActiveIcon,
-      link: `/team/${teamId}`,
+      link: `/team/${activeTeamId}`,
     },
     {
       tabName: 'Team',
       tabType: 'TEAM',
       image: TeamsIcon,
       activeImage: TeamsActiveIcon,
-      link: `/team/${teamId}/manage-teams`,
+      link: `/team/${activeTeamId}/manage-teams`,
     },
     {
       tabName: 'Staff',
       tabType: 'STAFF',
       image: UserManagementIcon,
       activeImage: UserManagementActiveIcon,
-      link: `/team/${teamId}/staffs`,
+      link: `/team/${activeTeamId}/staffs`,
     },
     {
       tabName: 'Players',
       tabType: 'PLAYERS',
       image: PlayerIcon,
       activeImage: PlayerActiveIcon,
-      link: `/team/${teamId}/players`,
+      link: `/team/${activeTeamId}/players`,
     },
     /*    {
       tabName: 'Reporters',
@@ -206,14 +208,14 @@ export const Sidebar: FC<SidebarProps> = (props) => {
       tabType: 'EVENT',
       image: EventIcon,
       activeImage: EventActiveIcon,
-      link: `/team/${teamId}/events`,
+      link: `/team/${activeTeamId}/events`,
     },
     {
       tabName: 'Statistics',
       tabType: 'STATISTICS',
       image: StatisticsIcon,
       activeImage: StatisticsActiveIcon,
-      link: `/team/${teamId}/statistics`,
+      link: `/team/${activeTeamId}/statistics`,
     },
     /*{
       tabName: 'Message',

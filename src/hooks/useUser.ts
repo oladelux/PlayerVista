@@ -3,12 +3,15 @@ import * as api from '../api'
 import { useNavigate } from 'react-router-dom'
 import { routes } from '../constants/routes'
 import { isAccessToken } from '../services/helper'
+import { RegistrationDetails } from '@/api'
+import { useToast } from '@/hooks/use-toast.ts'
 
 export type UserHook = ReturnType<typeof useUser>
 
 export function useUser() {
   const [data, setData] = useState<api.AuthenticatedUserData>()
   const navigate = useNavigate()
+  const { toast } = useToast()
 
   function refreshUserData(): Promise<api.AuthenticatedUserData | undefined> {
     return api.getAuthenticatedUser()
@@ -37,6 +40,27 @@ export function useUser() {
     }
   }
 
+  async function updateUserData(
+    data: Partial<RegistrationDetails>): Promise<api.AuthenticatedUserData | undefined> {
+    return api.updateUser(data)
+      .then(user => {
+        setData(user)
+        toast({
+          variant: 'success',
+          description: 'User updated successfully!',
+        })
+        return user
+      })
+      .catch(e => {
+        console.error('Unhandled error updating user data', e)
+        toast({
+          variant: 'error',
+          description: 'Error updating user profile!',
+        })
+        return undefined
+      })
+  }
+
   async function initializeApp (): Promise<api.AuthenticatedUserData | undefined> {
     console.debug('Initially loading user data')
     if(isAccessToken()) {
@@ -57,5 +81,6 @@ export function useUser() {
      */
     initializeApp,
     getUserName,
+    updateUserData,
   }
 }

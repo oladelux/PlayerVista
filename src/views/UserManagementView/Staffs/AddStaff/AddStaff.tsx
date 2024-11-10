@@ -4,17 +4,19 @@ import { useSelector } from 'react-redux'
 import { Field } from 'formik'
 import generator from 'generate-password-ts'
 
-import { useAppDispatch } from '../../../../store/types'
-import { AuthenticatedUserData, StaffData } from '../../../../api'
-import { createStaffThunk, staffSelector } from '../../../../store/slices/StaffSlice.ts'
-import { UseUpdates } from '../../../../hooks/useUpdates.ts'
+import { useAppDispatch } from '@/store/types.ts'
+import { AuthenticatedUserData, StaffData } from '@/api'
+import { createStaffThunk, staffSelector } from '@/store/slices/StaffSlice.ts'
+import { UseUpdates } from '@/hooks/useUpdates.ts'
 
-import { DashboardLayout } from '../../../../component/DashboardLayout/DashboardLayout'
-import { Spinner } from '../../../../component/Spinner/Spinner.tsx'
+import { DashboardLayout } from '@/component/DashboardLayout/DashboardLayout.tsx'
+import { Spinner } from '@/component/Spinner/Spinner.tsx'
 import { FormikStep, FormikStepper } from '../../../TeamView/CreateTeam/Step'
-import { SuccessConfirmationPopup } from '../../../../component/SuccessConfirmation/SuccessConfirmation.tsx'
+import { SuccessConfirmationPopup } from '@/component/SuccessConfirmation/SuccessConfirmation.tsx'
 
 import './AddStaff.scss'
+import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
+import { capitalize } from '@mui/material'
 
 const password = generator.generate({
   length: 10,
@@ -48,6 +50,7 @@ const AddStaffMultiStep: FC<AddStaffProps> = ({ user, logger }) => {
   const navigate = useNavigate()
   const { teamId } = useParams()
   const { loadingCreatingStaff } = useSelector(staffSelector)
+  const { roles } = useSelector(settingsSelector)
   const [isActiveConfirmationPopup, setIsActiveConfirmationPopup] = useState(false)
 
   const isPending = loadingCreatingStaff === 'pending'
@@ -75,7 +78,6 @@ const AddStaffMultiStep: FC<AddStaffProps> = ({ user, logger }) => {
               groupId: user.groupId,
               password: password,
             }
-            console.log(data)
             dispatch(createStaffThunk({ data }))
               .unwrap()
               .then(() => {
@@ -122,10 +124,9 @@ const AddStaffMultiStep: FC<AddStaffProps> = ({ user, logger }) => {
                 name='role'
               >
                 <option>Select Staff Role</option>
-                <option value='admin'>Admin</option>
-                <option value='coach'>Coach</option>
-                <option value='scout'>Scout</option>
-                <option value='coach'>Others</option>
+                {roles.slice()
+                  .sort((a, b) => a.name.localeCompare(b.name)).map((role) => (
+                    <option key={role.id} value={role.name}>{capitalize(role.name)}</option>))}
               </Field>
             </div>
           </div>
