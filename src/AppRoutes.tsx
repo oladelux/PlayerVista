@@ -39,8 +39,7 @@ import { SettingsView } from '@/views/SettingsView/SettingsView.tsx'
 export const AppRoutes: FC = () => {
   const controller = useAppController()
 
-  const { user, players, events, logger, logs, teams, staffs, reporters } =
-    controller
+  const { user, players, events, logger, logs, teams, staffs } = controller
   const accessToken = getCookie('access-token')
 
   if (user.data === undefined && accessToken) {
@@ -110,7 +109,8 @@ export const AppRoutes: FC = () => {
         />
         <Route
           path={routes.manageTeam}
-          element={<ManageTeam teams={controller.teams} players={controller.allPlayers} />}
+          element={<ManageTeam teams={controller.teams}
+            team={controller.singleTeam} players={controller.allPlayers} />}
         />
         <Route
           path={routes.players}
@@ -146,7 +146,7 @@ export const AppRoutes: FC = () => {
           element={
             <ReportersView
               user={user.data}
-              reporters={reporters}
+              reporters={[]}
               teams={teams}
             />
           }
@@ -169,7 +169,7 @@ export const AppRoutes: FC = () => {
         <Route
           path={routes.playerEventStats}
           element={
-            <PlayerEventStats players={players} events={events} teams={teams} />
+            <PlayerEventStats events={events} teams={teams} />
           }
         />
         <Route path={routes.account} element={<MyAccount />} />

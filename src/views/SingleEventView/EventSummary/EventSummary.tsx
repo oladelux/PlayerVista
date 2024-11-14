@@ -1,7 +1,7 @@
 import { FC, useMemo, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { Player, TeamResult } from '@/api'
+import { Player, TeamResponse } from '@/api'
 import { EventsHook } from '@/hooks/useEvents.ts'
 
 import { DashboardLayout } from '@/component/DashboardLayout/DashboardLayout.tsx'
@@ -19,7 +19,7 @@ import { OtherStats } from '@/views/SingleEventView/EventSummary/stats/OtherStat
 type EventSummaryProps = {
   players: Player[]
   events: EventsHook
-  teams: TeamResult[]
+  teams: TeamResponse[]
 }
 
 export const EventSummary:FC<EventSummaryProps> = ({ players, events, teams }) => {

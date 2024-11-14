@@ -17,6 +17,7 @@ import { SelectPlayerPosition } from '../../component/SelectPlayerPosition/Selec
 import './SinglePlayerView.scss'
 import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
 import { usePermission } from '@/hooks/usePermission.ts'
+import ProfileTeamImage from '@/component/ProfileTeamImage/ProfileTeamImage.tsx'
 
 export const SinglePlayerView: FC = () => {
   const dispatch = useAppDispatch()
@@ -116,27 +117,7 @@ export const SinglePlayerView: FC = () => {
     <DashboardLayout>
       <div className='Single-player-view'>
         <div className='Single-player-view__header border-b border-border-line'>
-          <div className='Single-player-view__header-media'>
-            <img
-              alt='player-image'
-              src={imageSrc}
-              width={100}
-              className='Single-player-view__header-media-img'
-            />
-          </div>
-          <div className='Single-player-view__header-info'>
-            <div className='Single-player-view__header-info--firstname'>{firstName}</div>
-            <div className='Single-player-view__header-info--lastname'>{lastName}</div>
-            <div className='Single-player-view__header-info--team'>
-              <img
-                alt='team-image'
-                src={team && team.logo}
-                width={23}
-                className='Single-player-view__header-info--team-img'
-              />
-              <div className='Single-player-view__header-info--team-text'>{team && team.teamName}</div>
-            </div>
-          </div>
+          <ProfileTeamImage playerId={playerId} teamId={teamId} />
         </div>
         <div className='Single-player-view__sections'>
           <div className='Single-player-view__sections-bio'>

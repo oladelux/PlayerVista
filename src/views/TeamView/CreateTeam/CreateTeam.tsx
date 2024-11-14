@@ -5,7 +5,7 @@ import CenterFocusWeakIcon from '@mui/icons-material/CenterFocusWeak'
 
 import { useAppDispatch } from '@/store/types.ts'
 import { createTeamThunk, getTeamsThunk } from '@/store/slices/TeamSlice.ts'
-import { AuthenticatedUserData, TeamFormData, TeamResult, uploadImageToCloudinary } from '@/api'
+import { AuthenticatedUserData, TeamFormData, TeamResponse, uploadImageToCloudinary } from '@/api'
 import { UseUpdates } from '@/hooks/useUpdates.ts'
 import { cloudName, cloudUploadPresets } from '@/config/constants.ts'
 
@@ -18,7 +18,7 @@ import './CreateTeam.scss'
 type DashboardCreateTeamProps = {
   logger: UseUpdates
   user: AuthenticatedUserData
-  teams: TeamResult[]
+  teams: TeamResponse[]
 }
 
 export const CreateTeam: FC<DashboardCreateTeamProps> = ({ logger, user, teams }) => {

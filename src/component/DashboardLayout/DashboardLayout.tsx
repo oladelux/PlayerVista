@@ -5,7 +5,7 @@ import { FiArrowLeft } from 'react-icons/fi'
 import Person2Icon from '@mui/icons-material/Person2'
 
 import { useAppController } from '@/hooks/useAppController.ts'
-import { TeamResult } from '@/api'
+import { TeamResponse } from '@/api'
 import { setCurrentTeam } from '@/utils/localStorage.ts'
 import { getEventsByTeamThunk } from '@/store/slices/EventsSlice.ts'
 import { getStaffsThunk } from '@/store/slices/StaffSlice.ts'
@@ -21,11 +21,10 @@ import { useMediaQuery } from '@mui/material'
 import { MobileNav } from '@/component/MobileNav/MobileNav.tsx'
 import { getPlayersByTeamIdThunk } from '@/store/slices/PlayersSlice.ts'
 import { useUser } from '@/hooks/useUser.ts'
-import { setActiveTeamId, settingsSelector } from '@/store/slices/SettingsSlice.ts'
-import { usePermission } from '@/hooks/usePermission.ts'
+import { setActiveTeamId } from '@/store/slices/SettingsSlice.ts'
 
 type DashboardHeaderProps = {
-  teams: TeamResult[]
+  teams: TeamResponse[]
 }
 
 export const DashboardHeader: FC<DashboardHeaderProps> = ({ teams }) => {
@@ -39,7 +38,7 @@ export const DashboardHeader: FC<DashboardHeaderProps> = ({ teams }) => {
     const id = e.target.value
     navigate(`/team/${id}`)
     setCurrentTeam(id)
-    dispatch((setActiveTeamId({ teamId: id })))
+    dispatch(setActiveTeamId({ teamId: id }))
     dispatch(getPlayersByTeamIdThunk({ teamId: id }))
     dispatch(getEventsByTeamThunk({ teamId: id }))
     user.data && dispatch(getStaffsThunk({ groupId: user.data.groupId }))

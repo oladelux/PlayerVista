@@ -4,8 +4,8 @@ import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined'
 import SendIcon from '@mui/icons-material/Send'
 import { Snackbar } from '@mui/material'
 
-import { AuthenticatedUserData, LogType, TeamResult } from '../../api'
-import { AuthenticationHook } from '../../hooks/useAuthentication.ts'
+import { AuthenticatedUserData, LogType, TeamResponse } from '@/api'
+import { AuthenticationHook } from '@/hooks/useAuthentication.ts'
 
 import { DashboardLayout } from '../../component/DashboardLayout/DashboardLayout'
 import { Card } from '../../component/Card/Card'
@@ -18,7 +18,7 @@ import PointIcon from '../../assets/images/icons/point.png'
 import './Dashboard.scss'
 
 type DashboardProps = {
-  teams: TeamResult[]
+  teams: TeamResponse[]
   applicationLogs: LogType[]
   user: AuthenticatedUserData
   authentication: AuthenticationHook

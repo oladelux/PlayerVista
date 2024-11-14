@@ -4,14 +4,14 @@ import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, Tabl
 import { convertSecondsToGameMinute, getPlayerActions } from '@/utils/players.ts'
 import { Player, PlayerActions } from '@/api'
 import { useSelector } from 'react-redux'
-import { getPerformanceDataThunk, playerPerformanceSelector } from '@/store/slices/PlayerPerformanceSlice.ts'
+import { getPerformanceByEventThunk, playerPerformanceSelector } from '@/store/slices/PlayerPerformanceSlice.ts'
 import { Link, useParams } from 'react-router-dom'
 import { useAppDispatch } from '@/store/types.ts'
 
 interface GeneralStatsProps {
   players: Player[]
 }
-type GeneralActionType = 'pass' | 'tackles' | 'shots' | 'aerial_duels' | 'goals' | 'assists';
+type GeneralActionType = 'passes' | 'tackles' | 'shots' | 'aerialDuels' | 'goals' | 'assists';
 
 export const GeneralStats: FC<GeneralStatsProps> = ({ players }) => {
   const { eventId } = useParams()
@@ -31,7 +31,7 @@ export const GeneralStats: FC<GeneralStatsProps> = ({ players }) => {
   }
 
   const renderPlayerActions = (actions: PlayerActions | undefined) => {
-    const actionTypes: GeneralActionType[] = ['pass', 'tackles', 'shots', 'aerial_duels', 'goals', 'assists']
+    const actionTypes: GeneralActionType[] = ['passes', 'tackles', 'shots', 'aerialDuels', 'goals', 'assists']
     if (!actions) {
       return actionTypes.map((type) => {
         if(type === 'goals' || type === 'assists') {
@@ -78,7 +78,7 @@ export const GeneralStats: FC<GeneralStatsProps> = ({ players }) => {
 
   useEffect(() => {
     if(eventId) {
-      dispatch(getPerformanceDataThunk({ eventId }))
+      dispatch(getPerformanceByEventThunk({ eventId }))
     }
   }, [dispatch, eventId])
 

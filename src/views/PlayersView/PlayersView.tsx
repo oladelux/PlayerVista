@@ -14,6 +14,7 @@ import './PlayersView.scss'
 import { useSelector } from 'react-redux'
 import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
 import { usePermission } from '@/hooks/usePermission.ts'
+import { EyeIcon } from 'lucide-react'
 
 const playerColumns = [
   { key: 'name', title: 'Name' },
@@ -28,7 +29,10 @@ const playerColumns = [
   {
     key: 'action',
     title: 'Action',
-    render: (value: string) => <Link className='table-link' to={value}>View</Link>,
+    render: (value: string) => (<div className='flex gap-2 items-center'>
+      <Link className='table-link' to={value}><EyeIcon width={16} /></Link>
+      <Link className='table-link border-l border-l-border-line px-2' to={value}>View Stats</Link>
+    </div>),
   },
 ]
 

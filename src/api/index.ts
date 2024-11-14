@@ -98,6 +98,14 @@ export type RegistrationDetails = {
   oldPassword?: string
 }
 
+export type SignUpFormData = {
+  firstName: string
+  lastName: string
+  email: string
+  password: string
+  role: string
+}
+
 export type UserRegistration = {
   id: string
   role: string
@@ -157,7 +165,7 @@ export type BaseApiResponse = {
 }
 
 export type TeamApiResponse = {
-  data: TeamResult[]
+  data: TeamResponse[]
 }
 
 export type Player = {
@@ -232,6 +240,35 @@ export type RoleFormData = {
   permissions: string[]
   groupId: string
   createdByUserId: string
+}
+
+export type TeamResponse = {
+  id: string,
+  userId: string,
+  teamName: string,
+  creationYear: string,
+  teamGender: string,
+  logo: string,
+  ageGroup: string,
+  headCoach: string,
+  headCoachContact: string,
+  assistantCoach: string,
+  assistantCoachContact: string,
+  medicalPersonnel: string,
+  medicalPersonnelContact: string,
+  kitManager: string,
+  kitManagerContact: string,
+  mediaManager: string,
+  mediaManagerContact: string,
+  logisticsCoordinator: string,
+  logisticsCoordinatorContact: string,
+  stadiumName: string,
+  street: string,
+  postcode: string,
+  city: string,
+  country: string,
+  createdAt: string,
+  updatedAt: string
 }
 
 export type TeamFormData = {
@@ -345,9 +382,8 @@ export type UpdateUserData = {
   teamId: string
 }
 
-export async function register(data: RegistrationDetails): Promise<RegistrationResponse> {
-  const res = await apiRequest('/v1/auth/register', 'POST', data)
-  return await res.json()
+export async function register(data: SignUpFormData): Promise<Response> {
+  return await apiRequest('/auth/email/register', 'POST', data)
 }
 
 export async function updateUser(
@@ -391,6 +427,10 @@ export async function loginAuthentication(data: AuthenticationCredentials):
   Promise<AuthenticationResult> {
   const res = await apiRequest('/auth/email/login', 'POST', data)
   return await res.json()
+}
+
+export async function confirmEmail(data: { hash: string }): Promise<Response> {
+  return await apiRequest('/auth/email/confirm', 'POST', data)
 }
 
 export function logout() {
@@ -473,8 +513,8 @@ export async function getTeamsByUser(userId: string): Promise<TeamDataResponse> 
   return await res.json()
 }
 
-export async function getTeam(id: string): Promise<TeamFormData> {
-  const res = await apiRequest('/teams', 'GET', { id })
+export async function getTeam(id: string): Promise<TeamResponse> {
+  const res = await apiRequest(`/teams/${id}`, 'GET')
   return await res.json()
 }
 
@@ -495,6 +535,11 @@ export async function getPlayersByTeamId(teamId: string): Promise<PlayerDataResp
 
 export async function getPlayersByUserId(userId: string): Promise<PlayerDataResponse> {
   const res = await apiRequest(`/players/user/${userId}`, 'GET')
+  return await res.json()
+}
+
+export async function getPlayerById(id: string): Promise<Player> {
+  const res = await apiRequest(`/players/${id}`, 'GET')
   return await res.json()
 }
 
@@ -593,12 +638,13 @@ type HeatmapEntry = {
 
 export type PlayerActions = {
   shots: Action[]
+  touches: Action[]
   tackles: Action[]
   goals: Action[]
-  pass: Action[]
+  passes: Action[]
   assists: Action[]
   interceptions: Action[]
-  clearance: Action[]
+  clearances: Action[]
   blockedShots: Action[]
   aerialDuels: Action[]
   aerialClearance: Action[]
@@ -607,33 +653,38 @@ export type PlayerActions = {
   mistakes: Action[]
   recoveries: Action[]
   blocks: Action[]
-  yellowCards: Action[]
-  redCards: Action[]
+  yellowCard: Action[]
+  redCard: Action[]
   offside: Action[]
   cornerKick: Action[]
   freekick: Action[]
-  dribble: Action[]
+  dribbles: Action[]
   penalty: Action[]
+  crosses: Action[]
+  goalConceded: Action[]
+  penaltySaves: Action[]
+  freekickSaves: Action[]
+  OneVOneSaves: Action[]
 }
 
 export type PlayerPerformance = {
+  id: string
   eventId: string
   playerId: string
-  jerseyNumber: number
-  firstName: string
-  lastName: string
-  position: string
   minutePlayed: number
   heatmap: HeatmapEntry[]
   actions: PlayerActions
+  createdAt: Date
+  updatedAt: Date
 }
 
-export async function getPerformanceData(eventId: string): Promise<PlayerPerformance[]> {
-  const res = await apiRequest(`/v1/performance/${eventId}`, 'GET')
+export async function getPerformanceByEvent(eventId: string): Promise<PlayerPerformance[]> {
+  const res = await apiRequest(`/performance/event/${eventId}`, 'GET')
   return await res.json()
 }
 
-export async function getPerformanceDataByPlayer(eventId: string, playerId: string): Promise<PlayerPerformance> {
-  const res = await apiRequest(`/v1/performance/${eventId}/${playerId}`, 'GET')
+export async function getPerformanceDataByPlayer(
+  eventId: string, playerId: string): Promise<PlayerPerformance> {
+  const res = await apiRequest(`/performance/event/${eventId}/player/${playerId}`, 'GET')
   return await res.json()
 }

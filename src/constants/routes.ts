@@ -2,7 +2,7 @@ export enum Routes {
   HOME='/',
   LOGIN = '/login',
   DEMO_BOOKING = 'https://calendly.com/admin-playervista/demo-book',
-  EMAIL_VERIFICATION = '/verify-email/:token',
+  EMAIL_VERIFICATION = '/verify-email/:hash',
   TEAM = '/team',
   CREATE_TEAM = '/team/create-team',
   MANAGE_TEAM = '/team/:teamId/manage-teams',

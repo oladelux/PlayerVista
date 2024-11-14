@@ -1,7 +1,7 @@
 import { FC, useEffect } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
-import { AuthenticatedUserData, TeamResult } from '../../api'
+import { AuthenticatedUserData, TeamResponse } from '../../api'
 import { useCountdown } from '../../hooks/useCountdown.ts'
 import { UserHook } from '../../hooks/useUser.ts'
 
@@ -10,21 +10,21 @@ import { DashboardHeader } from '../../component/DashboardLayout/DashboardLayout
 import './EmailVerification.scss'
 
 type EmailVerificationProps = {
-  teams: TeamResult[]
+  teams: TeamResponse[]
   user: AuthenticatedUserData
   userHook: UserHook
 }
 
 export const EmailVerification: FC<EmailVerificationProps> = ({ teams, user, userHook }) => {
   const navigate = useNavigate()
-  const { token } = useParams()
-  const countdown = useCountdown(userHook.refreshUserData, token)
+  const { hash } = useParams()
+  const countdown = useCountdown(userHook.refreshUserData, hash)
 
   useEffect(() => {
     if (teams.length > 0 && user.isEmailVerified) {
       navigate(`/team/${teams[0].id}`)
     }
-  }, [teams, user.isEmailVerified])
+  }, [navigate, teams, user.isEmailVerified])
 
   return (
     <>

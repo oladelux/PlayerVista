@@ -165,7 +165,7 @@ type SidebarProps = {
 
 export const Sidebar: FC<SidebarProps> = (props) => {
   const { pathname } = useLocation()
-  const { activeTeamId } = useSelector(settingsSelector)
+  const { activeTeamId, userRole } = useSelector(settingsSelector)
 
   const sideBarTabs: SideBarTabsType[] = [
     {
@@ -183,26 +183,12 @@ export const Sidebar: FC<SidebarProps> = (props) => {
       link: `/team/${activeTeamId}/manage-teams`,
     },
     {
-      tabName: 'Staff',
-      tabType: 'STAFF',
-      image: UserManagementIcon,
-      activeImage: UserManagementActiveIcon,
-      link: `/team/${activeTeamId}/staffs`,
-    },
-    {
       tabName: 'Players',
       tabType: 'PLAYERS',
       image: PlayerIcon,
       activeImage: PlayerActiveIcon,
       link: `/team/${activeTeamId}/players`,
     },
-    /*    {
-      tabName: 'Reporters',
-      tabType: 'REPORTERS',
-      image: ReporterIcon,
-      activeImage: ReporterActiveIcon,
-      link: `/team/${teamId}/reporters`,
-    },*/
     {
       tabName: 'Event',
       tabType: 'EVENT',
@@ -223,8 +209,25 @@ export const Sidebar: FC<SidebarProps> = (props) => {
       image: MessageIcon,
       activeImage: MessageActiveIcon,
       link: `/team/${teamId}/message`,
+    },
+    {
+      tabName: 'Reporters',
+      tabType: 'REPORTERS',
+      image: ReporterIcon,
+      activeImage: ReporterActiveIcon,
+      link: `/team/${teamId}/reporters`,
     },*/
   ]
+
+  if (userRole === 'Admin' || userRole === 'admin') {
+    sideBarTabs.push({
+      tabName: 'Staff',
+      tabType: 'STAFF',
+      image: UserManagementIcon,
+      activeImage: UserManagementActiveIcon,
+      link: `/team/${activeTeamId}/staffs`,
+    })
+  }
 
   const [activeTab, setActiveTab] = useState('')
 

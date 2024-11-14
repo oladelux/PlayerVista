@@ -1,7 +1,7 @@
 import { FC, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { TeamResult, Event } from '@/api'
+import { TeamResponse, Event } from '@/api'
 import { formatDate } from '@/services/helper.ts'
 import {
   formatSingleEventDate,
@@ -17,7 +17,7 @@ import './SingleEventView.scss'
 
 type SingleEventViewProps = {
   events: EventsHook;
-  teams: TeamResult[];
+  teams: TeamResponse[];
 };
 
 const now = new Date()
@@ -91,7 +91,7 @@ export const SingleEventView: FC<SingleEventViewProps> = (props) => {
 
 type SingleTrainingProps = {
   isEvent: Event;
-  isTeam: TeamResult;
+  isTeam: TeamResponse;
   isTraining: Event[];
 };
 
@@ -156,7 +156,7 @@ const SingleTraining: FC<SingleTrainingProps> = (props) => {
 
 type SingleMatchProps = {
   isEvent: Event;
-  isTeam: TeamResult;
+  isTeam: TeamResponse;
   isMatches: Event[];
 };
 

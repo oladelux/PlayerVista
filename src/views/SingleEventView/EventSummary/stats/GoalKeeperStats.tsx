@@ -3,7 +3,7 @@ import { Player, PlayerActions } from '@/api'
 import { useParams } from 'react-router-dom'
 import { useAppDispatch } from '@/store/types.ts'
 import { useSelector } from 'react-redux'
-import { getPerformanceDataThunk, playerPerformanceSelector } from '@/store/slices/PlayerPerformanceSlice.ts'
+import { getPerformanceByEventThunk, playerPerformanceSelector } from '@/store/slices/PlayerPerformanceSlice.ts'
 import { convertSecondsToGameMinute, getPlayerActions } from '@/utils/players.ts'
 import { Slider } from '@/components/ui/slider.tsx'
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table.tsx'
@@ -13,7 +13,7 @@ interface GoalKeeperStatsProps {
 }
 
 //TODO: Add cleanSheet action type
-type GoalKeeperActionType = 'saves' | 'pass' | 'aerial_clearance' | 'goals' | 'assists';
+type GoalKeeperActionType = 'saves' | 'pass' | 'aerialClearance' | 'goals' | 'assists';
 
 export const GoalKeeperStats: FC<GoalKeeperStatsProps> = ({ players }) => {
 
@@ -32,7 +32,7 @@ export const GoalKeeperStats: FC<GoalKeeperStatsProps> = ({ players }) => {
   })
 
   const renderPlayerActions = (actions: PlayerActions | undefined) => {
-    const actionTypes: GoalKeeperActionType[] = ['saves', 'pass', 'aerial_clearance', 'goals', 'assists']
+    const actionTypes: GoalKeeperActionType[] = ['saves', 'pass', 'aerialClearance', 'goals', 'assists']
     if (!actions) {
       return actionTypes.map((type) => {
         if(type === 'goals' || type === 'assists') {
@@ -88,7 +88,7 @@ export const GoalKeeperStats: FC<GoalKeeperStatsProps> = ({ players }) => {
 
   useEffect(() => {
     if(eventId) {
-      dispatch(getPerformanceDataThunk({ eventId }))
+      dispatch(getPerformanceByEventThunk({ eventId }))
     }
   }, [dispatch, eventId])
 

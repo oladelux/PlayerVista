@@ -5,13 +5,12 @@ import {
   ClientError,
   createTeam, getTeam, getTeamsByUser,
   TeamDataResponse,
-  TeamFormData,
-  TeamResult,
+  TeamFormData, TeamResponse,
 } from '@/api'
 
 type InitialTeamState = {
-  teams: TeamResult[]
-  team: TeamFormData | null
+  teams: TeamResponse[]
+  team: TeamResponse | null
   /**
    * The loading state of creating new team
    */
@@ -59,7 +58,7 @@ export const getTeamsThunk = createAsyncThunk<
  * Gets a single team
  */
 export const getTeamThunk = createAsyncThunk<
-  undefined | TeamFormData,
+  undefined | TeamResponse,
   { id: string }
 >('teams/team', ({ id }) => {
   return getTeam(id)

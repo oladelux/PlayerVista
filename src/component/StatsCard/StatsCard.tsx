@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { TeamResult } from '@/api'
+import { TeamResponse } from '@/api'
 
 import './StatsCard.scss'
 import { usePlayers } from '@/hooks/usePlayers.ts'
@@ -85,7 +85,7 @@ const data = [
 ]
 
 type StatsCardProps = {
-  team: TeamResult | undefined
+  team: TeamResponse | undefined
 }
 
 export const StatsCard: FC<StatsCardProps> = props => {

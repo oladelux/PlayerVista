@@ -3,7 +3,10 @@ import { Player, PlayerActions } from '@/api'
 import { useParams } from 'react-router-dom'
 import { useAppDispatch } from '@/store/types.ts'
 import { useSelector } from 'react-redux'
-import { getPerformanceDataThunk, playerPerformanceSelector } from '@/store/slices/PlayerPerformanceSlice.ts'
+import {
+  getPerformanceByEventThunk,
+  playerPerformanceSelector,
+} from '@/store/slices/PlayerPerformanceSlice.ts'
 import { convertSecondsToGameMinute, getPlayerActions } from '@/utils/players.ts'
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table.tsx'
 import { Slider } from '@/components/ui/slider.tsx'
@@ -12,7 +15,7 @@ interface AttackingStatsProps {
   players: Player[]
 }
 
-type AttackingActionType = 'shots' | 'dribble' | 'corner_kick' | 'freekick' | 'offside' | 'goals' | 'assists'
+type AttackingActionType = 'shots' | 'dribbles' | 'cornerKicks' | 'freekicks' | 'offside' | 'goals' | 'assists'
 
 export const AttackingStats: FC<AttackingStatsProps> = ({ players }) => {
   const { eventId } = useParams()
@@ -23,7 +26,7 @@ export const AttackingStats: FC<AttackingStatsProps> = ({ players }) => {
   const data = getPlayerActions(players, performance)
 
   const renderPlayerActions = (actions: PlayerActions | undefined) => {
-    const actionTypes: AttackingActionType[] = ['shots', 'dribble', 'corner_kick', 'freekick', 'offside', 'goals', 'assists']
+    const actionTypes: AttackingActionType[] = ['shots', 'dribbles', 'cornerKicks', 'freekicks', 'offside', 'goals', 'assists']
     if (!actions) {
       return actionTypes.map((type) => {
         if(type === 'goals' || type === 'assists' || type === 'offside') {
@@ -79,7 +82,7 @@ export const AttackingStats: FC<AttackingStatsProps> = ({ players }) => {
 
   useEffect(() => {
     if(eventId) {
-      dispatch(getPerformanceDataThunk({ eventId }))
+      dispatch(getPerformanceByEventThunk({ eventId }))
     }
   }, [dispatch, eventId])
   return (

@@ -2,7 +2,7 @@ import React, { FC } from 'react'
 import { useSelector } from 'react-redux'
 
 import { eventsSelector } from '@/store/slices/EventsSlice.ts'
-import { Event, TeamResult } from '@/api'
+import { Event, TeamResponse } from '@/api'
 import { formatSingleEventDate, formatSingleEventTime } from '@/utils/date.ts'
 
 import ClubLogo from '../../assets/images/club.png'
@@ -28,7 +28,7 @@ const NoUpcomingMatch = () => {
 }
 
 type UpcomingMatchProps = {
-  team: TeamResult | undefined
+  team: TeamResponse | undefined
 }
 
 export const UpcomingMatch:FC<UpcomingMatchProps> = props => {

@@ -9,7 +9,7 @@ import { getStaffsThunk } from '@/store/slices/StaffSlice.ts'
 import { getEventsByTeamThunk } from '@/store/slices/EventsSlice.ts'
 import { setCurrentTeam } from '@/utils/localStorage.ts'
 import { getTeamThunk, teamSelector } from '@/store/slices/TeamSlice.ts'
-import { AuthenticatedUserData, Player, TeamResult } from '@/api'
+import { AuthenticatedUserData, Player, TeamResponse } from '@/api'
 import { setActiveTeamId, settingsSelector } from '@/store/slices/SettingsSlice.ts'
 
 import { DashboardHeader } from '../../component/DashboardLayout/DashboardLayout'
@@ -18,7 +18,7 @@ import './TeamView.scss'
 import { usePermission } from '@/hooks/usePermission.ts'
 
 type TeamViewProps = {
-  teams: TeamResult[]
+  teams: TeamResponse[]
   user: AuthenticatedUserData
 }
 
@@ -82,7 +82,7 @@ export const TeamView: FC<TeamViewProps> = props => {
 }
 
 interface TeamViewCardProps {
-  team: TeamResult
+  team: TeamResponse
   setActiveTeam: (teamId: string) => void
   players: Player[]
 }

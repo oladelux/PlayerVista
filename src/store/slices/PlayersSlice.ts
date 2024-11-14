@@ -3,13 +3,14 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { AsyncThunkLoading, RootState } from '../types'
 import {
   addPlayer,
-  ClientError,
+  ClientError, getPlayerById,
   getPlayersByTeamId, getPlayersByUserId, Player,
   PlayerDataResponse,
   PlayerFormData, updatePlayer,
 } from '@/api'
 
 type InitialPlayersState = {
+  player: Player | null
   players: Player[]
   allPlayers: Player[]
   /**
@@ -28,15 +29,18 @@ type InitialPlayersState = {
    * The loading state of updating a player
    */
   loadingUpdatingPlayer: AsyncThunkLoading
+  loadingGettingPlayerStatus: AsyncThunkLoading
 }
 
 const initialState: InitialPlayersState = {
+  player: null,
   players: [],
   allPlayers: [],
   loadingCreatingNewPlayerStatus: 'idle',
   loadingGettingTeamPlayersStatus: 'idle',
   loadingGettingTeamPlayersByUsersStatus: 'idle',
   loadingUpdatingPlayer: 'idle',
+  loadingGettingPlayerStatus: 'idle',
 }
 
 /**
@@ -74,6 +78,13 @@ export const getPlayersByUserIdThunk = createAsyncThunk<
   { userId: string }
 >('players/user', ({ userId }) => {
   return getPlayersByUserId(userId)
+})
+
+export const getPlayerByIdThunk = createAsyncThunk<
+  undefined | Player,
+  { id: string }
+>('players/player', async ({ id }) => {
+  return await getPlayerById(id)
 })
 
 /**
@@ -142,6 +153,26 @@ export const playersSlice = createSlice({
         ) {
           state.loadingUpdatingPlayer = 'failed'
           console.error('Error updating player', action.error)
+        }
+      })
+      .addCase(getPlayerByIdThunk.pending, state => {
+        state.loadingGettingPlayerStatus = 'pending'
+      })
+      .addCase(getPlayerByIdThunk.fulfilled, (state, action) => {
+        if (
+          state.loadingGettingPlayerStatus === 'pending'
+        )
+          if (action.payload) {
+            state.loadingGettingPlayerStatus = 'succeeded'
+            state.player = action.payload
+          }
+      })
+      .addCase(getPlayerByIdThunk.rejected, (state, action) => {
+        if (
+          state.loadingGettingPlayerStatus === 'pending'
+        ) {
+          state.loadingGettingPlayerStatus = 'failed'
+          console.error('Error getting player', action.error)
         }
       })
       .addCase(getPlayersByTeamIdThunk.pending, state => {

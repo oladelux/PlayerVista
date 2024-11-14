@@ -66,7 +66,7 @@ export const createRoleThunk = createAsyncThunk<
 export const getRolesByGroupIdThunk = createAsyncThunk<
   RolesResponse,
   { groupId: string }
->('settings/roles', async ({ groupId }, { rejectWithValue }) => {
+>('settings/get-roles-by-groupId', async ({ groupId }, { rejectWithValue }) => {
   try {
     return await getRolesAndPermissions(groupId)
   } catch (e) {

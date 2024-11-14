@@ -3,16 +3,16 @@ import { Player, PlayerActions } from '@/api'
 import { useParams } from 'react-router-dom'
 import { useAppDispatch } from '@/store/types.ts'
 import { useSelector } from 'react-redux'
-import { getPerformanceDataThunk, playerPerformanceSelector } from '@/store/slices/PlayerPerformanceSlice.ts'
+import { getPerformanceByEventThunk, playerPerformanceSelector } from '@/store/slices/PlayerPerformanceSlice.ts'
 import { convertSecondsToGameMinute, getPlayerActions } from '@/utils/players.ts'
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table.tsx'
-import { Slider } from '@/components/ui/slider.tsx';
+import { Slider } from '@/components/ui/slider.tsx'
 
 interface DefendingStatsProps {
   players: Player[]
 }
 
-type DefendingActionType = 'tackles' | 'aerial_duels' | 'fouls' | 'interceptions' | 'clearance' | 'recoveries' | 'blocks' | 'mistakes' | 'goals' | 'assists'
+type DefendingActionType = 'tackles' | 'aerialDuels' | 'fouls' | 'interceptions' | 'clearances' | 'recoveries' | 'blocks' | 'mistakes' | 'goals' | 'assists'
 
 export const DefendingStats: FC<DefendingStatsProps> = ({ players }) => {
 
@@ -24,10 +24,10 @@ export const DefendingStats: FC<DefendingStatsProps> = ({ players }) => {
   const data = getPlayerActions(players, performance)
 
   const renderPlayerActions = (actions: PlayerActions | undefined) => {
-    const actionTypes: DefendingActionType[] = ['tackles', 'aerial_duels', 'fouls', 'interceptions', 'clearance', 'recoveries', 'blocks', 'mistakes', 'goals', 'assists']
+    const actionTypes: DefendingActionType[] = ['tackles', 'aerialDuels', 'fouls', 'interceptions', 'clearances', 'recoveries', 'blocks', 'mistakes', 'goals', 'assists']
     if (!actions) {
       return actionTypes.map((type) => {
-        if(type === 'goals' || type === 'assists' || type === 'mistakes' || type === 'recoveries' || type === 'blocks' || type === 'clearance' || type === 'interceptions') {
+        if(type === 'goals' || type === 'assists' || type === 'mistakes' || type === 'recoveries' || type === 'blocks' || type === 'clearances' || type === 'interceptions') {
           return (
             <Fragment key={type}>
               <TableCell className='text-center border-r'>
@@ -47,7 +47,7 @@ export const DefendingStats: FC<DefendingStatsProps> = ({ players }) => {
       const filteredActions = actions[type]?.filter(action =>
         action.timestamp >= timeRange[0] && action.timestamp <= timeRange[1],
       )
-      if(type === 'goals' || type === 'assists' || type === 'mistakes' || type === 'recoveries' || type === 'blocks' || type === 'clearance' || type === 'interceptions') {
+      if(type === 'goals' || type === 'assists' || type === 'mistakes' || type === 'recoveries' || type === 'blocks' || type === 'clearances' || type === 'interceptions') {
         return (
           <Fragment key={type}>
             <TableCell className='text-center border-r'>
@@ -80,7 +80,7 @@ export const DefendingStats: FC<DefendingStatsProps> = ({ players }) => {
 
   useEffect(() => {
     if(eventId) {
-      dispatch(getPerformanceDataThunk({ eventId }))
+      dispatch(getPerformanceByEventThunk({ eventId }))
     }
   }, [dispatch, eventId])
 

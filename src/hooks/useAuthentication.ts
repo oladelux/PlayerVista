@@ -2,13 +2,18 @@ import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 
 import * as api from '../api'
-import { ApiError, AuthenticationCredentials, RegistrationDetails } from '../api'
+import { ApiError, AuthenticationCredentials, SignUpFormData } from '@/api'
 import { routes } from '../constants/routes'
 import { UserHook } from './useUser'
 import { addCookie, removeCookie } from '../services/cookies'
 import { useAppDispatch } from '../store/types.ts'
-import { clearSettingsState, setActiveTeamId, setUserRole } from '../store/slices/SettingsSlice.ts'
-import { clearTeamState } from '../store/slices/TeamSlice.ts'
+import {
+  clearSettingsState,
+  getRolesByGroupIdThunk,
+  setActiveTeamId,
+  setUserRole,
+} from '../store/slices/SettingsSlice.ts'
+import { clearTeamState, getTeamThunk } from '../store/slices/TeamSlice.ts'
 import { clearPlayerState, getPlayersByTeamIdThunk } from '../store/slices/PlayersSlice.ts'
 import { clearEventState, getEventsByTeamThunk } from '../store/slices/EventsSlice.ts'
 import { clearLocalStorage, setCurrentTeam } from '../utils/localStorage.ts'
@@ -28,22 +33,22 @@ export function useAuthentication (
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [emailVerificationSent, setEmailVerificationSent] = useState(false)
 
-  async function register(data: RegistrationDetails) {
+  async function register(data: SignUpFormData) {
     setIsSubmitting(true)
-    return api.register(data)
-      .then(async (res) => {
-        addCookie('access-token', res.tokens.access.token, res.tokens.access.expires)
-        addCookie('refresh-token', res.tokens.refresh.token, res.tokens.refresh.expires)
-        const userData = await user.refreshUserData()
-        if (!userData) {
-          throw new Error('Unexpected no user data after registration')
-        }
-        navigate(routes.team, { replace: true })
-      })
-      .catch(e => {
-        throw e
-      })
-      .finally(() => setIsSubmitting(false))
+    try {
+      const res = await api.register(data)
+      if (res.status === 204) {
+        const loginData = { email: data.email, password: data.password }
+        await loginUser(loginData)
+      } else {
+        console.log('Unexpected response from registration')
+      }
+    } catch (e) {
+      console.error('Registration failed', e)
+      throw e
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   async function loginUser(data: AuthenticationCredentials) {
@@ -63,6 +68,8 @@ export function useAuthentication (
           setCurrentTeam(userData.teamId)
           dispatch(setActiveTeamId({ teamId: userData.teamId }))
           dispatch(setUserRole({ role: userData.role }))
+          dispatch(getTeamThunk({ id: userData.teamId }))
+          dispatch(getRolesByGroupIdThunk({ groupId: userData.groupId }))
           dispatch(getPlayersByTeamIdThunk({ teamId: userData.teamId }))
           dispatch(getEventsByTeamThunk({ teamId: userData.teamId }))
           dispatch(getStaffsThunk({ groupId: userData.groupId }))

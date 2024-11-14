@@ -3,10 +3,10 @@ import ReactDOM from 'react-dom'
 import { useSelector } from 'react-redux'
 import Switch from '@mui/material/Switch'
 
-import { Event, TeamResult } from '../../api'
-import { formatSingleEventDate, formatSingleEventTime } from '../../utils/date.ts'
-import { useAppDispatch } from '../../store/types.ts'
-import { assignReporterThunk, reporterSelector, retractReporterThunk } from '../../store/slices/ReporterSlice.ts'
+import { Event, TeamResponse } from '@/api'
+import { formatSingleEventDate, formatSingleEventTime } from '@/utils/date.ts'
+import { useAppDispatch } from '@/store/types.ts'
+import { assignReporterThunk, reporterSelector, retractReporterThunk } from '@/store/slices/ReporterSlice.ts'
 
 import { Popup } from '../Popup/Popup.tsx'
 
@@ -18,7 +18,7 @@ type AssignModalProps = {
    */
   onClose: () => void
   scheduledMatches: Event[]
-  currentTeam: TeamResult | undefined
+  currentTeam: TeamResponse | undefined
   activeReporter: string
 }
 

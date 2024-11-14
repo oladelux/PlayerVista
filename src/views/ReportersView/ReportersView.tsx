@@ -4,8 +4,8 @@ import { Link, useParams } from 'react-router-dom'
 import { FaPlus } from 'react-icons/fa'
 import classnames from 'classnames'
 
-import { AuthenticatedUserData, Reporter, TeamResult } from '../../api'
-import { useEvents } from '../../hooks/useEvents.ts'
+import { AuthenticatedUserData, Reporter, TeamResponse } from '@/api'
+import { useEvents } from '@/hooks/useEvents.ts'
 
 import { Table } from '../../component/Table/Table.tsx'
 import { DashboardLayout } from '../../component/DashboardLayout/DashboardLayout.tsx'
@@ -16,7 +16,7 @@ import './ReportersView.scss'
 type ReportersViewProps = {
   user: AuthenticatedUserData
   reporters: Reporter[]
-  teams: TeamResult[]
+  teams: TeamResponse[]
 }
 
 export const ReportersView:FC<ReportersViewProps> = ({ user, reporters, teams }) => {

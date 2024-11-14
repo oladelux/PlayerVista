@@ -3,7 +3,7 @@ import { Player, PlayerActions } from '@/api'
 import { useParams } from 'react-router-dom'
 import { useAppDispatch } from '@/store/types.ts'
 import { useSelector } from 'react-redux'
-import { getPerformanceDataThunk, playerPerformanceSelector } from '@/store/slices/PlayerPerformanceSlice.ts'
+import { getPerformanceByEventThunk, playerPerformanceSelector } from '@/store/slices/PlayerPerformanceSlice.ts'
 import { convertSecondsToGameMinute, getPlayerActions } from '@/utils/players.ts'
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table.tsx'
 import { Slider } from '@/components/ui/slider.tsx'
@@ -12,7 +12,7 @@ interface OtherStatsProps {
   players: Player[]
 }
 
-type OtherActionType = 'penalty' | 'yellow_cards' | 'red_cards'
+type OtherActionType = 'penalty' | 'yellowCard' | 'redCard'
 
 export const OtherStats: FC<OtherStatsProps> = ({ players }) => {
   const { eventId } = useParams()
@@ -23,10 +23,10 @@ export const OtherStats: FC<OtherStatsProps> = ({ players }) => {
   const data = getPlayerActions(players, performance)
 
   const renderPlayerActions = (actions: PlayerActions | undefined) => {
-    const actionTypes: OtherActionType[] = ['penalty', 'yellow_cards', 'red_cards']
+    const actionTypes: OtherActionType[] = ['penalty', 'yellowCard', 'redCard']
     if (!actions) {
       return actionTypes.map((type) => {
-        if(type === 'yellow_cards' || type === 'red_cards') {
+        if(type === 'yellowCard' || type === 'redCard') {
           return (
             <Fragment key={type}>
               <TableCell className='text-center border-r'>
@@ -46,7 +46,7 @@ export const OtherStats: FC<OtherStatsProps> = ({ players }) => {
       const filteredActions = actions[type]?.filter(action =>
         action.timestamp >= timeRange[0] && action.timestamp <= timeRange[1],
       )
-      if(type === 'yellow_cards' || type === 'red_cards') {
+      if(type === 'yellowCard' || type === 'redCard') {
         return (
           <Fragment key={type}>
             <TableCell className='text-center border-r'>
@@ -79,7 +79,7 @@ export const OtherStats: FC<OtherStatsProps> = ({ players }) => {
 
   useEffect(() => {
     if(eventId) {
-      dispatch(getPerformanceDataThunk({ eventId }))
+      dispatch(getPerformanceByEventThunk({ eventId }))
     }
   }, [dispatch, eventId])
   return (

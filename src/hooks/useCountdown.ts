@@ -7,7 +7,7 @@ import { setCurrentTeam } from '../utils/localStorage.ts'
 import { getEventsByTeamThunk } from '../store/slices/EventsSlice.ts'
 import { getStaffsThunk } from '../store/slices/StaffSlice.ts'
 import { teamSelector } from '../store/slices/TeamSlice.ts'
-import { AuthenticatedUserData, verifyEmail } from '@/api'
+import { AuthenticatedUserData, confirmEmail } from '@/api'
 import { getPlayersByTeamIdThunk } from '@/store/slices/PlayersSlice.ts'
 
 const EMAIL_VERIFICATION_TIMEOUT = 5000
@@ -15,7 +15,7 @@ const EMAIL_VERIFICATION_TIMEOUT = 5000
 export type CountdownHook = ReturnType<typeof useCountdown>
 
 export const useCountdown = (
-  refreshUserData: () => Promise<AuthenticatedUserData | undefined>, token: string | undefined,
+  refreshUserData: () => Promise<AuthenticatedUserData | undefined>, hash: string | undefined,
 ) => {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
@@ -26,9 +26,9 @@ export const useCountdown = (
   const [emailVerificationFailed, setEmailVerificationFailed] = useState(false)
 
   const navigateToDashboard = () => {
-    if(token) {
+    if(hash) {
       try {
-        verifyEmail(token)
+        confirmEmail({ hash })
           .then(async () => {
             await refreshUserData()
             setEmailVerified(true)

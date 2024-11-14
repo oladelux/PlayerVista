@@ -20,9 +20,9 @@ export const Update:FC<UpdateProps> = ({ applicationLogs }) => {
     <div className='Update'>
       <div className='Update__header'>
         <div className='Update__header-title'>Recent Updates</div>
-        <div className='Update__header-nav'>
+        {/*<div className='Update__header-nav'>
           <Link className='Update__header-nav--link' to={''}>See all</Link>
-        </div>
+        </div>*/}
       </div>
       <div className='Update__notifications'>
         {sortedApplicationLogs.map(logs =>
