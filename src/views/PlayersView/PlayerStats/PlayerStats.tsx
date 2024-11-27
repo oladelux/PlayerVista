@@ -187,11 +187,11 @@ export default function PlayerStats() {
               possessionData,
               disciplinaryData,
               goalkeeperData,
-              offensiveChartData,
-              defensiveChartData,
-              possessionChartData,
-              disciplinaryChartData,
-              goalkeeperChartData,
+              offensiveChartData: JSON.stringify(offensiveChartData),
+              defensiveChartData: JSON.stringify(defensiveChartData),
+              possessionChartData: JSON.stringify(possessionChartData),
+              disciplinaryChartData: JSON.stringify(disciplinaryChartData),
+              goalkeeperChartData: JSON.stringify(goalkeeperChartData),
             }}
           />
         </div>

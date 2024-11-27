@@ -13,7 +13,7 @@ interface GoalKeeperStatsProps {
 }
 
 //TODO: Add cleanSheet action type
-type GoalKeeperActionType = 'saves' | 'pass' | 'aerialClearance' | 'goals' | 'assists';
+type GoalKeeperActionType = 'saves' | 'aerialClearance' | 'goals' | 'assists';
 
 export const GoalKeeperStats: FC<GoalKeeperStatsProps> = ({ players }) => {
 
@@ -32,7 +32,7 @@ export const GoalKeeperStats: FC<GoalKeeperStatsProps> = ({ players }) => {
   })
 
   const renderPlayerActions = (actions: PlayerActions | undefined) => {
-    const actionTypes: GoalKeeperActionType[] = ['saves', 'pass', 'aerialClearance', 'goals', 'assists']
+    const actionTypes: GoalKeeperActionType[] = ['saves', 'aerialClearance', 'goals', 'assists']
     if (!actions) {
       return actionTypes.map((type) => {
         if(type === 'goals' || type === 'assists') {

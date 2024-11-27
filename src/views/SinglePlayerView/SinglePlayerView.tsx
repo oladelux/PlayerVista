@@ -4,10 +4,9 @@ import { useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 
-import { teamSelector } from '../../store/slices/TeamSlice'
-import { playersSelector, updatePlayerThunk } from '../../store/slices/PlayersSlice'
-import { PlayerFormData } from '../../api'
-import { useAppDispatch } from '../../store/types.ts'
+import { playersSelector, updatePlayerThunk } from '@/store/slices/PlayersSlice.ts'
+import { PlayerFormData } from '@/api'
+import { useAppDispatch } from '@/store/types.ts'
 
 import { DashboardLayout } from '../../component/DashboardLayout/DashboardLayout'
 import { InputField } from '../../component/InputField/InputField'
@@ -18,13 +17,13 @@ import './SinglePlayerView.scss'
 import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
 import { usePermission } from '@/hooks/usePermission.ts'
 import ProfileTeamImage from '@/component/ProfileTeamImage/ProfileTeamImage.tsx'
+import { useUser } from '@/hooks/useUser.ts'
 
 export const SinglePlayerView: FC = () => {
   const dispatch = useAppDispatch()
   const { userRole } = useSelector(settingsSelector)
   const { canManagePlayer } = usePermission(userRole)
   const { playerId, teamId } = useParams()
-  const { teams } = useSelector(teamSelector)
   const { players, loadingUpdatingPlayer } = useSelector(playersSelector)
 
   const [isUpdateSuccessful, setIsUpdateSuccessful] = useState(false)
@@ -32,7 +31,7 @@ export const SinglePlayerView: FC = () => {
 
   const isUpdatingPending = loadingUpdatingPlayer === 'pending'
 
-  const team = teams.find(team => teamId === team.id)
+  const user = useUser()
   const player = players && teamId && players.find(l => playerId === l.id)
 
   const { firstName, lastName, teamCaptain, imageSrc, birthDate, city, contactPersonCity,
@@ -41,6 +40,8 @@ export const SinglePlayerView: FC = () => {
     position, email, id, phoneNumber } = player || {}
 
   const [updateFormData, setUpdateFormData] = useState<PlayerFormData>({
+    teamId: teamId || '',
+    userId: user.data?.id ||'',
     firstName: firstName || '',
     teamCaptain: teamCaptain || false,
     birthDate: new Date(birthDate || ''),
@@ -91,15 +92,15 @@ export const SinglePlayerView: FC = () => {
   }
 
   useEffect(() => {
-    if(teamId){
+    if(teamId && user.data){
       const player = players?.find(l => playerId === l.id)
       if (player) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { team, id, ...playerWithoutTeamAndId } = player
-        setUpdateFormData(playerWithoutTeamAndId)
+        const { id, ...playerWithoutTeamAndId } = player
+        setUpdateFormData({ ...playerWithoutTeamAndId, userId: user.data.id })
       }
     }
-  }, [players, teamId, playerId])
+  }, [players, teamId, playerId, user.data])
 
   useEffect(() => {
     if(isUpdateSuccessful) {

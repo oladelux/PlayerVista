@@ -1,3 +1,4 @@
+/*
 import { Player } from '@/api'
 import { ChangeEvent, FC, useState } from 'react'
 import { useSelector } from 'react-redux'
@@ -107,3 +108,4 @@ export const PlayerSummaryStats: FC<PlayerSummaryStatsProps> = ({
     </div>
   )
 }
+*/

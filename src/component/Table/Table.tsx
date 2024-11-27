@@ -1,17 +1,22 @@
-import { FC } from 'react'
+import { FC, ReactNode } from 'react'
 import './Table.scss'
 import { Button } from '../Button/Button'
 
 type Item = {
-  [key: string]: string | number | boolean | undefined | JSX.Element|
-    { teamId: string | undefined; playerId: string }
-}
+  [key: string]:
+    | string
+    | number
+    | boolean
+    | undefined
+    | JSX.Element
+    | { teamId: string | undefined; playerId: string };
+};
 
 export type Column = {
   key: string
   title: string
   placeholder?: string
-  render?: (value: never) => JSX.Element
+  render?: (value: string) => JSX.Element
 }
 type TableProps = {
   columns: Column[]
@@ -32,9 +37,16 @@ export const Table: FC<TableProps> = ({ columns, data }) => {
         <tbody className='Table__container-body'>
           {data.length ? data.map((row, index) => (
             <tr key={index} className='Table__container-body-row'>
-              {columns.map((column, xIndex) => <td key={column.key} className={`Table__container-body-row-cell ${xIndex > 0 && xIndex < columns.length - 2 ? 'hidden md:table-cell' : ''}`}>
-                {column.render ? column.render(row[column.key]) : row[column.key]}
-              </td>)}
+              {columns.map((column, xIndex) =>
+                <td
+                  key={column.key}
+                  className={`Table__container-body-row-cell ${xIndex > 0 && xIndex < columns.length - 2 ? 'hidden md:table-cell' : ''}`}
+                >
+                  {column.render ?
+                    column.render(row[column.key] as string) : row[column.key] as ReactNode
+                  }
+                </td>,
+              )}
             </tr>
           )): <tr><td colSpan={columns.length} className='Table__container-body--no-data'>There are no data available</td></tr>}
         </tbody>

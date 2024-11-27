@@ -15,7 +15,7 @@ interface AttackingStatsProps {
   players: Player[]
 }
 
-type AttackingActionType = 'shots' | 'dribbles' | 'cornerKicks' | 'freekicks' | 'offside' | 'goals' | 'assists'
+type AttackingActionType = 'shots' | 'dribbles' | 'cornerKick' | 'freekick' | 'offside' | 'goals' | 'assists'
 
 export const AttackingStats: FC<AttackingStatsProps> = ({ players }) => {
   const { eventId } = useParams()
@@ -26,7 +26,7 @@ export const AttackingStats: FC<AttackingStatsProps> = ({ players }) => {
   const data = getPlayerActions(players, performance)
 
   const renderPlayerActions = (actions: PlayerActions | undefined) => {
-    const actionTypes: AttackingActionType[] = ['shots', 'dribbles', 'cornerKicks', 'freekicks', 'offside', 'goals', 'assists']
+    const actionTypes: AttackingActionType[] = ['shots', 'dribbles', 'cornerKick', 'freekick', 'offside', 'goals', 'assists']
     if (!actions) {
       return actionTypes.map((type) => {
         if(type === 'goals' || type === 'assists' || type === 'offside') {

@@ -23,7 +23,7 @@ export const Statistics: FC<StatisticsProps> = ({ players, performance }) => {
     const actions = item.actions || {}
     const shotOnTarget = actions.shots?.filter(shot => shot.value === 'SUCCESSFUL')?.length || 0
     const shotOffTarget = actions.shots?.filter(shot => shot.value === 'NOT_SUCCESSFUL')?.length || 0
-    const completedPasses = actions.pass?.filter(item => item.value === 'SUCCESSFUL')?.length || 0
+    const completedPasses = actions.passes?.filter(item => item.value === 'SUCCESSFUL')?.length || 0
 
     return {
       number: item.jerseyNum,
@@ -48,7 +48,7 @@ export const Statistics: FC<StatisticsProps> = ({ players, performance }) => {
       minutePlayed: convertSecondsToGameMinute(item.minutePlayed) || 0,
       totalTackles: actions.tackles?.length || 0,
       interceptions: actions.interceptions?.length || 0,
-      clearance: actions.clearance?.length || 0,
+      clearance: actions.clearances?.length || 0,
       blockedShots: actions.blockedShots?.length || 0,
       aerialDuels: actions.aerialDuels?.length || 0,
       fouls: actions.fouls?.length || 0,
