@@ -1,7 +1,9 @@
 import { useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 
-import { eventsSelector } from '../store/slices/EventsSlice.ts'
+import { eventsSelector, getEventsByTeamThunk } from '../store/slices/EventsSlice.ts'
+import { useEffect } from 'react'
+import { useAppDispatch } from '@/store/types.ts'
 
 export type EventsHook = ReturnType<typeof useEvents>
 
@@ -11,6 +13,7 @@ export type EventsHook = ReturnType<typeof useEvents>
 export const useEvents = () => {
   const { events } = useSelector(eventsSelector)
   const { teamId } = useParams()
+  const dispatch = useAppDispatch()
   const currentTimestamp = new Date().getTime()
 
   const matches = events.filter(event => event.type === 'match')
@@ -25,6 +28,12 @@ export const useEvents = () => {
       (event) => new Date(event.startDate).getFullYear() === year,
     )
   }
+
+  useEffect(() => {
+    if(teamId) {
+      dispatch(getEventsByTeamThunk({ teamId }))
+    }
+  }, [dispatch, teamId])
 
   return {
     events,

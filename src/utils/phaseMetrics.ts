@@ -6,7 +6,11 @@ export type PhaseActions = {
   tailwindColor: string;
 }
 
-export type HalfType = 'fullTime' | 'firstHalf' | 'secondHalf'
+export enum HalfType {
+  FullTime = 'fullTime',
+  FirstHalf = 'firstHalf',
+  SecondHalf = 'secondHalf',
+}
 
 export const OffensiveMetrics: PhaseActions[] = [
   {
@@ -181,4 +185,49 @@ export const getHalfData = (performance: PlayerPerformance | null, half: HalfTyp
     })
     return acc
   }, { ...defaultActions })
+}
+
+export function aggregatePlayerActions(performanceData: PlayerPerformance[]): PlayerActions {
+  const aggregatedActions: PlayerActions = {
+    shots: [],
+    touches: [],
+    tackles: [],
+    goals: [],
+    passes: [],
+    assists: [],
+    interceptions: [],
+    clearances: [],
+    blockedShots: [],
+    aerialDuels: [],
+    aerialClearance: [],
+    fouls: [],
+    saves: [],
+    mistakes: [],
+    recoveries: [],
+    blocks: [],
+    yellowCard: [],
+    redCard: [],
+    offside: [],
+    cornerKick: [],
+    freekick: [],
+    dribbles: [],
+    penalty: [],
+    crosses: [],
+    goalConceded: [],
+    penaltySaves: [],
+    freekickSaves: [],
+    OneVOneSaves: [],
+  }
+  if (!performanceData || !performanceData.length) {
+    return aggregatedActions
+  }
+  performanceData.forEach(performance => {
+    Object.entries(performance.actions).forEach(([key, actions]) => {
+      if (aggregatedActions[key as keyof PlayerActions]) {
+        aggregatedActions[key as keyof PlayerActions].push(...actions)
+      }
+    })
+  })
+
+  return aggregatedActions
 }

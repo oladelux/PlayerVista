@@ -1,6 +1,6 @@
 import { FC, Fragment, useEffect, useState } from 'react'
 import { Player, PlayerActions } from '@/api'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { useAppDispatch } from '@/store/types.ts'
 import { useSelector } from 'react-redux'
 import { getPerformanceByEventThunk, playerPerformanceSelector } from '@/store/slices/PlayerPerformanceSlice.ts'
@@ -126,7 +126,9 @@ export const OtherStats: FC<OtherStatsProps> = ({ players }) => {
                   <TableCell className='border-r'>{matchData?.minutePlayed ?
                     convertSecondsToGameMinute(matchData.minutePlayed) : 0}
                   </TableCell>
-                  <TableCell className='border-r'>{`${player.firstName} ${player.lastName}`}</TableCell>
+                  <TableCell className='border-r'>
+                    <Link to={`${player.id}`}>{`${player.firstName} ${player.lastName}`}</Link>
+                  </TableCell>
                   {/*//TODO: Fix this*/}
                   <TableCell className='border-r'>{matchData?.minutePlayed ?
                     convertSecondsToGameMinute(matchData.minutePlayed) : 0}

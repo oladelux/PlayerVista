@@ -1,29 +1,36 @@
 import { DashboardLayout } from '@/component/DashboardLayout/DashboardLayout.tsx'
 import { useParams } from 'react-router-dom'
 import { FC, useEffect, useMemo, useState } from 'react'
-import { Player, TeamResponse } from '@/api'
+import { TeamResponse } from '@/api'
 import { EventsHook } from '@/hooks/useEvents.ts'
 import {
   clearPlayerPerformanceData,
-  getPerformanceDataByPlayerIdThunk,
+  getPerformanceByEventAndPlayerThunk,
   playerPerformanceSelector,
 } from '@/store/slices/PlayerPerformanceSlice.ts'
 import { useAppDispatch } from '@/store/types.ts'
 import { useSelector } from 'react-redux'
-import { Button } from '@/components/ui/button.tsx'
 import { usePlayer } from '@/hooks/usePlayer.ts'
 import ProfileTeamImage from '@/component/ProfileTeamImage/ProfileTeamImage.tsx'
 import { calculateAge, formatDate } from '@/services/helper.ts'
 import classnames from 'classnames'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs.tsx'
 import {
-  DefensiveMetrics, DisciplineMetric, getHalfData, GoalkeepingMetrics, HalfType,
+  DefensiveMetrics,
+  DisciplineMetric,
+  getHalfData,
+  GoalkeepingMetrics,
+  HalfType,
   OffensiveMetrics,
   PossessionMetrics,
 } from '@/utils/phaseMetrics.ts'
 import PlayerDataTab from '@/component/PlayerDataTab/PlayerDataTab.tsx'
 import { PlayerFieldPosition } from '@/views/SingleEventView/PlayerEventStats/PlayerFieldPosition.tsx'
 import ClubLogo from '../../../assets/images/club.png'
+import { PdfType } from '@/config/PdfType.ts'
+import DownloadPdfButton from '@/component/DownloadPdfButton/DownloadPdfButton.tsx'
+import { useTeam } from '@/hooks/useTeam.ts'
+import { singleMatchOffensiveData } from '@/utils/players.ts'
 
 type PlayerEventStatsProps = {
   events: EventsHook
@@ -31,11 +38,12 @@ type PlayerEventStatsProps = {
 }
 
 export const PlayerEventStats:FC<PlayerEventStatsProps> = ({ events, teams }) => {
-  const [selectedHalf, setSelectedHalf] = useState<HalfType>('fullTime')
+  const [selectedHalf, setSelectedHalf] = useState<HalfType>(HalfType.FullTime)
   const { eventId, playerId, teamId } = useParams()
   const dispatch = useAppDispatch()
   const { playerPerformance } = useSelector(playerPerformanceSelector)
   const { player } = usePlayer(playerId)
+  const { team } = useTeam(teamId)
 
   const isEvent = useMemo(() => {
     if (teamId) {
@@ -52,12 +60,14 @@ export const PlayerEventStats:FC<PlayerEventStatsProps> = ({ events, teams }) =>
   useEffect(() => {
     if (eventId && playerId) {
       dispatch(clearPlayerPerformanceData())
-      dispatch(getPerformanceDataByPlayerIdThunk({ eventId, playerId }))
+      dispatch(getPerformanceByEventAndPlayerThunk({ eventId, playerId }))
     }
   }, [dispatch, eventId, playerId])
 
   const halfData = getHalfData(playerPerformance, selectedHalf)
-  const handleHalfSelection = (half: 'fullTime' | 'firstHalf' | 'secondHalf') => setSelectedHalf(half)
+  const handleHalfSelection = (half: HalfType) => setSelectedHalf(half)
+
+  const singleMatchData = playerPerformance && singleMatchOffensiveData(playerPerformance)
 
   if(!player) return null
 
@@ -67,7 +77,22 @@ export const PlayerEventStats:FC<PlayerEventStatsProps> = ({ events, teams }) =>
         <div className='text-sub-text mb-5'>Player Stats</div>
         <div className='flex justify-between items-center pb-5 border-b border-border-line'>
           <ProfileTeamImage playerId={playerId} teamId={teamId}/>
-          <Button type='button' className='bg-dark-purple text-white hover:bg-dark-purple'>Export</Button>
+          <DownloadPdfButton
+            filename={`${player.lastName}_${player.firstName}`}
+            pdfType={PdfType.SINGLE_MATCH_PLAYER_REPORT}
+            templateName='singleMatchPlayerReport'
+            data={{
+              player,
+              team,
+              isEvent,
+              isTeam,
+              offensiveData: singleMatchData?.offensiveData,
+              defensiveData: singleMatchData?.defensiveData,
+              possessionData: singleMatchData?.possessionData,
+              disciplinaryData: singleMatchData?.disciplinaryData,
+              goalkeeperData: singleMatchData?.goalkeeperData,
+            }}
+          />
         </div>
         <div className='grid grid-cols-3 gap-10 mt-5'>
           <div className='flex items-center justify-between'>
@@ -90,8 +115,8 @@ export const PlayerEventStats:FC<PlayerEventStatsProps> = ({ events, teams }) =>
       </div>
       <div className='py-2 px-2.5 mb-5 md:py-10 md:px-12 bg-white rounded-md'>
         <div className='text-sub-text mb-5'>Match Information</div>
-        <div className='grid grid-cols-3 gap-5 items-center justify-center'>
-          <div className='col-span-2'>
+        <div className='grid md:grid-cols-3 grid-cols-1 gap-5 items-center justify-center'>
+          <div className='col-span-1 md:col-span-2'>
             <div className='grid grid-cols-3 gap-5 items-center text-center'>
               <div className='flex flex-col items-center'>
                 <img src={isTeam?.logo} width={64} alt='team-logo' />
@@ -120,7 +145,7 @@ export const PlayerEventStats:FC<PlayerEventStatsProps> = ({ events, teams }) =>
               className={classnames('p-2.5 cursor-pointer text-text-grey-2 rounded-tl-md rounded-bl-md',
                 selectedHalf === 'fullTime' && 'bg-dark-purple' +
                 ' text-white')}
-              onClick={() => handleHalfSelection('fullTime')}
+              onClick={() => handleHalfSelection(HalfType.FullTime)}
             >
               Full Time
             </div>
@@ -128,7 +153,7 @@ export const PlayerEventStats:FC<PlayerEventStatsProps> = ({ events, teams }) =>
               className={classnames('p-2.5 cursor-pointer text-text-grey-2',
                 selectedHalf === 'firstHalf' && 'bg-dark-purple' +
                 ' text-white')}
-              onClick={() => handleHalfSelection('firstHalf')}
+              onClick={() => handleHalfSelection(HalfType.FirstHalf)}
             >
               1st Half
             </div>
@@ -136,7 +161,7 @@ export const PlayerEventStats:FC<PlayerEventStatsProps> = ({ events, teams }) =>
               className={classnames('p-2.5 cursor-pointer text-text-grey-2 rounded-tr-md rounded-br-md',
                 selectedHalf === 'secondHalf' && 'bg-dark-purple' +
                 ' text-white')}
-              onClick={() => handleHalfSelection('secondHalf')}
+              onClick={() => handleHalfSelection(HalfType.SecondHalf)}
             >
               2nd Half
             </div>

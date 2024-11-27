@@ -1,0 +1,776 @@
+<html>
+<head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
+  <meta charset="utf-8">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+      body, html {
+          background: white;
+          font-family: 'Nunito', sans-serif;
+          margin: 0;
+          padding: 0;
+      }
+      .striped-div {
+          height: 30px;
+          padding: 0px 50px;
+          display: flex;
+          align-items: center;
+          font-size: 12px;
+          font-weight: bold;
+          color: #fff;
+          background:
+                  linear-gradient(145deg,
+                  #ffffff 10%,
+                  transparent 10%,
+                  transparent 30%,
+                  #ffffff 30%,
+                  #ffffff 50%,
+                  transparent 50%,
+                  transparent 70%,
+                  #ffffff 70%,
+                  #ffffff 90%,
+                  transparent 90%
+                  ),#37003C;
+          background-size: 100px 30px;
+          background-position: right center;
+          background-repeat: no-repeat;
+      }
+      .content {
+          margin: 50px auto;
+          width: 90%;
+      }
+      .player-stats-container {
+          padding: 10px;
+          margin-bottom: 20px;
+          background: white;
+          border-radius: 8px;
+      }
+
+      .header {
+          color: rgba(136, 149, 167, 1);
+          margin-bottom: 20px;
+      }
+
+      .profile-section {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding-bottom: 20px;
+          border-bottom: 1px solid rgba(230, 231, 236, 1);
+      }
+
+      .profile-team-image {
+          display: grid;
+          grid-template-columns: auto auto;
+          gap: 12px;
+      }
+
+      .player-image {
+          width: 112px;
+          height: 112px;
+          background: #e5e5e5;
+          border-radius: 50%;
+          display: grid;
+          place-items: center;
+          overflow: hidden;
+          padding: 8px;
+      }
+
+      .player-image img {
+          max-width: 100%;
+          height: auto;
+      }
+
+      .player-details {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          margin: auto 0;
+          height: 70%;
+      }
+
+      .player-first-name {
+          font-size: 20px;
+          line-height: 16px;
+          margin-bottom: 0;
+          padding-bottom: 0;
+      }
+
+      .player-last-name {
+          font-size: 29px;
+          font-weight: bold;
+          margin-bottom: 0;
+          padding-bottom: 0;
+      }
+
+      .team-info {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+      }
+
+      .team-logo {
+          width: 23px;
+      }
+
+      .team-name {
+          font-size: 12px;
+          color: rgb(170, 172, 175);
+      }
+
+      .player-stats-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 20px;
+          column-gap: 40px;
+          margin-top: 20px;
+      }
+
+      .stat-item {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 0;
+          padding-bottom: 0;
+      }
+
+      .stat-label {
+          color: rgba(136, 149, 167, 1);
+          font-size: 12px;
+      }
+
+      .stat-value {
+          font-size: 12px;
+      }
+      .page-break {
+          page-break-before: always;
+      }
+      .stat-section-header {
+          color: #37003C;
+          font-size: 16px;
+          font-weight: 600;
+          padding: 12px 0;
+          border-top: 1px solid #E1E7EC;
+      }
+      .stat-section-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 20px;
+          column-gap: 40px;
+      }
+      table {
+          width: 100%;
+          border-collapse: collapse;
+          text-align: center;
+          background: #FCFCFE;
+          margin: 40px 0;
+      }
+
+      th, td {
+          border: 1px solid #37003C;
+          padding: 8px;
+      }
+
+      th {
+          color: #AAACAF;
+          font-weight: 400;
+      }
+      td {
+          color: #240026;
+      }
+      .sub-header {
+          font-size: 0.8rem;
+          color: #240026;
+      }
+      .right-border {
+          border-right: 1px solid #E1E7EC;
+      }
+      .top-border {
+          border-top: none;
+      }
+      .left-border {
+          border-left: none;
+      }
+      .remove-right-border {
+          border-right: none;
+      }
+      .bottom-border {
+          border-bottom: none;
+      }
+  </style>
+</head>
+<body>
+  <div class="striped-div">FULL PLAYER REPORT</div>
+  <div class="content">
+    <div class="player-stats-container">
+      <div class="header">Player Information</div>
+      <div class="profile-section">
+        <div class="profile-team-image">
+          <div class="player-image">
+            <img src="{{ player.imageSrc }}" alt="{{ player.firstName }}" />
+          </div>
+          <div class="player-details">
+            <div class="player-first-name">{{ player.firstName }}</div>
+            <div class="player-last-name">{{ player.lastName }}</div>
+            <div class="team-info">
+              <img src="{{ team.logo }}" alt="team_logo" class="team-logo" />
+              <div class="team-name">{{ team.teamName }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="player-stats-grid">
+        <div class="stat-item">
+          <span class="stat-label">AGE</span>
+          <span class="stat-value">{{ calculatedAge }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">POSITION</span>
+          <span class="stat-value">{{ player.position }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">JERSEY NUMBER</span>
+          <span class="stat-value">{{ player.uniformNumber }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">TOTAL MINUTES PLAYED</span>
+          <span class="stat-value">{{ totalMinutesPlayed }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">TOTAL MATCHES PLAYED</span>
+          <span class="stat-value">{{ totalMatchesPlayed }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="page-break"></div>
+  <div class="striped-div">FULL PLAYER REPORT</div>
+  <div class="content">
+    <div class="player-stats-container">
+      <div class="header">Offensive Stats</div>
+      <div class="stat-section">
+        <div class="stat-section-header">Guide</div>
+      </div>
+      <div class="stat-section-grid">
+        <div class="stat-item">
+          <span class="stat-value">S_ONT</span>
+          <span class="stat-label">Shots On Target</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">S_OFFT</span>
+          <span class="stat-label">Shots Off Target</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">SA</span>
+          <span class="stat-label">Shot Accuracy</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">TS</span>
+          <span class="stat-label">Total Shots</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">PS</span>
+          <span class="stat-label">Penalties Scored</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">TD</span>
+          <span class="stat-label">Total Dribbles</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">SD</span>
+          <span class="stat-label">Successful Dribbles</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">DA</span>
+          <span class="stat-label">Dribbles Accuracy</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">PA</span>
+          <span class="stat-label">Pass Accuracy</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">TP</span>
+          <span class="stat-label">Total Passes</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">SP</span>
+          <span class="stat-label">Successful Passes</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">TA</span>
+          <span class="stat-label">Total Assist</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">TG</span>
+          <span class="stat-label">Total Goals</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">P_WON</span>
+          <span class="stat-label">Penalties Won</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">P_SC</span>
+          <span class="stat-label">Penalties Scored</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">P_LS</span>
+          <span class="stat-label">Penalties Lost</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">P_ACC</span>
+          <span class="stat-label">Penalties Accuracy</span>
+        </div>
+      </div>
+      <div class="table">
+        <table>
+          <thead>
+            <tr>
+              <th colspan="4" class="top-border left-border">Shots</th>
+              <th colspan="3" class="top-border">Dribbles</th>
+              <th colspan="3" class="top-border">Passes</th>
+              <th colspan="2" class="top-border">Goals</th>
+              <th colspan="1" class="top-border">Assists</th>
+              <th colspan="3" class="top-border remove-right-border">Penalties</th>
+            </tr>
+            <tr>
+              <th class="sub-header left-border right-border">TS</th>
+              <th class="sub-header right-border">S_ONT</th>
+              <th class="sub-header right-border">S_OFFT</th>
+              <th class="sub-header">SA</th>
+              <th class="sub-header right-border">TD</th>
+              <th class="sub-header right-border">SD</th>
+              <th class="sub-header">DA(%)</th>
+              <th class="sub-header right-border">TP</th>
+              <th class="sub-header right-border">SP</th>
+              <th class="sub-header">PA (%)</th>
+              <th class="sub-header right-border">TG</th>
+              <th class="sub-header">TA</th>
+              <th class="sub-header">P_SC</th>
+              <th class="sub-header right-border">P_LS</th>
+              <th class="sub-header remove-right-border">P_ACC(%)</th>
+            </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td class="left-border right-border bottom-border">{{offensiveData.totalShots}}</td>
+            <td class="right-border bottom-border">{{offensiveData.shotsOnTarget}}</td>
+            <td class="right-border bottom-border">{{offensiveData.shotsOffTarget}}</td>
+            <td class="bottom-border">{{offensiveData.shotsAccuracy}}</td>
+            <td class="right-border bottom-border">{{offensiveData.totalDribbles}}</td>
+            <td class="right-border bottom-border">{{offensiveData.successfulDribbles}}</td>
+            <td class="bottom-border">{{offensiveData.dribblesAccuracy}}</td>
+            <td class="right-border bottom-border">{{offensiveData.totalPasses}}</td>
+            <td class="right-border bottom-border">{{offensiveData.successfulPasses}}</td>
+            <td class="bottom-border">{{offensiveData.passAccuracy}}</td>
+            <td class="right-border bottom-border">{{offensiveData.totalGoals}}</td>
+            <td class="bottom-border">{{offensiveData.totalAssists}}</td>
+            <td class="bottom-border">{{offensiveData.penaltiesScored}}</td>
+            <td class="right-border bottom-border">{{offensiveData.penaltiesLost}}</td>
+            <td class="bottom-border remove-right-border">{{offensiveData.penaltiesAccuracy}}</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="header">Progression Chart of last 10 Matches</div>
+      <div class="chart-container">
+        <canvas id="offensiveChart"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="page-break"></div>
+  <div class="striped-div">FULL PLAYER REPORT</div>
+  <div class="content">
+    <div class="player-stats-container">
+      <div class="header">Defensive Stats</div>
+      <div class="stat-section">
+        <div class="stat-section-header">Guide</div>
+      </div>
+      <div class="stat-section-grid">
+        <div class="stat-item">
+          <span class="stat-value">S.TKLs</span>
+          <span class="stat-label">Successful Tackles</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">T.TKLs</span>
+          <span class="stat-label">Total Tackles</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">TI</span>
+          <span class="stat-label">Total Interceptions</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">TC</span>
+          <span class="stat-label">Total Clearance</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">TB</span>
+          <span class="stat-label">Total Blocks</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">T.AD</span>
+          <span class="stat-label">Total Aerial Duels</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">ADW</span>
+          <span class="stat-label">Aerial Duels Won</span>
+        </div>
+      </div>
+      <div class="table">
+        <table>
+          <thead>
+          <tr>
+            <th colspan="2" class="top-border left-border">Tackles</th>
+            <th colspan="1" class="top-border">Interceptions</th>
+            <th colspan="1" class="top-border">Clearances</th>
+            <th colspan="1" class="top-border">Blocks</th>
+            <th colspan="2" class="top-border remove-right-border">Aerial Duels</th>
+          </tr>
+          <tr>
+            <th class="sub-header left-border right-border">S.TKLs</th>
+            <th class="sub-header">T.TKLs</th>
+            <th class="sub-header">TI</th>
+            <th class="sub-header">TC</th>
+            <th class="sub-header">TB</th>
+            <th class="sub-header right-border">T.AD</th>
+            <th class="sub-header remove-right-border">ADW</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td class="left-border right-border bottom-border">{{defensiveData.successfulTackles}}</td>
+            <td class="bottom-border">{{defensiveData.totalTackles}}</td>
+            <td class="bottom-border">{{defensiveData.totalInterceptions}}</td>
+            <td class="bottom-border">{{defensiveData.totalClearances}}</td>
+            <td class="bottom-border">{{defensiveData.totalBlocks}}</td>
+            <td class="right-border bottom-border">{{defensiveData.totalAerialDuels}}</td>
+            <td class="bottom-border remove-right-border">{{defensiveData.aerialDuelsWon}}</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="header">Progression Chart of last 10 Matches</div>
+      <div class="chart-container">
+        <canvas id="defensiveChart"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="page-break"></div>
+  <div class="striped-div">FULL PLAYER REPORT</div>
+  <div class="content">
+    <div class="player-stats-container">
+      <div class="header">Possession Stats</div>
+      <div class="stat-section">
+        <div class="stat-section-header">Guide</div>
+      </div>
+      <div class="stat-section-grid">
+        <div class="stat-item">
+          <span class="stat-value">TOT.C</span>
+          <span class="stat-label">Total Crosses</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">SUC.C</span>
+          <span class="stat-label">Successful Crosses</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">T</span>
+          <span class="stat-label">Touches</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">ATT.TO</span>
+          <span class="stat-label">Attempted Take-Ons</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">SUC.TO</span>
+          <span class="stat-label">Successful Take-Ons</span>
+        </div>
+      </div>
+      <div class="table">
+        <table>
+          <thead>
+          <tr>
+            <th colspan="2" class="top-border left-border">Crosses</th>
+            <th colspan="1" class="top-border">Touches</th>
+            <th colspan="2" class="top-border remove-right-border">Take Ons</th>
+          </tr>
+          <tr>
+            <th class="sub-header left-border right-border">TOT.C</th>
+            <th class="sub-header">SUS.C</th>
+            <th class="sub-header">T</th>
+            <th class="sub-header right-border">ATT.TO</th>
+            <th class="sub-header remove-right-border">SUC.TO</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td class="left-border right-border bottom-border">{{possessionData.totalCrosses}}</td>
+            <td class="bottom-border">{{possessionData.successfulCrosses}}</td>
+            <td class="bottom-border">{{possessionData.totalTouches}}</td>
+            <td class="right-border bottom-border">{{possessionData.attemptedTakeOns}}</td>
+            <td class="bottom-border remove-right-border">{{possessionData.successfulTakeOns}}</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="header">Progression Chart of last 10 Matches</div>
+      <div class="chart-container">
+        <canvas id="possessionChart"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="page-break"></div>
+  <div class="striped-div">FULL PLAYER REPORT</div>
+  <div class="content">
+    <div class="player-stats-container">
+      <div class="header">Disciplinary Stats</div>
+      <div class="stat-section">
+        <div class="stat-section-header">Guide</div>
+      </div>
+      <div class="stat-section-grid">
+        <div class="stat-item">
+          <span class="stat-value">CrdY</span>
+          <span class="stat-label">Yellow Cards</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">CrdR</span>
+          <span class="stat-label">Red Cards</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">Fls</span>
+          <span class="stat-label">Fouls Commited</span>
+        </div>
+      </div>
+      <div class="table">
+        <table>
+          <thead>
+          <tr>
+            <th colspan="1" class="top-border left-border">Yellow Cards</th>
+            <th colspan="1" class="top-border">Red Cards</th>
+            <th colspan="1" class="top-border remove-right-border">Fouls Commited</th>
+          </tr>
+          <tr>
+            <th class="sub-header left-border">CrdY</th>
+            <th class="sub-header">CrdR</th>
+            <th class="sub-header remove-right-border">Fls</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td class="left-border bottom-border">{{disciplinaryData.totalYellowCards}}</td>
+            <td class="bottom-border">{{disciplinaryData.totalRedCards}}</td>
+            <td class="bottom-border remove-right-border">{{disciplinaryData.totalFouls}}</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="header">Progression Chart of last 10 Matches</div>
+      <div class="chart-container">
+        <canvas id="disciplinaryChart"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="page-break"></div>
+  <div class="striped-div">FULL PLAYER REPORT</div>
+  <div class="content">
+    <div class="player-stats-container">
+      <div class="header">Goalkeeper Stats</div>
+      <div class="stat-section">
+        <div class="stat-section-header">Guide</div>
+      </div>
+      <div class="stat-section-grid">
+        <div class="stat-item">
+          <span class="stat-value">SOT.A</span>
+          <span class="stat-label">Shot on Target Against</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">Saves</span>
+          <span class="stat-label">Saves</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">Save%</span>
+          <span class="stat-label">Save Percentage</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">P.Sv</span>
+          <span class="stat-label">Penalty Saves</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">P.ms</span>
+          <span class="stat-label">Penalty Missed</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">P.S%</span>
+          <span class="stat-label">Penalty Saves Percentage</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">DFK.F</span>
+          <span class="stat-label">Direct Freekick Faced</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">FK.S</span>
+          <span class="stat-label">Freekick Saves</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">FK.GS</span>
+          <span class="stat-label">Freekick Goals Conceded</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">1v1.F</span>
+          <span class="stat-label">1 V 1 Faced</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">1v1.S</span>
+          <span class="stat-label">1 V 1 Saved</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">1v1.S%</span>
+          <span class="stat-label">1 V 1 Save Percentage</span>
+        </div>
+      </div>
+      <div class="table">
+        <table>
+          <thead>
+          <tr>
+            <th colspan="3" class="top-border left-border">Saves</th>
+            <th colspan="3" class="top-border">Penalties</th>
+            <th colspan="3" class="top-border">Free Kicks</th>
+            <th colspan="3" class="top-border remove-right-border">1v1s</th>
+          </tr>
+          <tr>
+            <th class="sub-header left-border right-border">SOT.A</th>
+            <th class="sub-header right-border">Saves</th>
+            <th class="sub-header">Save%</th>
+            <th class="sub-header right-border">P.Sv</th>
+            <th class="sub-header right-border">P.ms</th>
+            <th class="sub-header">P.S%</th>
+            <th class="sub-header right-border">DFK.F</th>
+            <th class="sub-header right-border">FK.S</th>
+            <th class="sub-header">FK.GS</th>
+            <th class="sub-header right-border">1v1.F</th>
+            <th class="sub-header right-border">1v1.S</th>
+            <th class="sub-header remove-right-border">1v1.S%</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td class="left-border right-border bottom-border">{{goalkeeperData.shotsOnTargetAgainst}}</td>
+            <td class="right-border bottom-border">{{goalkeeperData.saves}}</td>
+            <td class="bottom-border">{{goalkeeperData.savePercentage}}</td>
+            <td class="bottom-border right-border">{{goalkeeperData.penaltySaves}}</td>
+            <td class="right-border bottom-border">{{goalkeeperData.penaltyMisses}}</td>
+            <td class="bottom-border">{{goalkeeperData.penaltySavePercentage}}</td>
+            <td class="right-border bottom-border">{{goalkeeperData.directFreeKickFaced}}</td>
+            <td class="bottom-border right-border">{{goalkeeperData.freeKickSaved}}</td>
+            <td class="bottom-border">{{goalkeeperData.freeKickGoalSaved}}</td>
+            <td class="bottom-border right-border">{{goalkeeperData.oneVOneFaced}}</td>
+            <td class="right-border bottom-border">{{goalkeeperData.oneVOneSaved}}</td>
+            <td class="bottom-border remove-right-border">{{goalkeeperData.oneVOneSavedPercentage}}</td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="header">Progression Chart of last 10 Matches</div>
+      <div class="chart-container">
+        <canvas id="goalkeeperChart"></canvas>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Data for the chart
+    const chartData = {
+      offensive: {{{ offensiveChartData }}},
+      defensive: {{{ defensiveChartData }}},
+      possession: {{{ possessionChartData }}},
+      disciplinary: {{{ disciplinaryChartData }}},
+      goalkeeping: {{{ goalkeeperChartData }}},
+    }
+
+    // Labels (e.g., match days or events)
+    const labels = ['M1', 'M2', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8', 'M9', 'M10'];
+
+    const distinctColors = [
+      'rgba(255, 99, 132, 0.8)',   // Red
+      'rgba(54, 162, 235, 0.8)',  // Blue
+      'rgba(255, 206, 86, 0.8)',  // Yellow
+      'rgba(75, 192, 192, 0.8)',  // Teal
+      'rgba(153, 102, 255, 0.8)', // Purple
+      'rgba(255, 159, 64, 0.8)',  // Orange
+      'rgba(0, 128, 128, 0.8)',   // Dark Teal
+      'rgba(128, 0, 128, 0.8)',   // Violet
+      'rgba(0, 255, 0, 0.8)',     // Green
+      'rgba(255, 0, 255, 0.8)',   // Magenta
+      'rgba(0, 0, 255, 0.8)',     // Deep Blue
+      'rgba(255, 0, 0, 0.8)',     // Deep Red
+      'rgba(0, 255, 255, 0.8)',   // Cyan
+      'rgba(128, 128, 0, 0.8)',   // Olive
+      'rgba(255, 255, 0, 0.8)',   // Bright Yellow
+    ];
+
+    // Assign distinct colors to stats
+    const colors = {};
+    Object.keys(chartData).forEach((category) => {
+      Object.keys(chartData[category]).forEach((stat, index) => {
+        colors[stat] = distinctColors[index % distinctColors.length];
+      });
+    });
+
+    // Function to create chart
+    function createChart(elementId, data) {
+      const ctx = document.getElementById(elementId).getContext('2d');
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels.slice(0, data[Object.keys(data)[0]].length),
+          datasets: Object.keys(data).map((key) => ({
+            label: key,
+            data: data[key],
+            borderColor: colors[key],
+            backgroundColor: colors[key].replace('0.8', '0.3'),
+            fill: false,
+            tension: 0.5
+          })),
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              display: true,
+            },
+          },
+          scales: {
+            x: {
+              display: true,
+              title: {
+                display: true,
+                text: 'Matches',
+              },
+            },
+            y: {
+              display: true,
+              title: {
+                display: false,
+                text: 'Values',
+              },
+              stacked: true,
+              ticks: {
+                stepSize: 2,
+                display: false,
+                precision: 0,
+              },
+              suggestedMin: 0,
+            },
+          },
+        },
+      });
+    }
+
+    // Create charts
+    createChart('offensiveChart', chartData.offensive);
+    createChart('defensiveChart', chartData.defensive);
+    createChart('possessionChart', chartData.possession);
+    createChart('disciplinaryChart', chartData.disciplinary);
+    createChart('goalkeeperChart', chartData.goalkeeping);
+  </script>
+</body>
+</html>

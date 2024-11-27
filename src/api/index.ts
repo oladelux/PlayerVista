@@ -683,8 +683,24 @@ export async function getPerformanceByEvent(eventId: string): Promise<PlayerPerf
   return await res.json()
 }
 
-export async function getPerformanceDataByPlayer(
+export async function getPerformanceByEventAndPlayer(
   eventId: string, playerId: string): Promise<PlayerPerformance> {
   const res = await apiRequest(`/performance/event/${eventId}/player/${playerId}`, 'GET')
   return await res.json()
+}
+
+type PlayerPerformanceApiResponse = {
+  data: PlayerPerformance[]
+}
+
+export type PlayerPerformanceResponse = BaseApiResponse & PlayerPerformanceApiResponse
+
+export async function getPerformancesForPlayer(
+  playerId: string): Promise<PlayerPerformanceResponse> {
+  const res = await apiRequest(`/performance/player/${playerId}`, 'GET')
+  return await res.json()
+}
+
+export async function generatePDF(data: { html: string}): Promise<Response> {
+  return await apiRequest('/pdf-rendering/generate', 'POST', data)
 }

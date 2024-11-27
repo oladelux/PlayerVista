@@ -29,9 +29,9 @@ const playerColumns = [
   {
     key: 'action',
     title: 'Action',
-    render: (value: string) => (<div className='flex gap-2 items-center'>
-      <Link className='table-link' to={value}><EyeIcon width={16} /></Link>
-      <Link className='table-link border-l border-l-border-line px-2' to={value}>View Stats</Link>
+    render: (value: { teamId: string, playerId: string }) => (<div className='flex gap-2 items-center'>
+      <Link className='table-link' to={`/team/${value.teamId}/players/${value.playerId}`}><EyeIcon width={16} /></Link>
+      <Link className='table-link border-l border-l-border-line px-2' to={`/team/${value.teamId}/player/${value.playerId}/statistics`}>View Stats</Link>
     </div>),
   },
 ]
@@ -71,7 +71,7 @@ export const PlayersView:FC<PlayersViewProps> = ({ players }) => {
     position: player.position,
     jerseyNumber: player.uniformNumber,
     status: true,
-    action: `/team/${teamId}/players/${player.id}`,
+    action: { teamId, playerId: player.id },
   }))
 
   const sortedTeamPlayers = formattedPlayers.sort((a, b) => {

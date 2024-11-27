@@ -41,7 +41,7 @@ export const CreateTeam: FC<DashboardCreateTeamProps> = ({ logger, user, teams }
 export const DashboardCreateTeam: FC<DashboardCreateTeamProps> = ({ logger, user, teams }) => {
   return (
     <div className='Create-team'>
-      <div className='Create-team__content'>
+      <div className='Create-team__content px-12 py-10'>
         <div className='Create-team__content-header'>
           <div className='Create-team__content-header-title'>Hello Admin,</div>
           <div className='Create-team__content-header-sub-title'>Let’s create a team for you in three easy steps</div>

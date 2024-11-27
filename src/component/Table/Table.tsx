@@ -3,14 +3,15 @@ import './Table.scss'
 import { Button } from '../Button/Button'
 
 type Item = {
-  [key: string]: string | number | boolean | undefined | JSX.Element
+  [key: string]: string | number | boolean | undefined | JSX.Element|
+    { teamId: string | undefined; playerId: string }
 }
 
 export type Column = {
   key: string
   title: string
   placeholder?: string
-  render?: (value: any) => JSX.Element
+  render?: (value: never) => JSX.Element
 }
 type TableProps = {
   columns: Column[]

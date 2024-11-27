@@ -5,6 +5,8 @@ import { routes } from '../constants/routes'
 import { isAccessToken } from '../services/helper'
 import { RegistrationDetails } from '@/api'
 import { useToast } from '@/hooks/use-toast.ts'
+import { removeCookie } from '@/services/cookies.ts'
+import { clearLocalStorage } from '@/utils/localStorage.ts'
 
 export type UserHook = ReturnType<typeof useUser>
 
@@ -21,6 +23,9 @@ export function useUser() {
       })
       .catch(e => {
         if (e instanceof api.UnauthorizedError) {
+          removeCookie('access-token')
+          removeCookie('refresh-token')
+          clearLocalStorage()
           navigate(routes.login)
         } else {
           console.error('Unhandled error getting user data', e)

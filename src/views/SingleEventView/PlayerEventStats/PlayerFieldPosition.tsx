@@ -24,7 +24,7 @@ export const PlayerFieldPosition: FC<PlayerFieldPositionProps> = ({
 
   return (
     <>
-      <div className='flex'>
+      <div className='flex justify-center'>
         <div className='my-5'>
           <div className='bg-[#3C8031]'>
             <ScatterChart
