@@ -7,7 +7,7 @@ import classnames from 'classnames'
 import { AuthenticatedUserData, Reporter, TeamResponse } from '@/api'
 import { useEvents } from '@/hooks/useEvents.ts'
 
-import { Table } from '../../component/Table/Table.tsx'
+import { Column, Table } from '../../component/Table/Table.tsx'
 import { DashboardLayout } from '../../component/DashboardLayout/DashboardLayout.tsx'
 import { AssignModal } from '../../component/AssignModal/AssignModal.tsx'
 
@@ -27,7 +27,7 @@ export const ReportersView:FC<ReportersViewProps> = ({ user, reporters, teams })
   const currentTeam = teams.find((team) => team.id === teamId)
 
   const filteredReporters = reporters.filter((item) => item.id !== user.id)
-  const reporterColumns = [
+  const reporterColumns: Column<never>[] = [
     { key: 'name', title: 'Name' },
     { key: 'email', title: 'Email' },
     {

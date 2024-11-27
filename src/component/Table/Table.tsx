@@ -1,4 +1,4 @@
-import { FC, ReactNode } from 'react'
+import { FC, ReactElement, ReactNode } from 'react'
 import './Table.scss'
 import { Button } from '../Button/Button'
 
@@ -8,23 +8,23 @@ type Item = {
     | number
     | boolean
     | undefined
-    | JSX.Element
+    | ReactElement
     | { teamId: string | undefined; playerId: string };
 };
 
-export type Column = {
+export type Column<T> = {
   key: string
   title: string
   placeholder?: string
-  render?: (value: string) => JSX.Element
+  render?: (value: T) => ReactElement
 }
-type TableProps = {
-  columns: Column[]
+type TableProps<T> = {
+  columns: Column<T>[]
   data: Item[]
 
 }
 
-export const Table: FC<TableProps> = ({ columns, data }) => {
+export const Table = <T, >({ columns, data }: TableProps<T>) => {
   return (
     <div className='Table'>
       <table className='Table__container'>
@@ -43,7 +43,7 @@ export const Table: FC<TableProps> = ({ columns, data }) => {
                   className={`Table__container-body-row-cell ${xIndex > 0 && xIndex < columns.length - 2 ? 'hidden md:table-cell' : ''}`}
                 >
                   {column.render ?
-                    column.render(row[column.key] as string) : row[column.key] as ReactNode
+                    column.render(row[column.key] as T) : row[column.key] as ReactNode
                   }
                 </td>,
               )}

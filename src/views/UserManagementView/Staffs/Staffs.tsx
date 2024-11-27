@@ -4,18 +4,18 @@ import { Link, useParams } from 'react-router-dom'
 import { FaPlus } from 'react-icons/fa'
 import classnames from 'classnames'
 
-import { usePlayers } from '../../../hooks/usePlayers'
-import { AuthenticatedUserData, Staff } from '../../../api'
+import { usePlayers } from '@/hooks/usePlayers.ts'
+import { AuthenticatedUserData, Staff } from '@/api'
 
-import { DashboardLayout } from '../../../component/DashboardLayout/DashboardLayout'
-import { Table } from '../../../component/Table/Table'
+import { DashboardLayout } from '@/component/DashboardLayout/DashboardLayout.tsx'
+import { Column, Table } from '@/component/Table/Table.tsx'
 
 import './Staffs.scss'
 import { useSelector } from 'react-redux'
 import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
 import { usePermission } from '@/hooks/usePermission.ts'
 
-const staffColumns = [
+const staffColumns: Column<never>[] = [
   { key: 'name', title: 'Name' },
   { key: 'email', title: 'Email' },
   {

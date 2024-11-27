@@ -1,3 +1,4 @@
+/*
 import { FC } from 'react'
 import {
   ReferenceArea,
@@ -9,9 +10,9 @@ import {
   YAxis,
 } from 'recharts'
 
-import { HeatSectorsType, LocationData } from '../../../../utils/players.ts'
+import { HeatSectorsType, LocationData } from '@/utils/players.ts'
 
-import { Column, Table } from '../../../../component/Table/Table.tsx'
+import { Column, Table } from '@/component/Table/Table.tsx'
 
 type HeatMapProps = {
   playerLocations: LocationData[]
@@ -85,3 +86,4 @@ export const HeatMap: FC<HeatMapProps> = ({
     </>
   )
 }
+*/

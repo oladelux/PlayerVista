@@ -8,7 +8,7 @@ import { usePlayers } from '@/hooks/usePlayers.ts'
 
 import { Link, useParams } from 'react-router-dom'
 import { DashboardLayout } from '../../component/DashboardLayout/DashboardLayout'
-import { Table } from '../../component/Table/Table'
+import { Column, Table } from '../../component/Table/Table'
 
 import './PlayersView.scss'
 import { useSelector } from 'react-redux'
@@ -16,7 +16,7 @@ import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
 import { usePermission } from '@/hooks/usePermission.ts'
 import { EyeIcon } from 'lucide-react'
 
-const playerColumns = [
+const playerColumns: Column<never>[] = [
   { key: 'name', title: 'Name' },
   { key: 'age', title: 'Age' },
   { key: 'position', title: 'Position' },
