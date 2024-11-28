@@ -10,7 +10,7 @@ import { useAppDispatch } from '../store/types.ts'
 import {
   clearSettingsState,
   getRolesByGroupIdThunk,
-  setActiveTeamId,
+  setActiveTeamId, setUserId,
   setUserRole,
 } from '../store/slices/SettingsSlice.ts'
 import { clearTeamState, getTeamThunk } from '../store/slices/TeamSlice.ts'
@@ -68,6 +68,7 @@ export function useAuthentication (
           setCurrentTeam(userData.teamId)
           dispatch(setActiveTeamId({ teamId: userData.teamId }))
           dispatch(setUserRole({ role: userData.role }))
+          dispatch(setUserId({ id: userData.id }))
           dispatch(getTeamThunk({ id: userData.teamId }))
           dispatch(getRolesByGroupIdThunk({ groupId: userData.groupId }))
           dispatch(getPlayersByTeamIdThunk({ teamId: userData.teamId }))

@@ -25,6 +25,7 @@ export const SinglePlayerView: FC = () => {
   const { canManagePlayer } = usePermission(userRole)
   const { playerId, teamId } = useParams()
   const { players, loadingUpdatingPlayer } = useSelector(playersSelector)
+  const { userId } = useSelector(settingsSelector)
 
   const [isUpdateSuccessful, setIsUpdateSuccessful] = useState(false)
   const [dateValue, setDateValue] = useState<Dayjs | null>(null)
@@ -41,7 +42,7 @@ export const SinglePlayerView: FC = () => {
 
   const [updateFormData, setUpdateFormData] = useState<PlayerFormData>({
     teamId: teamId || '',
-    userId: user.data?.id ||'',
+    userId: userId,
     firstName: firstName || '',
     teamCaptain: teamCaptain || false,
     birthDate: new Date(birthDate || ''),

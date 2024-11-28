@@ -13,7 +13,7 @@ import {
   getApplicationLogsThunk,
   getRolesByGroupIdThunk,
   setActiveTeamId,
-  settingsSelector, setUserRole,
+  settingsSelector, setUserId, setUserRole,
 } from '../store/slices/SettingsSlice.ts'
 import { getEventsByTeamThunk } from '../store/slices/EventsSlice.ts'
 import { getStaffsThunk, staffSelector } from '../store/slices/StaffSlice.ts'
@@ -44,6 +44,7 @@ export function useAppController () {
     await dispatch(getRolesByGroupIdThunk({ groupId: userData.groupId }))
     dispatch(setActiveTeamId({ teamId: activeTeamId }))
     dispatch(setUserRole({ role: userData.role }))
+    dispatch(setUserId({ id: userData.id }))
   })
   const team = useTeams(user.data?.id)
   const loading = useAppLoading()
@@ -65,6 +66,7 @@ export function useAppController () {
             await dispatch(getStaffsThunk({ groupId: data.groupId }))
             //await dispatch(getReportersThunk({ teamId: currentTeam }))
             dispatch(setUserRole({ role: data.role }))
+            dispatch(setUserId({ id: data.id }))
           }
         })
         .then(() => {
