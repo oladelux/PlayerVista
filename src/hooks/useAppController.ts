@@ -54,7 +54,6 @@ export function useAppController () {
       user.initializeApp()
         .then(async data => {
           if (data) {
-            console.log('data', data)
             dispatch(setActiveTeamId({ teamId: data.teamId }))
             dispatch(setUserRole({ role: data.role }))
             dispatch(setUserId({ id: data.id }))
