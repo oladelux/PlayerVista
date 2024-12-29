@@ -77,6 +77,7 @@ const AddStaffMultiStep: FC<AddStaffProps> = ({ user, logger }) => {
               teamId,
               groupId: user.groupId,
               password: password,
+              parentUserId: user.id,
             }
             dispatch(createStaffThunk({ data }))
               .unwrap()

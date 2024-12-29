@@ -35,6 +35,17 @@ export function useUser() {
 
   }
 
+  function getSubscriptionData(userId: string): Promise<api.Subscription | undefined> {
+    return api.getSubscription(userId)
+      .then(subscription => {
+        return subscription
+      })
+      .catch(e => {
+        console.error('Unhandled error getting subscription data', e)
+        return undefined
+      })
+  }
+
   async function getUserName(id: string): Promise<string> {
     try {
       const user = await api.getUserDetails(id)
@@ -81,6 +92,7 @@ export function useUser() {
   return {
     data,
     refreshUserData,
+    getSubscriptionData,
     /**
      * Effect to run at application startup
      */

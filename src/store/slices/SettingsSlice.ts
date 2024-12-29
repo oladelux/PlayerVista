@@ -14,6 +14,7 @@ import {
 type InitialSettingsState = {
   activeTeamId: string,
   userRole: string,
+  userId: string,
   logs: LogType[],
   roles: Roles[]
   /**
@@ -28,6 +29,7 @@ type InitialSettingsState = {
 const initialState: InitialSettingsState = {
   activeTeamId: '',
   userRole: '',
+  userId: '',
   logs: [],
   roles: [],
   loadingGettingLogs: 'idle',
@@ -109,12 +111,20 @@ export const settingsSlice = createSlice({
       const { role } = action.payload
       state.userRole = role
     },
+    setUserId: (
+      state,
+      action: PayloadAction<{ id: string }>,
+    ) => {
+      const { id } = action.payload
+      state.userId = id
+    },
     clearSettingsState: (
       state,
     ) => {
       state.logs = []
       state.activeTeamId = ''
       state.userRole = ''
+      state.userId = ''
       state.loadingGettingLogs = 'idle'
     },
   },
@@ -193,6 +203,7 @@ export const settingsSlice = createSlice({
 export const {
   setActiveTeamId,
   setUserRole,
+  setUserId,
   clearSettingsState,
 } = settingsSlice.actions
 

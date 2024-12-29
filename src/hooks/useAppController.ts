@@ -13,7 +13,7 @@ import {
   getApplicationLogsThunk,
   getRolesByGroupIdThunk,
   setActiveTeamId,
-  settingsSelector, setUserRole,
+  settingsSelector, setUserId, setUserRole,
 } from '../store/slices/SettingsSlice.ts'
 import { getEventsByTeamThunk } from '../store/slices/EventsSlice.ts'
 import { getStaffsThunk, staffSelector } from '../store/slices/StaffSlice.ts'
@@ -36,7 +36,6 @@ export function useAppController () {
   const { players } = usePlayers()
   const events = useEvents()
   const authentication = useAuthentication(user, async (userData) => {
-    console.log('currentTeam', activeTeamId)
     await dispatch(getTeamsThunk({ userId: userData.id }))
     await dispatch(getTeamThunk({ id: activeTeamId }))
     await dispatch(getPlayersByUserIdThunk({ userId: userData.id }))
@@ -44,6 +43,7 @@ export function useAppController () {
     await dispatch(getRolesByGroupIdThunk({ groupId: userData.groupId }))
     dispatch(setActiveTeamId({ teamId: activeTeamId }))
     dispatch(setUserRole({ role: userData.role }))
+    dispatch(setUserId({ id: userData.id }))
   })
   const team = useTeams(user.data?.id)
   const loading = useAppLoading()
@@ -55,6 +55,8 @@ export function useAppController () {
         .then(async data => {
           if (data) {
             dispatch(setActiveTeamId({ teamId: data.teamId }))
+            dispatch(setUserRole({ role: data.role }))
+            dispatch(setUserId({ id: data.id }))
             await dispatch(getTeamsThunk({ userId: data.id }))
             await dispatch(getTeamThunk({ id: data.teamId }))
             await dispatch(getApplicationLogsThunk({ groupId: data.groupId }))
@@ -64,7 +66,6 @@ export function useAppController () {
             await dispatch(getEventsByTeamThunk({ teamId: data.teamId }))
             await dispatch(getStaffsThunk({ groupId: data.groupId }))
             //await dispatch(getReportersThunk({ teamId: currentTeam }))
-            dispatch(setUserRole({ role: data.role }))
           }
         })
         .then(() => {

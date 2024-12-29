@@ -1,14 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useSelector } from 'react-redux'
-
-import { useAppDispatch } from '../store/types.ts'
-import { setCurrentTeam } from '../utils/localStorage.ts'
-import { getEventsByTeamThunk } from '../store/slices/EventsSlice.ts'
-import { getStaffsThunk } from '../store/slices/StaffSlice.ts'
-import { teamSelector } from '../store/slices/TeamSlice.ts'
 import { AuthenticatedUserData, confirmEmail } from '@/api'
-import { getPlayersByTeamIdThunk } from '@/store/slices/PlayersSlice.ts'
+import { routes } from '@/constants/routes.ts'
 
 const EMAIL_VERIFICATION_TIMEOUT = 5000
 
@@ -18,8 +11,6 @@ export const useCountdown = (
   refreshUserData: () => Promise<AuthenticatedUserData | undefined>, hash: string | undefined,
 ) => {
   const navigate = useNavigate()
-  const dispatch = useAppDispatch()
-  const { teams } = useSelector(teamSelector)
   const [secondsRemaining, setSecondsRemaining] = useState(Math
     .floor(EMAIL_VERIFICATION_TIMEOUT / 1000))
   const [emailVerified, setEmailVerified] = useState(false)
@@ -32,12 +23,7 @@ export const useCountdown = (
           .then(async () => {
             await refreshUserData()
             setEmailVerified(true)
-            setCurrentTeam(teams[0].id)
-            await dispatch(getPlayersByTeamIdThunk({ teamId: teams[0].id }))
-            await dispatch(getEventsByTeamThunk({ teamId: teams[0].id }))
-            await dispatch(getStaffsThunk({ groupId: teams[0].id }))
-            // await dispatch(getReportersThunk({ teamId: teams[0].id }))
-            navigate(`/team/${teams[0].id}`)
+            navigate(routes.team)
           })
           .catch((error) => {
             console.error('Error verifying email:', error)

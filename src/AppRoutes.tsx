@@ -23,7 +23,6 @@ import {
   CreateTeam,
   DashboardCreateTeam,
 } from './views/TeamView/CreateTeam/CreateTeam'
-import { ManageTeam } from './views/ManageTeam/ManageTeam'
 import { Staffs } from './views/UserManagementView/Staffs/Staffs'
 import { DashboardLayout } from './component/DashboardLayout/DashboardLayout.tsx'
 import { SingleEventView } from './views/SingleEventView/SingleEventView.tsx'
@@ -36,6 +35,10 @@ import { StatisticsView } from './views/StatisticsView/StatisticsView.tsx'
 import { PlayerEventStats } from '@/views/SingleEventView/PlayerEventStats/PlayerEventStats.tsx'
 import { SettingsView } from '@/views/SettingsView/SettingsView.tsx'
 import PlayerStats from '@/views/PlayersView/PlayerStats/PlayerStats.tsx'
+import SelectPlan from '@/views/SelectPlan/SelectPlan.tsx'
+import PaymentCallback from '@/views/SelectPlan/PaymentCallback.tsx'
+import { Teams } from '@/views/Teams/Teams.tsx'
+import { ManageTeam } from '@/views/Teams/form/ManageTeam.tsx'
 
 export const AppRoutes: FC = () => {
   const controller = useAppController()
@@ -74,6 +77,10 @@ export const AppRoutes: FC = () => {
   return (
     <>
       <Routes>
+        <Route
+          path={routes.paymentCallback} element={<PaymentCallback />}
+        />
+        <Route path={routes.selectPlan} element={<SelectPlan teams={controller.teams} />} />
         <Route path={routes.home} element={<Home />} />
         <Route
           path={routes.team}
@@ -109,8 +116,8 @@ export const AppRoutes: FC = () => {
           }
         />
         <Route
-          path={routes.manageTeam}
-          element={<ManageTeam teams={controller.teams}
+          path={routes.teams}
+          element={<Teams teams={controller.teams}
             team={controller.singleTeam} players={controller.allPlayers} />}
         />
         <Route
@@ -177,6 +184,7 @@ export const AppRoutes: FC = () => {
             <PlayerEventStats events={events} teams={teams} />
           }
         />
+        <Route path={routes.manageTeam} element={<ManageTeam teams={teams} user={user.data} />} />
         <Route path={routes.account} element={<MyAccount />} />
         <Route path={routes.logout} element={<MyAccount />} />
         <Route

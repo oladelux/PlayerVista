@@ -65,9 +65,12 @@ export const createEventThunk = createAsyncThunk<
  */
 export const getEventsByTeamThunk = createAsyncThunk<
   EventDataResponse,
-  { teamId: string }
+  { teamId: string | undefined }
 >('events/getEvents', async ({ teamId }, { rejectWithValue }) => {
   try {
+    if (!teamId) {
+      return rejectWithValue('Team ID is required to fetch events')
+    }
     return await getEventsByTeamId(teamId)
   } catch (e) {
     if (e instanceof ClientError) {
@@ -79,9 +82,12 @@ export const getEventsByTeamThunk = createAsyncThunk<
 
 export const getSingleEventThunk = createAsyncThunk<
   SingleEventType,
-  { eventId: string }
+  { eventId: string | undefined }
 >('events/getSingleEvent', async({ eventId }, { rejectWithValue }) => {
   try {
+    if (!eventId) {
+      return rejectWithValue('Event ID is required to fetch events')
+    }
     return await getSingleEvent(eventId)
   } catch (e) {
     if (e instanceof ClientError) {

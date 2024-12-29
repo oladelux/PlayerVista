@@ -65,9 +65,10 @@ export const createNewPlayerThunk = createAsyncThunk<
  */
 export const getPlayersByTeamIdThunk = createAsyncThunk<
   undefined | PlayerDataResponse,
-  { teamId: string }
+  { teamId: string | undefined }
 >('players/team', ({ teamId }) => {
-  return getPlayersByTeamId(teamId)
+  if(teamId)
+    return getPlayersByTeamId(teamId)
 })
 
 /**
