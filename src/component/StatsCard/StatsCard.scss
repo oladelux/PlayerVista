@@ -80,7 +80,7 @@
   &__content {
     padding: 25px 0;
     display: grid;
-    grid-template-columns: 2fr 3fr;
+    grid-template-columns: 3fr 2fr;
     column-gap: 20px;
 
     @include mixins.mobile {
@@ -88,9 +88,15 @@
       gap: 15px;
       padding: 10px 0;
     }
+    &-overview {
+      height: 250px;
+    }
+
+    &-trends {
+      min-height: 250px;
+    }
 
     &-overview, &-trends {
-      height: 450px;
       border-radius: 8px;
       background-color: colors.$color-background;
 

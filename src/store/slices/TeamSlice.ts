@@ -59,9 +59,10 @@ export const getTeamsThunk = createAsyncThunk<
  */
 export const getTeamThunk = createAsyncThunk<
   undefined | TeamResponse,
-  { id: string }
+  { id: string | undefined }
 >('teams/team', ({ id }) => {
-  return getTeam(id)
+  if(id)
+    return getTeam(id)
 } )
 
 export const teamSlice = createSlice({

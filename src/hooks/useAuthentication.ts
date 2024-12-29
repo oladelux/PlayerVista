@@ -9,16 +9,14 @@ import { addCookie, removeCookie } from '../services/cookies'
 import { useAppDispatch } from '../store/types.ts'
 import {
   clearSettingsState,
-  getRolesByGroupIdThunk,
-  setActiveTeamId, setUserId,
-  setUserRole,
 } from '../store/slices/SettingsSlice.ts'
-import { clearTeamState, getTeamThunk } from '../store/slices/TeamSlice.ts'
-import { clearPlayerState, getPlayersByTeamIdThunk } from '../store/slices/PlayersSlice.ts'
-import { clearEventState, getEventsByTeamThunk } from '../store/slices/EventsSlice.ts'
-import { clearLocalStorage, setCurrentTeam } from '../utils/localStorage.ts'
-import { clearStaffState, getStaffsThunk } from '../store/slices/StaffSlice.ts'
+import { clearTeamState } from '../store/slices/TeamSlice.ts'
+import { clearPlayerState } from '../store/slices/PlayersSlice.ts'
+import { clearEventState } from '../store/slices/EventsSlice.ts'
+import { clearLocalStorage } from '../utils/localStorage.ts'
+import { clearStaffState } from '../store/slices/StaffSlice.ts'
 import { clearReporterState } from '../store/slices/ReporterSlice.ts'
+import { SubscriptionStatus } from '../api'
 
 export type AuthenticationHook = ReturnType<typeof useAuthentication>
 
@@ -61,21 +59,16 @@ export function useAuthentication (
         if (!userData) {
           throw new Error('Unexpected no user data after logging in')
         }
+        const parentUserId = userData.parentUserId || userData.id
         await afterLogin(userData)
-        if(userData.role === 'admin') {
-          navigate(routes.team)
+        const subscription = await user.getSubscriptionData(parentUserId)
+        if(subscription){
+          if(subscription.status === SubscriptionStatus.ACTIVE){
+            navigate(routes.team)
+          }
         } else {
-          setCurrentTeam(userData.teamId)
-          dispatch(setActiveTeamId({ teamId: userData.teamId }))
-          dispatch(setUserRole({ role: userData.role }))
-          dispatch(setUserId({ id: userData.id }))
-          dispatch(getTeamThunk({ id: userData.teamId }))
-          dispatch(getRolesByGroupIdThunk({ groupId: userData.groupId }))
-          dispatch(getPlayersByTeamIdThunk({ teamId: userData.teamId }))
-          dispatch(getEventsByTeamThunk({ teamId: userData.teamId }))
-          dispatch(getStaffsThunk({ groupId: userData.groupId }))
-          // dispatch(getReportersThunk({ teamId: userData.teamId }))
-          navigate(`/team/${userData.teamId}`)
+          sessionStorage.setItem('userData', JSON.stringify(userData))
+          navigate(routes.selectPlan)
         }
       })
       .catch(e => {

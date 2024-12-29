@@ -9,13 +9,13 @@ import { formatDate } from '@/services/helper.ts'
 import { DashboardLayout } from '../../component/DashboardLayout/DashboardLayout'
 import { Table } from '../../component/Table/Table'
 
-import './ManageTeam.scss'
+import './Teams.scss'
 import { useSelector } from 'react-redux'
 import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
 import { usePermission } from '@/hooks/usePermission.ts'
 import { EyeIcon } from 'lucide-react'
 
-type ManageTeamProps = {
+type TeamsProps = {
   teams: TeamResponse[]
   players: Player[]
   team: TeamResponse | null
@@ -29,14 +29,14 @@ const columns = [
   {
     key: 'action',
     title: 'Action',
-    render: (value: string) => (<div className='flex gap-2 items-center'>
-      <Link className='table-link' to={value}><EyeIcon width={16} /></Link>
-      <Link className='table-link border-l border-l-border-line px-2' to={value}>View Stats</Link>
+    render: (value: { manageLink: string, viewStatsLink: string }) => (<div className='flex gap-2 items-center'>
+      <Link className='table-link' to={value.manageLink}><EyeIcon width={16} /></Link>
+      <Link className='table-link border-l border-l-border-line px-2' to={value.viewStatsLink}>View Stats</Link>
     </div>),
   },
 ]
 
-export const ManageTeam:FC<ManageTeamProps> = ({ teams, players, team }) => {
+export const Teams:FC<TeamsProps> = ({ teams, players, team }) => {
   const { userRole } = useSelector(settingsSelector)
   const { canCreateTeam } = usePermission(userRole)
   const { teamId } = useParams()
@@ -46,13 +46,19 @@ export const ManageTeam:FC<ManageTeamProps> = ({ teams, players, team }) => {
     noOfPlayers: players.filter(player => player.teamId === team.id).length,
     dateCreated: formatDate(new Date(team.creationYear)),
     homeStadium: team.stadiumName,
-    action: `manage-teams/${team.id}`,
+    action: {
+      manageLink: 'manage-team',
+      viewStatsLink: 'view-stats',
+    },
   })) : team ? [{
     name: team.teamName,
     noOfPlayers: players.filter(player => player.teamId === team.id).length,
     dateCreated: formatDate(new Date(team.creationYear)),
     homeStadium: team.stadiumName,
-    action: `manage-teams/${team.id}`,
+    action: {
+      manageLink: 'manage-team',
+      viewStatsLink: 'view-stats',
+    },
   }] : []
 
   return (

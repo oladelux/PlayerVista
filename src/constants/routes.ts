@@ -5,7 +5,8 @@ export enum Routes {
   EMAIL_VERIFICATION = '/verify-email/:hash',
   TEAM = '/team',
   CREATE_TEAM = '/team/create-team',
-  MANAGE_TEAM = '/team/:teamId/manage-teams',
+  TEAMS = '/team/:teamId/team',
+  MANAGE_TEAM = '/team/:teamId/team/manage-team',
   DASHBOARD_CREATE_TEAM = '/team/:teamId/team/create-team',
   DASHBOARD = '/team/:teamId',
   PLAYERS = '/team/:teamId/players',
@@ -27,7 +28,9 @@ export enum Routes {
   SIGN_UP = '/onboard',
   FORGOT_PASSWORD = '/forgot-password',
   CHANGE_PASSWORD = '/change-password',
-  SETTINGS = '/settings'
+  SETTINGS = '/settings',
+  SELECT_PLAN = '/onboard/select-plan',
+  PAYMENT_CALLBACK = '/onboard/payment-callback',
 }
 
 export const routes = {
@@ -36,6 +39,7 @@ export const routes = {
   demoBooking: Routes.DEMO_BOOKING,
   emailVerification: Routes.EMAIL_VERIFICATION,
   team: Routes.TEAM,
+  teams: Routes.TEAMS,
   manageTeam: Routes.MANAGE_TEAM,
   dashboardCreateTeam: Routes.DASHBOARD_CREATE_TEAM,
   createTeam: Routes.CREATE_TEAM,
@@ -60,4 +64,6 @@ export const routes = {
   logout: Routes.LOGOUT,
   forgotPassword: Routes.FORGOT_PASSWORD,
   changePassword: Routes.CHANGE_PASSWORD,
+  selectPlan: Routes.SELECT_PLAN,
+  paymentCallback: Routes.PAYMENT_CALLBACK,
 }

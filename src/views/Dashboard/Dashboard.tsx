@@ -67,9 +67,6 @@ export const Dashboard: FC<DashboardProps> = props => {
           <Card className='Dashboard__section-card'>
             <StatsCard team={currentTeam} />
           </Card>
-          {/*<Card className='Dashboard__section-card'>
-            <PlayerMetrics team={currentTeam} />
-          </Card>*/}
         </div>
       </div>
       <Snackbar
