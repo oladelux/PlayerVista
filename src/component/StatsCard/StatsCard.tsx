@@ -1,88 +1,16 @@
-import { FC } from 'react'
-import { TeamResponse } from '@/api'
+import { FC, useEffect, useState } from 'react'
+import { PlayerPerformance, TeamResponse } from '@/api'
 
 import './StatsCard.scss'
 import { usePlayers } from '@/hooks/usePlayers.ts'
+import { calculateAge } from '@/services/helper.ts'
+import { Link } from 'react-router-dom'
+import { ArrowTopRightOnSquareIcon } from '@heroicons/react/24/solid'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.tsx'
+import { Progress } from '@/components/ui/progress.tsx'
+import { getPerformancesForPlayerThunk } from '@/store/slices/PlayerPerformanceSlice.ts'
+import { useAppDispatch } from '@/store/types.ts'
 
-const pieData = [
-  {
-    subject: 'Math',
-    A: 120,
-  },
-  {
-    subject: 'Chinese',
-    A: 98,
-  },
-  {
-    subject: 'English',
-    A: 86,
-  },
-  {
-    subject: 'Geography',
-    A: 99,
-  },
-  {
-    subject: 'Physics',
-    A: 85,
-  },
-  {
-    subject: 'History',
-    A: 65,
-  },
-]
-
-const data = [
-  {
-    name: '0\'',
-    GoalConceded: 2,
-    GoalScored: 1,
-  },
-  {
-    name: '10\'',
-    GoalConceded: 1,
-    GoalScored: 3,
-  },
-  {
-    name: '20\'',
-    GoalConceded: 4,
-    GoalScored: 2,
-  },
-  {
-    name: '30\'',
-    GoalConceded: 1,
-    GoalScored: 1,
-  },
-  {
-    name: '40\'',
-    GoalConceded: 2,
-    GoalScored: 0,
-  },
-  {
-    name: '50\'',
-    GoalConceded: 5,
-    GoalScored: 2,
-  },
-  {
-    name: '60\'',
-    GoalConceded: 1,
-    GoalScored: 2,
-  },
-  {
-    name: '70\'',
-    GoalConceded: 5,
-    GoalScored: 2,
-  },
-  {
-    name: '80\'',
-    GoalConceded: 3,
-    GoalScored: 1,
-  },
-  {
-    name: '90\'',
-    GoalConceded: 1,
-    GoalScored: 2,
-  },
-]
 
 type StatsCardProps = {
   team: TeamResponse | undefined
@@ -90,10 +18,78 @@ type StatsCardProps = {
 
 export const StatsCard: FC<StatsCardProps> = props => {
   const { players } = usePlayers(props.team?.id)
+  const dispatch = useAppDispatch()
+  const averageAge = players.length > 0
+    ? players.reduce((acc, player) => acc + calculateAge(player.birthDate), 0) / players.length
+    : 0
+  const [currentFirstPlayer, setCurrentFirstPlayer] = useState<string>('')
+  const [currentSecondPlayer, setCurrentSecondPlayer] = useState<string>('')
+  const [firstPlayerPerformance, setFirstPlayerPerformance] = useState<PlayerPerformance[]>([])
+  const [secondPlayerPerformance, setSecondPlayerPerformance] = useState<PlayerPerformance[]>([])
+
+  function handleFirstPlayerChange(value: string) {
+    setCurrentFirstPlayer(value)
+  }
+
+  function handleSecondPlayerChange(value: string) {
+    setCurrentSecondPlayer(value)
+  }
+
+  function calculatePercentage(value: number, max: number): number {
+    return (value / max) * 100
+  }
+
+  function calculatePerformance(performanceData: PlayerPerformance[]) {
+    console.log('performanceData', performanceData)
+    return performanceData.reduce((acc, event) => {
+      acc.matchesPlayed += 1
+      acc.playerGoal += event.actions['goals'].length
+      acc.playerAssists += event.actions['assists'].length
+      const totalPasses = event.actions['passes'].length
+      const successfulPasses = event.actions['passes'].filter((pass) => pass.value === 'SUCCESSFUL').length ?? 0
+      acc.totalPasses += totalPasses
+      acc.successfulPasses += successfulPasses
+      acc.passAccuracy = acc.totalPasses > 0 ? (acc.successfulPasses / acc.totalPasses) * 100 : 0
+      return acc
+    }, {
+      matchesPlayed: 0,
+      playerGoal: 0,
+      playerAssists: 0,
+      totalPasses: 0,
+      successfulPasses: 0,
+      passAccuracy: 0,
+    })
+  }
+
+  useEffect(() => {
+    if(currentFirstPlayer) {
+      dispatch(getPerformancesForPlayerThunk({ playerId: currentFirstPlayer }))
+    }
+  }, [dispatch, currentFirstPlayer])
+
+  useEffect(() => {
+    if (currentFirstPlayer) {
+      dispatch(getPerformancesForPlayerThunk({ playerId: currentFirstPlayer }))
+        .then((action: any) => {
+          setFirstPlayerPerformance(action.payload.data)
+        })
+    }
+  }, [dispatch, currentFirstPlayer])
+
+  useEffect(() => {
+    if (currentSecondPlayer) {
+      dispatch(getPerformancesForPlayerThunk({ playerId: currentSecondPlayer }))
+        .then((action: any) => {
+          setSecondPlayerPerformance(action.payload.data)
+        })
+    }
+  }, [dispatch, currentSecondPlayer])
+
+  const firstPlayerStats = calculatePerformance(firstPlayerPerformance)
+  const secondPlayerStats = calculatePerformance(secondPlayerPerformance)
 
   return (
     <div className='Stats-card'>
-      <div className='Stats-card__title'>Stats</div>
       <div className='Stats-card__header'>
         <div className='Stats-card__header-basic'>
           <img alt='team-logo' className='Stats-card__header-basic-image' src={props.team?.logo} />
@@ -105,65 +101,181 @@ export const StatsCard: FC<StatsCardProps> = props => {
             <div className='Stats-card__header-info-data-title'>Players</div>
           </div>
           <div className='Stats-card__header-info-data'>
-            <div className='Stats-card__header-info-data-value'>26.9</div>
+            <div className='Stats-card__header-info-data-value'>{averageAge}</div>
             <div className='Stats-card__header-info-data-title'>Average age</div>
           </div>
         </div>
       </div>
       <div className='Stats-card__content'>
-        <div className='Stats-card__content-overview'>
-          <div className='Stats-card__content-overview--title'>Team Overview</div>
-          {/*<div className='Stats-card__content-trends--radar-chart'>
-            <ResponsiveContainer width='100%' height='100%'>
-              <RadarChart cx='50%' cy='50%' outerRadius='80%' data={pieData}>
-                <PolarGrid gridType='circle' radialLines={false} fill='#37003C'/>
-                <PolarAngleAxis dataKey='subject' />
-                <Radar
-                  name='Mike'
-                  dataKey='A'
-                  stroke='#37003C'
-                  fill='#37003C'
-                  dot={{ r: 8, stroke: '#37003C', fill: '#ffffff' }}
-                />
-                <PolarRadiusAxis />
-              </RadarChart>
-            </ResponsiveContainer>
-          </div>*/}
-        </div>
         <div className='Stats-card__content-trends'>
-          <div className='Stats-card__content-trends--title'>Team Trends</div>
-          {/* <div className='Stats-card__content-trends--line-chart'>
-            <LineChart
-              width={600}
-              height={350}
-              data={data}
-              margin={{
-                top: 5,
-                right: 30,
-                left: 20,
-                bottom: 5,
-              }}
+          <div className='Stats-card__content-trends--title mb-8 font-semibold'>Player Comparison</div>
+          <div className='px-4 flex justify-between'>
+            <Select
+              onValueChange={handleFirstPlayerChange}
+              defaultValue={currentFirstPlayer}
             >
-              <XAxis dataKey='name' label={{ value: 'Minutes played', offset: -5, position: 'insideBottom' }} />
-              <YAxis label={{ value: 'Goals scored/conceded', angle: -90, position: 'insideBottomLeft' }} />
-              <Tooltip />
-              <Legend height={4} />
-              <Line
-                type='monotone'
-                dataKey='GoalScored'
-                stroke='#8884d8'
-                dot={{ stroke: '#37003C', strokeWidth: 1, r: 8 }}
-                activeDot={{ stroke: '#37003C' }}
-              />
-              <Line
-                type='natural'
-                dataKey='GoalConceded'
-                stroke='#82ca9d'
-                strokeWidth={2} dot={{ strokeWidth: 1, r: 8 }}
-                activeDot={{ stroke: '#37003C' }}
-              />
-            </LineChart>
-          </div>*/}
+              <SelectTrigger className='w-[180px]'>
+                <SelectValue placeholder='Player 1'/>
+              </SelectTrigger>
+              <SelectContent>
+                {players
+                  .filter(player => player.id !== currentSecondPlayer)
+                  .map(player => (
+                    <SelectItem key={player.id} value={player.id}>
+                      {player.firstName} {player.lastName}
+                    </SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
+            <Select
+              onValueChange={handleSecondPlayerChange}
+              defaultValue={currentSecondPlayer}
+            >
+              <SelectTrigger className='w-[180px]'>
+                <SelectValue placeholder='Player 2'/>
+              </SelectTrigger>
+              <SelectContent>
+                {players
+                  .filter(player => player.id !== currentFirstPlayer)
+                  .map(player => (
+                    <SelectItem key={player.id} value={player.id}>
+                      {player.firstName} {player.lastName}
+                    </SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className='my-8'>
+            <div className='px-4 grid items-center grid-cols-3 mb-2'>
+              <div className='grid grid-cols-6 items-center gap-2'>
+                <div className='bg-dark-blue2 col-span-1 text-white p-1 text-xs rounded-full text-center'>
+                  {firstPlayerStats.matchesPlayed}
+                </div>
+                <Progress
+                  value={calculatePercentage(firstPlayerStats.matchesPlayed,
+                    firstPlayerStats.matchesPlayed + secondPlayerStats.matchesPlayed)}
+                  className='col-span-5'
+                />
+              </div>
+              <div className='text-sm text-center'>Matches Played</div>
+              <div className='grid grid-cols-6 items-center gap-2'>
+                <Progress
+                  value={calculatePercentage(secondPlayerStats.matchesPlayed,
+                    firstPlayerStats.matchesPlayed + secondPlayerStats.matchesPlayed)}
+                  className='col-span-5'
+                />
+                <div className='bg-dark-blue2 col-span-1 text-white p-1 text-xs rounded-full text-center'>
+                  {secondPlayerStats.matchesPlayed}
+                </div>
+              </div>
+            </div>
+            <div className='px-4 grid items-center grid-cols-3 mb-2'>
+              <div className='grid grid-cols-6 items-center gap-2'>
+                <div className='bg-dark-blue2 col-span-1 text-white p-1 text-xs rounded-full text-center'>
+                  {firstPlayerStats.playerGoal}
+                </div>
+                <Progress
+                  value={calculatePercentage(firstPlayerStats.playerGoal,
+                    firstPlayerStats.playerGoal + secondPlayerStats.playerGoal)}
+                  className='col-span-5'
+                />
+              </div>
+              <div className='text-sm text-center'>Goals</div>
+              <div className='grid grid-cols-6 items-center gap-2'>
+                <Progress
+                  value={calculatePercentage(secondPlayerStats.playerGoal,
+                    firstPlayerStats.playerGoal + secondPlayerStats.playerGoal)}
+                  className='col-span-5'
+                />
+                <div className='bg-dark-blue2 col-span-1 text-white p-1 text-xs rounded-full text-center'>
+                  {secondPlayerStats.playerGoal}
+                </div>
+              </div>
+            </div>
+            <div className='px-4 grid items-center grid-cols-3 mb-2'>
+              <div className='grid grid-cols-6 items-center gap-2'>
+                <div className='bg-dark-blue2 col-span-1 text-white p-1 text-xs rounded-full text-center'>
+                  {firstPlayerStats.playerAssists}
+                </div>
+                <Progress
+                  value={calculatePercentage(firstPlayerStats.playerAssists,
+                    firstPlayerStats.playerAssists + secondPlayerStats.playerAssists)}
+                  className='col-span-5'
+                />
+              </div>
+              <div className='text-sm text-center'>Assists</div>
+              <div className='grid grid-cols-6 items-center gap-2'>
+                <Progress
+                  value={calculatePercentage(secondPlayerStats.playerAssists,
+                    firstPlayerStats.playerAssists + secondPlayerStats.playerAssists)}
+                  className='col-span-5'
+                />
+                <div className='bg-dark-blue2 col-span-1 text-white p-1 text-xs rounded-full text-center'>
+                  {secondPlayerStats.playerAssists}
+                </div>
+              </div>
+            </div>
+            <div className='px-4 grid items-center grid-cols-3 mb-2'>
+              <div className='grid grid-cols-6 items-center gap-2'>
+                <div className='bg-dark-blue2 col-span-1 text-white p-1 text-xs rounded-full text-center'>
+                  {firstPlayerStats.passAccuracy}
+                </div>
+                <Progress
+                  value={calculatePercentage(firstPlayerStats.passAccuracy,
+                    firstPlayerStats.passAccuracy + secondPlayerStats.passAccuracy)}
+                  className='col-span-5'
+                />
+              </div>
+              <div className='text-sm text-center'>Pass Accuracy(%)</div>
+              <div className='grid grid-cols-6 items-center gap-2'>
+                <Progress
+                  value={calculatePercentage(secondPlayerStats.passAccuracy,
+                    firstPlayerStats.passAccuracy + secondPlayerStats.passAccuracy)}
+                  className='col-span-5'
+                />
+                <div className='bg-dark-blue2 col-span-1 text-white p-1 text-xs rounded-full text-center'>
+                  {secondPlayerStats.passAccuracy}
+                </div>
+              </div>
+            </div>
+            <div className='px-4 grid items-center grid-cols-3 mb-2'>
+              {currentFirstPlayer &&
+                <Link
+                  to={`/team/${props.team?.id}/player/${currentFirstPlayer}/statistics`}
+                  className='text-sm hover:underline'
+                >
+                  View full stats
+                </Link>}
+              <div></div>
+              {currentSecondPlayer &&
+                <Link
+                  to={`/team/${props.team?.id}/player/${currentSecondPlayer}/statistics`}
+                  className='text-sm hover:underline'
+                >
+                  View full stats
+                </Link>}
+            </div>
+          </div>
+        </div>
+        <div className='Stats-card__content-overview'>
+          <div className='Stats-card__content-overview--title mb-8 font-semibold'>Quick Links</div>
+          <div className='flex flex-col gap-3 px-5'>
+            <Link to='team/create-team'
+              className='text-sm text-dark-purple flex gap-2 items-center w-fit border-b border-dark-purple'
+            >
+              Add new team <ArrowTopRightOnSquareIcon className='fill-dark-purple h-4'/>
+            </Link>
+            <Link to='staffs/add-staff'
+              className='text-sm text-dark-purple flex gap-2 items-center w-fit border-b border-dark-purple'
+            >
+              Add new staff <ArrowTopRightOnSquareIcon className='fill-dark-purple h-4'/>
+            </Link>
+            <Link to='players/add-player'
+              className='text-sm text-dark-purple flex gap-2 items-center w-fit border-b border-dark-purple'
+            >
+              Add new player <ArrowTopRightOnSquareIcon className='fill-dark-purple h-4'/>
+            </Link>
+          </div>
         </div>
       </div>
     </div>

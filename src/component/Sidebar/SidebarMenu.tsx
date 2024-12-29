@@ -180,7 +180,7 @@ export const Sidebar: FC<SidebarProps> = (props) => {
       tabType: 'TEAM',
       image: TeamsIcon,
       activeImage: TeamsActiveIcon,
-      link: `/team/${activeTeamId}/manage-teams`,
+      link: `/team/${activeTeamId}/team`,
     },
     {
       tabName: 'Players',

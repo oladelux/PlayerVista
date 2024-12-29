@@ -45,7 +45,7 @@
 
       &--date {
         font-weight: 600;
-        font-size: 0.875em;
+        font-size: 0.675em;
         color: colors.$color-dark-purple;
         width: 15%;
 
@@ -75,7 +75,7 @@
 
       &--time {
         width: 10%;
-        font-size: 0.75em;
+        font-size: 0.65em;
         color: colors.$color-dark-purple;
 
         @include mixins.mobile {

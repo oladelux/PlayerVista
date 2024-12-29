@@ -143,6 +143,7 @@ export type AuthenticatedUserData = {
   teamId: string
   isEmailVerified: boolean
   password: string
+  parentUserId: string
   createdAt: string
   updatedAt: string
 }
@@ -330,6 +331,7 @@ export type StaffData = {
   groupId: string
   teamId: string
   password: string
+  parentUserId: string
 }
 
 export type Staff = {
@@ -703,4 +705,97 @@ export async function getPerformancesForPlayer(
 
 export async function generatePDF(data: { html: string}): Promise<Response> {
   return await apiRequest('/pdf-rendering/generate', 'POST', data)
+}
+
+type SubscribeData = {
+  subscriptionPlan: SubscriptionPlan
+  planPeriod: SubscriptionType
+}
+
+export enum SubscriptionPlan {
+  STARTER = 'starter',
+  PRO = 'pro',
+}
+
+export enum SubscriptionType {
+  MONTHLY = 'monthly',
+  YEARLY = 'yearly',
+}
+
+/*export const planCodes: Record<SubscriptionPlan, string> = {
+  [SubscriptionPlan.STARTER_MONTHLY]: 'PLN_zpu4ypdq1mfln04',
+  [SubscriptionPlan.STARTER_ANNUAL]: 'PLN_w0izup1tjq0vrni',
+  [SubscriptionPlan.PRO_MONTHLY]: 'PLN_tp7tsmies8bu8dn',
+  [SubscriptionPlan.PRO_ANNUAL]: 'PLN_ktuhzv85e8l0qdb',
+}*/
+
+type SubscriptionResponse = {
+  redirectUrl: string
+  redirect: boolean
+}
+export async function selectSubscription(data: SubscribeData): Promise<SubscriptionResponse> {
+  const res = await apiRequest('/auth/choose-subscription', 'POST', data)
+  return await res.json()
+}
+
+type SubscriptionVerification = {
+  reference: string
+  userId: string
+}
+
+export enum SubscriptionPlanType {
+  STARTER = 'starter',
+  PRO = 'pro',
+}
+
+export enum SubscriptionType {
+  TRIAL = 'trial',
+  PAID = 'paid',
+}
+
+export enum SubscriptionStatus {
+  ACTIVE = 'active',
+  INACTIVE = 'inactive',
+  CANCELLED = 'cancelled',
+}
+
+export interface TeamSubscription {
+  id: string;
+  parentTeamId: string;
+  userId: string;
+  subscriptionPlan: SubscriptionPlanType;
+  subscriptionType: SubscriptionType;
+  status: SubscriptionStatus;
+  paystackCustomerId: string;
+  subscriptionId: string;
+  trialStart: Date | null;
+  trialEnd: Date | null;
+  subscriptionEnd: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+
+export async function confirmTransaction(
+  data: SubscriptionVerification,
+): Promise<TeamSubscription> {
+  const res = await apiRequest('/checkout/verify', 'POST', data)
+  return await res.json()
+}
+
+export interface Subscription {
+  id: string
+  userId: string
+  subscriptionPlan: SubscriptionPlanType
+  subscriptionType: SubscriptionType
+  status: SubscriptionStatus
+  paystackCustomerId: string
+  subscriptionId: string
+  subscriptionEnd: Date
+  trialStart: Date | null
+  trialEnd: Date | null
+}
+export async function getSubscription(userId: string): Promise<Subscription> {
+  const res = await apiRequest(`/subscription/user/${userId}`, 'GET')
+  return await res.json()
 }

@@ -9,7 +9,8 @@ type Item = {
     | boolean
     | undefined
     | ReactElement
-    | { teamId: string | undefined; playerId: string };
+    | { teamId?: string | undefined; playerId?: string | undefined;
+    manageLink?: string; viewStatsLink?: string };
 };
 
 export type Column<T> = {
