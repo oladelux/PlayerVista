@@ -3,7 +3,7 @@ import { TeamResponse } from '@/api'
 export function getTeamDefaultValues(team: TeamResponse | null) {
   return {
     teamName: team?.teamName,
-    establishmentYear: team ? new Date(team.creationYear).getFullYear() : '',
+    establishmentYear: team ? new Date(team.creationYear).getFullYear().toString() : '',
     teamGender: team?.teamGender,
     ageGroup: team?.ageGroup,
     headCoach: team?.headCoach,
