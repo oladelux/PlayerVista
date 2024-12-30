@@ -1,6 +1,14 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-
-import { ClientError, createStaff, getStaffs, Staff, StaffData, StaffDataResponse } from '../../api'
+import {
+  ClientError,
+  createStaff, deleteStaff,
+  getStaffs,
+  getUserDetails,
+  Staff,
+  StaffData,
+  StaffDataResponse, updateStaff,
+  UserDetailsResponse,
+} from '@/api'
 import { AsyncThunkLoading, RootState } from '../types.ts'
 
 type InitialStaffState = {
@@ -13,12 +21,20 @@ type InitialStaffState = {
    * The loading state of getting all staffs
    */
   loadingGettingStaff: AsyncThunkLoading
+  loadingGettingSingleStaff: AsyncThunkLoading
+  loadingUpdatingStaff: AsyncThunkLoading
+  loadingDeletingStaff: AsyncThunkLoading
+  staff: UserDetailsResponse | null
 }
 
 const initialState: InitialStaffState = {
   staffs: [],
   loadingCreatingStaff: 'idle',
   loadingGettingStaff: 'idle',
+  loadingGettingSingleStaff: 'idle',
+  loadingUpdatingStaff: 'idle',
+  loadingDeletingStaff: 'idle',
+  staff: null,
 }
 
 /**
@@ -52,6 +68,48 @@ export const getStaffsThunk = createAsyncThunk<
       return rejectWithValue(e.message)
     }
     return rejectWithValue('Unexpected error in getting staffs')
+  }
+})
+
+/**
+ * Gets a staff member
+ */
+export const getStaffThunk = createAsyncThunk<
+  undefined | UserDetailsResponse,
+  { id: string | undefined }
+>('staffs/staff', ({ id }) => {
+  if(id)
+    return getUserDetails(id)
+} )
+
+/**
+ * Update the staff
+ */
+export const updateStaffThunk = createAsyncThunk<
+  unknown,
+  { id: string, data: Partial<StaffData> }
+>('staffs/updateStaff', ({ id, data }, { rejectWithValue }) => {
+  try {
+    return updateStaff(id, data)
+  } catch (e) {
+    if (e instanceof ClientError) {
+      return rejectWithValue(e.message)
+    }
+    return rejectWithValue('Unexpected error in updating staff')
+  }
+})
+
+export const deleteStaffThunk = createAsyncThunk<
+  unknown,
+  { id: string }
+>('staffs/deleteStaff', async ({ id }, { rejectWithValue }) => {
+  try {
+    await deleteStaff(id)
+  } catch (e) {
+    if (e instanceof ClientError) {
+      return rejectWithValue(e.message)
+    }
+    return rejectWithValue('Unexpected error in deleting staff')
   }
 })
 
@@ -101,6 +159,63 @@ export const staffSlice = createSlice({
         ) {
           state.loadingGettingStaff = 'failed'
           console.error('Error getting all staffs', action.error)
+        }
+      })
+      .addCase(getStaffThunk.pending, state => {
+        state.loadingGettingSingleStaff = 'pending'
+      })
+      .addCase(getStaffThunk.fulfilled, (state, action) => {
+        if (
+          state.loadingGettingSingleStaff === 'pending'
+        ) {
+          state.loadingGettingSingleStaff = 'succeeded'
+          if (action.payload) {
+            state.staff = action.payload
+          }
+        }
+      })
+      .addCase(getStaffThunk.rejected, (state, action) => {
+        if (
+          state.loadingGettingSingleStaff === 'pending'
+        ) {
+          state.loadingGettingSingleStaff = 'failed'
+          console.error('Error getting single staff', action.error)
+        }
+      })
+      .addCase(updateStaffThunk.pending, state => {
+        state.loadingUpdatingStaff = 'pending'
+      })
+      .addCase(updateStaffThunk.fulfilled, state => {
+        if (
+          state.loadingUpdatingStaff === 'pending'
+        ) {
+          state.loadingUpdatingStaff = 'succeeded'
+        }
+      })
+      .addCase(updateStaffThunk.rejected, (state, action) => {
+        if (
+          state.loadingUpdatingStaff === 'pending'
+        ) {
+          state.loadingUpdatingStaff = 'failed'
+          console.error('Error updating staff', action.error)
+        }
+      })
+      .addCase(deleteStaffThunk.pending, state => {
+        state.loadingDeletingStaff = 'pending'
+      })
+      .addCase(deleteStaffThunk.fulfilled, state => {
+        if (
+          state.loadingDeletingStaff === 'pending'
+        ) {
+          state.loadingDeletingStaff = 'succeeded'
+        }
+      })
+      .addCase(deleteStaffThunk.rejected, (state, action) => {
+        if (
+          state.loadingDeletingStaff === 'pending'
+        ) {
+          state.loadingDeletingStaff = 'failed'
+          console.error('Error deleting staff', action.error)
         }
       })
   },

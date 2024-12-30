@@ -1,11 +1,18 @@
 import { useAppDispatch } from '@/store/types.ts'
 import { useEffect } from 'react'
-import { getTeamThunk, teamSelector } from '@/store/slices/TeamSlice.ts'
+import { getTeamThunk, teamSelector, updateTeamThunk } from '@/store/slices/TeamSlice.ts'
 import { useSelector } from 'react-redux'
+import { TeamFormData } from '@/api'
 
 export const useTeam = (teamId?: string) => {
   const dispatch = useAppDispatch()
   const { team } = useSelector(teamSelector)
+
+  async function updateTeam(data: TeamFormData) {
+    if (teamId) {
+      await dispatch(updateTeamThunk({ teamId, data }))
+    }
+  }
 
   useEffect(() => {
     if (teamId) {
@@ -13,5 +20,5 @@ export const useTeam = (teamId?: string) => {
     }
   }, [dispatch, teamId])
 
-  return { team }
+  return { team, updateTeam }
 }
