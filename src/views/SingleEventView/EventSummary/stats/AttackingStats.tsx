@@ -15,7 +15,7 @@ interface AttackingStatsProps {
   players: Player[]
 }
 
-type AttackingActionType = 'shots' | 'dribbles' | 'cornerKick' | 'freekick' | 'offside' | 'goals' | 'assists'
+type AttackingActionType = 'shots' | 'dribbles' | 'freekick' | 'goals' | 'assists'
 
 export const AttackingStats: FC<AttackingStatsProps> = ({ players }) => {
   const { eventId } = useParams()
@@ -26,10 +26,10 @@ export const AttackingStats: FC<AttackingStatsProps> = ({ players }) => {
   const data = getPlayerActions(players, performance)
 
   const renderPlayerActions = (actions: PlayerActions | undefined) => {
-    const actionTypes: AttackingActionType[] = ['shots', 'dribbles', 'cornerKick', 'freekick', 'offside', 'goals', 'assists']
+    const actionTypes: AttackingActionType[] = ['shots', 'dribbles', 'freekick', 'goals', 'assists']
     if (!actions) {
       return actionTypes.map((type) => {
-        if(type === 'goals' || type === 'assists' || type === 'offside') {
+        if(type === 'goals' || type === 'assists') {
           return (
             <Fragment key={type}>
               <TableCell className='text-center border-r'>
@@ -49,7 +49,7 @@ export const AttackingStats: FC<AttackingStatsProps> = ({ players }) => {
       const filteredActions = actions[type]?.filter(action =>
         action.timestamp >= timeRange[0] && action.timestamp <= timeRange[1],
       )
-      if(type === 'goals' || type === 'assists' || type === 'offside') {
+      if(type === 'goals' || type === 'assists') {
         return (
           <Fragment key={type}>
             <TableCell className='text-center border-r'>
@@ -104,9 +104,7 @@ export const AttackingStats: FC<AttackingStatsProps> = ({ players }) => {
               <TableHead className='border-r'>Name</TableHead>
               <TableHead colSpan={2} className='text-center border-r'>Shots</TableHead>
               <TableHead colSpan={2} className='text-center border-r'>Dribble</TableHead>
-              <TableHead colSpan={2} className='text-center border-r'>Corner</TableHead>
               <TableHead colSpan={2} className='text-center border-r'>Free Kick</TableHead>
-              <TableHead className='border-r'>Offside</TableHead>
               <TableHead className='border-r'>Goals</TableHead>
               <TableHead className='border-r'>Assists</TableHead>
             </TableRow>
@@ -119,11 +117,8 @@ export const AttackingStats: FC<AttackingStatsProps> = ({ players }) => {
               <TableHead className='text-center border-r' title='Shots Off'>Sht.Off</TableHead>
               <TableHead className='text-center border-r' title='Attempted Dribble'>ATT.Drb</TableHead>
               <TableHead className='text-center border-r' title='Successful Dribble'>SUC.Drb</TableHead>
-              <TableHead className='text-center border-r' title='Left Corner'>L.Cnr</TableHead>
-              <TableHead className='text-center border-r' title='Right Corner'>R.Cnr</TableHead>
               <TableHead className='text-center border-r' title='Free Kick Won'>FK.Won</TableHead>
               <TableHead className='text-center border-r' title='Free Kick Given'>FK.Given</TableHead>
-              <TableHead className='border-r'></TableHead>
               <TableHead className='border-r'></TableHead>
               <TableHead className='border-r'></TableHead>
             </TableRow>

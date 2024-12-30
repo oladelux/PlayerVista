@@ -765,6 +765,7 @@ export enum SubscriptionType {
 
 export enum SubscriptionStatus {
   ACTIVE = 'active',
+  PENDING = 'pending',
   INACTIVE = 'inactive',
   CANCELLED = 'cancelled',
 }

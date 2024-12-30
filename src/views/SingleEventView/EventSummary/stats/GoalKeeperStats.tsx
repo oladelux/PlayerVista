@@ -13,7 +13,7 @@ interface GoalKeeperStatsProps {
 }
 
 //TODO: Add cleanSheet action type
-type GoalKeeperActionType = 'saves' | 'aerialClearance' | 'goals' | 'assists';
+type GoalKeeperActionType = 'saves' | 'OneVOneSaves' | 'penaltySaves' | 'goalConceded' | 'freekickSaves';
 
 export const GoalKeeperStats: FC<GoalKeeperStatsProps> = ({ players }) => {
 
@@ -32,10 +32,10 @@ export const GoalKeeperStats: FC<GoalKeeperStatsProps> = ({ players }) => {
   })
 
   const renderPlayerActions = (actions: PlayerActions | undefined) => {
-    const actionTypes: GoalKeeperActionType[] = ['saves', 'aerialClearance', 'goals', 'assists']
+    const actionTypes: GoalKeeperActionType[] = ['saves', 'OneVOneSaves', 'goalConceded', 'penaltySaves', 'freekickSaves']
     if (!actions) {
       return actionTypes.map((type) => {
-        if(type === 'goals' || type === 'assists') {
+        if(type === 'OneVOneSaves' || type === 'goalConceded' || type === 'penaltySaves' || type === 'freekickSaves') {
           return (
             <Fragment key={type}>
               <TableCell className='text-center border-r'>
@@ -55,7 +55,7 @@ export const GoalKeeperStats: FC<GoalKeeperStatsProps> = ({ players }) => {
       const filteredActions = actions[type]?.filter(action =>
         action.timestamp >= timeRange[0] && action.timestamp <= timeRange[1],
       )
-      if(type === 'goals' || type === 'assists') {
+      if(type === 'OneVOneSaves' || type === 'goalConceded' || type === 'penaltySaves' || type === 'freekickSaves') {
         return (
           <Fragment key={type}>
             <TableCell className='text-center border-r'>
@@ -110,10 +110,10 @@ export const GoalKeeperStats: FC<GoalKeeperStatsProps> = ({ players }) => {
               <TableHead className='border-r'>Mins.</TableHead>
               <TableHead className='border-r'>Name</TableHead>
               <TableHead colSpan={2} className='text-center border-r'>Saves</TableHead>
-              <TableHead colSpan={2} className='text-center border-r'>Passes</TableHead>
-              <TableHead colSpan={2} className='text-center border-r'>Aerial Clearance</TableHead>
-              <TableHead className='border-r'>Goals</TableHead>
-              <TableHead className='border-r'>Assists</TableHead>
+              <TableHead className='border-r'>1v1 Saves</TableHead>
+              <TableHead className='border-r'>Goals Conceded</TableHead>
+              <TableHead className='border-r'>Pen Saves</TableHead>
+              <TableHead className='border-r'>FK Saves</TableHead>
             </TableRow>
             <TableRow>
               <TableHead className='border-r'></TableHead>
@@ -122,10 +122,8 @@ export const GoalKeeperStats: FC<GoalKeeperStatsProps> = ({ players }) => {
               <TableHead className='border-r'></TableHead>
               <TableHead className='text-center border-r' title='Total Shots Faced'>TSF</TableHead>
               <TableHead className='text-center border-r' title='Total Shots Saved'>TSS</TableHead>
-              <TableHead className='text-center border-r' title='Attempted Passes'>ATP</TableHead>
-              <TableHead className='text-center border-r' title='Completed Passes'>CMP</TableHead>
-              <TableHead className='text-center border-r' title='Attempted Clearance'>ATC</TableHead>
-              <TableHead className='text-center border-r' title='Successful Clearance'>SUC</TableHead>
+              <TableHead className='border-r'></TableHead>
+              <TableHead className='border-r'></TableHead>
               <TableHead className='border-r'></TableHead>
               <TableHead className='border-r'></TableHead>
             </TableRow>
