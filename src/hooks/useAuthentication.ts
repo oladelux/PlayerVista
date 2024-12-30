@@ -65,6 +65,9 @@ export function useAuthentication (
         if(subscription){
           if(subscription.status === SubscriptionStatus.ACTIVE){
             navigate(routes.team)
+          } else if(subscription.status === SubscriptionStatus.PENDING){
+            sessionStorage.setItem('userData', JSON.stringify(userData))
+            navigate(routes.selectPlan)
           }
         } else {
           sessionStorage.setItem('userData', JSON.stringify(userData))

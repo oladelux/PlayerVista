@@ -12,7 +12,7 @@ interface DefendingStatsProps {
   players: Player[]
 }
 
-type DefendingActionType = 'tackles' | 'aerialDuels' | 'fouls' | 'interceptions' | 'clearances' | 'recoveries' | 'blocks' | 'mistakes' | 'goals' | 'assists'
+type DefendingActionType = 'tackles' | 'aerialDuels' | 'fouls' | 'interceptions' | 'clearances' | 'blocks' | 'recoveries'
 
 export const DefendingStats: FC<DefendingStatsProps> = ({ players }) => {
 
@@ -24,10 +24,10 @@ export const DefendingStats: FC<DefendingStatsProps> = ({ players }) => {
   const data = getPlayerActions(players, performance)
 
   const renderPlayerActions = (actions: PlayerActions | undefined) => {
-    const actionTypes: DefendingActionType[] = ['tackles', 'aerialDuels', 'fouls', 'interceptions', 'clearances', 'recoveries', 'blocks', 'mistakes', 'goals', 'assists']
+    const actionTypes: DefendingActionType[] = ['tackles', 'aerialDuels', 'fouls', 'interceptions', 'clearances', 'recoveries', 'blocks']
     if (!actions) {
       return actionTypes.map((type) => {
-        if(type === 'goals' || type === 'assists' || type === 'mistakes' || type === 'recoveries' || type === 'blocks' || type === 'clearances' || type === 'interceptions') {
+        if(type === 'recoveries' || type === 'blocks' || type === 'clearances' || type === 'interceptions') {
           return (
             <Fragment key={type}>
               <TableCell className='text-center border-r'>
@@ -47,7 +47,7 @@ export const DefendingStats: FC<DefendingStatsProps> = ({ players }) => {
       const filteredActions = actions[type]?.filter(action =>
         action.timestamp >= timeRange[0] && action.timestamp <= timeRange[1],
       )
-      if(type === 'goals' || type === 'assists' || type === 'mistakes' || type === 'recoveries' || type === 'blocks' || type === 'clearances' || type === 'interceptions') {
+      if(type === 'recoveries' || type === 'blocks' || type === 'clearances' || type === 'interceptions') {
         return (
           <Fragment key={type}>
             <TableCell className='text-center border-r'>
@@ -108,9 +108,6 @@ export const DefendingStats: FC<DefendingStatsProps> = ({ players }) => {
               <TableHead className='border-r'>Clr</TableHead>
               <TableHead className='border-r'>Recvr</TableHead>
               <TableHead className='border-r'>Blocks</TableHead>
-              <TableHead className='border-r'>Mstk</TableHead>
-              <TableHead className='border-r'>Goals</TableHead>
-              <TableHead className='border-r'>Assists</TableHead>
             </TableRow>
             <TableRow>
               <TableHead className='border-r'></TableHead>
@@ -123,9 +120,6 @@ export const DefendingStats: FC<DefendingStatsProps> = ({ players }) => {
               <TableHead className='text-center border-r' title='Successful Duels'>SUD</TableHead>
               <TableHead className='text-center border-r' title='Foul Won'>FW</TableHead>
               <TableHead className='text-center border-r' title='Foul Commited'>FC</TableHead>
-              <TableHead className='border-r'></TableHead>
-              <TableHead className='border-r'></TableHead>
-              <TableHead className='border-r'></TableHead>
               <TableHead className='border-r'></TableHead>
               <TableHead className='border-r'></TableHead>
               <TableHead className='border-r'></TableHead>

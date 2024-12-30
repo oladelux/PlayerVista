@@ -86,24 +86,6 @@ export const EventSummary:FC<EventSummaryProps> = ({ players, events, teams }) =
             {value === 'attacking' && <AttackingStats players={players} />}
             {value === 'otherstats' && <OtherStats players={players} />}
           </div>
-          {/*<div className='Event-summary__content-tab'>
-            {tabCategory.map(category =>
-              <TabButton
-                className='Event-summary__content-tab-category'
-                key={category}
-                isActive={activeCategory === category}
-                onClick={() => setSelectedCategory(category)}>{category}
-              </TabButton>,
-            )}
-          </div>*/}
-          {/*<div className='Event-summary__content-section'>
-            {tabCategory.map(category =>
-              <TabContent key={category} isActive={activeCategory === category}>
-                {category === 'Summary' && <SummaryContent />}
-                {category === 'Player Stats' && <PlayerSummaryStats players={players} />}
-              </TabContent>,
-            )}
-          </div>*/}
         </div>
       </div>
     </DashboardLayout>

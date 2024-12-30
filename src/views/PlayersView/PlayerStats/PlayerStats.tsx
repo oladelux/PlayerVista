@@ -121,6 +121,10 @@ export default function PlayerStats() {
 
     return true
   })
+  const totalMinutesPlayed = filteredData.reduce((sum, match) => {
+    return sum + (match.minutePlayed || 0)
+  }, 0)
+  const numberOfMatchesPlayed = filteredData.filter(match => match.minutePlayed !== null).length
 
   // Sort filtered data by event start date
   const sortedPlayerDataForPDF = filteredData.sort((a, b) => {
@@ -216,11 +220,11 @@ export default function PlayerStats() {
           </div>
           <div className='flex items-center justify-between'>
             <div className='text-sub-text text-xs'>TOTAL MINUTES PLAYED</div>
-            <div className='text-xs'>{0}</div>
+            <div className='text-xs'>{totalMinutesPlayed}</div>
           </div>
           <div className='flex items-center justify-between'>
             <div className='text-sub-text text-xs'>TOTAL MATCHES PLAYED</div>
-            <div className='text-xs'>{filteredData.length}</div>
+            <div className='text-xs'>{numberOfMatchesPlayed}</div>
           </div>
         </div>
       </div>
