@@ -35,7 +35,7 @@ type TabType =
   | 'TEAM'
   | 'PLAYERS'
   | 'STAFF'
-  | 'EVENT'
+  | 'CALENDER'
   | 'STATISTICS'
   | 'MESSAGE'
   | 'REPORTERS';
@@ -44,7 +44,7 @@ const sidebarMenu = [
   'TEAM',
   'PLAYERS',
   'STAFF',
-  'EVENT',
+  'CALENDER',
   'STATISTICS',
   'MESSAGE',
   'REPORTERS',
@@ -190,8 +190,8 @@ export const Sidebar: FC<SidebarProps> = (props) => {
       link: `/team/${activeTeamId}/players`,
     },
     {
-      tabName: 'Event',
-      tabType: 'EVENT',
+      tabName: 'Calender',
+      tabType: 'CALENDER',
       image: EventIcon,
       activeImage: EventActiveIcon,
       link: `/team/${activeTeamId}/events`,

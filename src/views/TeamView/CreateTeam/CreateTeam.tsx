@@ -124,6 +124,7 @@ const CreateTeamMultiStep: FC<DashboardCreateTeamProps> = ({ logger, user }) => 
           const data: TeamFormData = {
             ...(values as TeamFormData),
             userId: user.id,
+            creationYear: new Date(values.creationYear).getFullYear().toString(),
             logo: file,
           }
           await dispatch(createTeamThunk({ data }))
@@ -203,22 +204,13 @@ const CreateTeamMultiStep: FC<DashboardCreateTeamProps> = ({ logger, user }) => 
               >
                 <option>Select Age Group</option>
                 <option value='under-7'>Under-7</option>
-                <option value='under-8'>Under-8</option>
                 <option value='under-9'>Under-9</option>
-                <option value='under-10'>Under-10</option>
                 <option value='under-11'>Under-11</option>
-                <option value='under-12'>Under-12</option>
                 <option value='under-13'>Under-13</option>
-                <option value='under-14'>Under-14</option>
                 <option value='under-15'>Under-15</option>
-                <option value='under-16'>Under-16</option>
                 <option value='under-17'>Under-17</option>
-                <option value='under-18'>Under-18</option>
                 <option value='under-19'>Under-19</option>
-                <option value='under-20'>Under-20</option>
                 <option value='under-21'>Under-21</option>
-                <option value='under-22'>Under-22</option>
-                <option value='under-23'>Under-23</option>
                 <option value='senior-team'>Senior Team</option>
               </Field>
             </div>

@@ -1,11 +1,10 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-
 import { AsyncThunkLoading, RootState } from '../types'
 import {
   ClientError,
   createTeam, getTeam, getTeamsByUser,
   TeamDataResponse,
-  TeamFormData, TeamResponse,
+  TeamFormData, TeamResponse, updateTeam,
 } from '@/api'
 
 type InitialTeamState = {
@@ -17,6 +16,7 @@ type InitialTeamState = {
   loadingCreatingTeamStatus: AsyncThunkLoading
   loadingGettingTeams: AsyncThunkLoading
   loadingGettingTeam: AsyncThunkLoading
+  loadingUpdatingTeam: AsyncThunkLoading
 }
 
 const initialState: InitialTeamState = {
@@ -25,6 +25,7 @@ const initialState: InitialTeamState = {
   loadingCreatingTeamStatus: 'idle',
   loadingGettingTeams: 'idle',
   loadingGettingTeam: 'idle',
+  loadingUpdatingTeam: 'idle',
 }
 
 /**
@@ -64,6 +65,23 @@ export const getTeamThunk = createAsyncThunk<
   if(id)
     return getTeam(id)
 } )
+
+/**
+ * Update the team
+ */
+export const updateTeamThunk = createAsyncThunk<
+  unknown,
+  { teamId: string, data: TeamFormData }
+>('teams/updateTeam', ({ teamId, data }, { rejectWithValue }) => {
+  try {
+    return updateTeam(data, teamId)
+  } catch (e) {
+    if (e instanceof ClientError) {
+      return rejectWithValue(e.message)
+    }
+    return rejectWithValue('Unexpected error in updating team')
+  }
+})
 
 export const teamSlice = createSlice({
   name: 'teams',
@@ -133,6 +151,25 @@ export const teamSlice = createSlice({
         ) {
           state.loadingGettingTeam = 'failed'
           console.error('Error getting team', action.error)
+        }
+      })
+
+      .addCase(updateTeamThunk.pending, state => {
+        state.loadingUpdatingTeam = 'pending'
+      })
+      .addCase(updateTeamThunk.fulfilled, state => {
+        if (
+          state.loadingUpdatingTeam === 'pending'
+        ) {
+          state.loadingUpdatingTeam = 'succeeded'
+        }
+      })
+      .addCase(updateTeamThunk.rejected, (state, action) => {
+        if (
+          state.loadingUpdatingTeam === 'pending'
+        ) {
+          state.loadingUpdatingTeam = 'failed'
+          console.error('Error updating team', action.error)
         }
       })
   },

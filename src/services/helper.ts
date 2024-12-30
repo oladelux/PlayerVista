@@ -69,7 +69,7 @@ export const combinedDate = (date: Date, time: string) => {
     date.getDate(),
     parseInt(time.slice(0, 2)),
     parseInt(time.slice(3, 5)),
-    parseInt(time.slice(6, 8)),
+    0,
   )
 }
 

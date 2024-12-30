@@ -64,14 +64,12 @@ export const EventCalender:FC<EventCalenderProps> = props => {
         navigate(`/team/${teamId}/events/${id}`)
       } else {
         openSelectedEventModal()
-        console.log('in')
       }
     },
     [navigate, teamId],
   )
 
   useEffect(() => {
-    // const now = new Date()
     if(props.events) {
       const newEvents = props.events.map((item) => {
         return {

@@ -403,6 +403,16 @@ export async function getStaffs(groupId: string): Promise<StaffDataResponse> {
   return await res.json()
 }
 
+export async function updateStaff(
+  id: string, data: Partial<StaffData>): Promise<StaffDataResponse> {
+  const res = await apiRequest(`/users/${id}`, 'PATCH', data)
+  return await res.json()
+}
+
+export async function deleteStaff(id: string): Promise<Response> {
+  return await apiRequest(`/users/${id}`, 'DELETE')
+}
+
 export async function createReporter(data: ReporterData): Promise<Reporter> {
   const res = await apiRequest('/v1/reporter', 'POST', data)
   return await res.json()
@@ -452,7 +462,7 @@ export async function getAuthenticatedUser(): Promise<AuthenticatedUserData> {
   return await res.json()
 }
 
-type UserDetailsResponse = {
+export type UserDetailsResponse = {
   id: string
   firstName: string
   lastName: string
@@ -755,6 +765,7 @@ export enum SubscriptionType {
 
 export enum SubscriptionStatus {
   ACTIVE = 'active',
+  PENDING = 'pending',
   INACTIVE = 'inactive',
   CANCELLED = 'cancelled',
 }

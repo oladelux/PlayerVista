@@ -20,7 +20,7 @@ export const MobileNav: FC = () => {
     { tabName: 'Team', icon: TeamsIcon, link: `/team/${activeTeamId}/manage-teams` },
     { tabName: 'Staff', icon: UserManagementIcon, link: `/team/${activeTeamId}/staffs` },
     { tabName: 'Players', icon: PlayerIcon, link: `/team/${activeTeamId}/players` },
-    { tabName: 'Event', icon: EventIcon, link: `/team/${activeTeamId}/events` },
+    { tabName: 'Calender', icon: EventIcon, link: `/team/${activeTeamId}/events` },
     { tabName: 'Statistics', icon: StatisticsIcon, link: `/team/${activeTeamId}/statistics` },
   ]
 
