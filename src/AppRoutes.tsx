@@ -39,6 +39,7 @@ import SelectPlan from '@/views/SelectPlan/SelectPlan.tsx'
 import PaymentCallback from '@/views/SelectPlan/PaymentCallback.tsx'
 import { Teams } from '@/views/Teams/Teams.tsx'
 import { ManageTeam } from '@/views/Teams/form/ManageTeam.tsx'
+import { EditStaff } from '@/views/UserManagementView/Staffs/EditStaff/EditStaff.tsx'
 
 export const AppRoutes: FC = () => {
   const controller = useAppController()
@@ -139,12 +140,13 @@ export const AppRoutes: FC = () => {
         <Route path={routes.singlePlayer} element={<SinglePlayerView />} />
         <Route
           path={routes.staffs}
-          element={<Staffs staffs={staffs} user={user.data} />}
+          element={<Staffs staffs={staffs} user={user.data} logger={logger} />}
         />
         <Route
           path={routes.addStaff}
           element={<AddStaff user={user.data} logger={logger} />}
         />
+        <Route path={routes.manageStaff} element={<EditStaff />} />
         <Route
           path={routes.addReporter}
           element={<AddReporter user={user.data} logger={logger} />}
@@ -184,7 +186,7 @@ export const AppRoutes: FC = () => {
             <PlayerEventStats events={events} teams={teams} />
           }
         />
-        <Route path={routes.manageTeam} element={<ManageTeam teams={teams} user={user.data} />} />
+        <Route path={routes.manageTeam} element={<ManageTeam />} />
         <Route path={routes.account} element={<MyAccount />} />
         <Route path={routes.logout} element={<MyAccount />} />
         <Route

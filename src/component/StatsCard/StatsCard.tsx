@@ -40,7 +40,6 @@ export const StatsCard: FC<StatsCardProps> = props => {
   }
 
   function calculatePerformance(performanceData: PlayerPerformance[]) {
-    console.log('performanceData', performanceData)
     return performanceData.reduce((acc, event) => {
       acc.matchesPlayed += 1
       acc.playerGoal += event.actions['goals'].length

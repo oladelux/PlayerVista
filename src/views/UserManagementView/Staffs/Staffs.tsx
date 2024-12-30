@@ -11,9 +11,15 @@ import { DashboardLayout } from '@/component/DashboardLayout/DashboardLayout.tsx
 import { Column, Table } from '@/component/Table/Table.tsx'
 
 import './Staffs.scss'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
 import { usePermission } from '@/hooks/usePermission.ts'
+import { EyeIcon } from 'lucide-react'
+import { ConfirmStaffDeletion } from '@/views/UserManagementView/Staffs/ConfirmStaffDeletion.tsx'
+import { AppDispatch } from '@/store/types.ts'
+import { useToast } from '@/hooks/use-toast.ts'
+import { UseUpdates } from '@/hooks/useUpdates.ts'
+import { deleteStaffThunk } from '@/store/slices/StaffSlice.ts'
 
 const staffColumns: Column<never>[] = [
   { key: 'name', title: 'Name' },
@@ -32,28 +38,58 @@ const staffColumns: Column<never>[] = [
   {
     key: 'action',
     title: 'Action',
-    render: (value: string) => <a className='table-link' href={value}>View</a>,
+    render: (value: { manageLink: string, deleteStaffLink: () => void }) => (<div className='flex gap-2 items-center'>
+      <Link className='table-link' to={value.manageLink}><EyeIcon width={16} /></Link>
+      <ConfirmStaffDeletion onDeleted={value.deleteStaffLink} />
+    </div>),
   },
 ]
 
 type StaffsProps = {
   staffs: Staff[]
   user: AuthenticatedUserData
+  logger: UseUpdates
 }
 
-export const Staffs: FC<StaffsProps> = ({ staffs, user }) => {
+export const Staffs: FC<StaffsProps> = ({ staffs, user, logger }) => {
   const { teamId } = useParams()
+  const { toast } = useToast()
+  const dispatch = useDispatch<AppDispatch>()
   const { userRole } = useSelector(settingsSelector)
   const { canCreateStaff } = usePermission(userRole)
   const { searchPlayerValue, handleSearchInput } = usePlayers()
   const filteredStaffs = staffs.filter((item) => item.id !== user.id && item.teamId === teamId)
+
+  const handleDeleteStaff = (staffId: string) => {
+    try {
+      dispatch(deleteStaffThunk({ id: staffId } ))
+        .unwrap()
+        .then(() => {
+          logger.setUpdate({ message: 'deleted a staff', userId: user.id, groupId: user.groupId })
+          logger.sendUpdates(user.groupId)
+          toast({
+            variant: 'success',
+            description: 'Staff member successfully deleted',
+          })
+        })
+    } catch (error) {
+      toast({
+        variant: 'error',
+        description: 'Error deleting staff',
+      })
+      console.error('Error deleting staff:', error)
+    }
+  }
 
   const allStaffs = filteredStaffs.map(staff => ({
     name: staff.firstName + ' ' + staff.lastName,
     email: staff.email,
     role: staff.role,
     verified: staff.isEmailVerified,
-    action: `/team/${teamId}/staffs/${staff.id}`,
+    action: {
+      manageLink: `/team/${teamId}/staffs/${staff.id}`,
+      deleteStaffLink: () => handleDeleteStaff(staff.id),
+    },
   }))
 
   return (

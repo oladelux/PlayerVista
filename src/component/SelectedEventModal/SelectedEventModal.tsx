@@ -1,4 +1,4 @@
-import { FC, useEffect } from 'react'
+import React, { FC, useEffect, useMemo } from 'react'
 import ReactDOM from 'react-dom'
 import { Field } from 'formik'
 import { useSelector } from 'react-redux'
@@ -18,6 +18,15 @@ import { CustomFormikTimePicker } from '../FormikWrapper/CustomFormikTimePicker.
 import { Popup } from '../Popup/Popup.tsx'
 
 import './SelectedEventModal.scss'
+import { Form, FormControl, FormField, FormItem } from '@/components/ui/form.tsx'
+import { Control, useForm } from 'react-hook-form'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group.tsx'
+import { Label } from '@/components/ui/label.tsx'
+import InputFormField from '@/components/form/InputFormField.tsx'
+import { Button } from '@/components/ui/button.tsx'
+import { eventSchema, EventSchemaIn, EventSchemaOut } from '@/component/EventFormModal/eventFormSchema.ts'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useToast } from '@/hooks/use-toast.ts'
 
 type SelectedEventModal = {
   /**
@@ -38,141 +47,150 @@ type SelectedEventProps = {
 
 const SelectedEvent: FC<SelectedEventProps> = props => {
   const dispatch = useAppDispatch()
+  const { toast } = useToast()
 
-  if (props.selectedEvent) {
-    const isEventMatch = props.selectedEvent.location.length
+  const defaultValues = useMemo(() => {
+    if(!props.selectedEvent) return
+    return {
+      date: new Date(props.selectedEvent.startDate).toLocaleDateString('en-CA'),
+      startTime: new Date(props.selectedEvent.startDate).toLocaleTimeString(),
+      endTime: new Date(props.selectedEvent.endDate).toLocaleTimeString(),
+      location: props.selectedEvent.location,
+      info: props.selectedEvent.info,
+      eventLocation: props.selectedEvent.eventLocation,
+      opponent: props.selectedEvent.opponent,
+    }
+  }, [props.selectedEvent])
 
-    return (
-      <Popup onClose={props.onClose} className='Selected-event'>
-        <div className='Selected-event__wrapper'>
-          <div className='Selected-event__wrapper-multi-step'>
-            <FormikStepper
-              initialValues={{
-                type: props.selectedEvent.type,
-                startDate: props.selectedEvent.startDate,
-                endDate: props.selectedEvent.endDate,
-                location: props.selectedEvent.location,
-                eventLocation: props.selectedEvent.eventLocation,
-                opponent: props.selectedEvent.opponent,
-                info: props.selectedEvent.info,
-              }}
-              onSubmit={async (values, { resetForm }) => {
-                if(!props.selectedEvent) return
-                const data = {
-                  type: values.type,
-                  startDate: combinedDate(new Date(values.startDate),
-                    new Date(values.startDate).toLocaleTimeString()),
-                  endDate: combinedDate(new Date(values.startDate),
-                    new Date(values.endDate).toLocaleTimeString()),
-                  location: values.location,
-                  eventLocation: values.eventLocation,
-                  opponent: values.opponent,
-                  info: values.info,
-                  userId: props.selectedEvent.userId,
-                  teamId: props.selectedEvent.teamId,
-                }
-                await dispatch(updateEventThunk({ data, eventId: props.eventId }))
-                  .unwrap()
-                  .then(() => {
-                    resetForm()
-                    props.onClose()
-                  })
-              }}
-            >
-              <FormikStep label='Event type' title='update'>
-                <div className='Event-form__wrapper-multi-step__title'>Update your event</div>
-                <div className='Event-form__wrapper-multi-step__layout'>
-                  <div className='Event-form__wrapper-multi-step__layout-form'>
-                    <div className='Event-form__wrapper-multi-step__layout-form-label'>Event type</div>
-                    <Field
-                      className='Event-form__wrapper-multi-step__layout-form-input'
-                      as='select'
-                      name='type'
-                    >
-                      <option>Select event type</option>
-                      <option value='training'>Training</option>
-                      <option value='match'>Match</option>
-                    </Field>
-                  </div>
-                </div>
-              </FormikStep>
-              <FormikStep label='Event Information'>
-                <div className='Training-form__layout'>
-                  {isEventMatch > 0 &&
-                    <div className='Match-form__radio-group' role='group' aria-labelledby='my-radio-group'>
-                      <label className='Match-form__radio-group-label'>
-                        <Field className='Match-form__radio-group-label--field' type='radio' name='location'
-                          value='Home'/>
-                        Home
-                      </label>
-                      <label className='Match-form__radio-group-label'>
-                        <Field className='Match-form__radio-group-label--field' type='radio' name='location'
-                          value='Away'/>
-                        Away
-                      </label>
-                    </div>
-                  }
-                  <div className='Training-form__layout--form-group'>
-                    <div className='Training-form__layout--form-group-label'>Date</div>
-                    <Field
-                      className='Training-form__layout--form-group-field'
-                      type='text'
-                      name='startDate'
-                      component={CustomFormikDatePicker}
-                    />
-                  </div>
-                  <div className='Training-form__layout--form-group'>
-                    <div className='Training-form__layout--form-group-label'>Event Location</div>
-                    <Field
-                      className='Training-form__layout--form-group-field'
-                      type='text'
-                      name='eventLocation'
-                    />
-                  </div>
-                  <div className='Training-form__layout--form-group'>
-                    <div className='Training-form__layout--form-group-label'>Start Time</div>
-                    <Field
-                      className='Training-form__layout--form-group-field'
-                      type='text'
-                      name='startDate'
-                      component={CustomFormikTimePicker}
-                    />
-                  </div>
-                  <div className='Training-form__layout--form-group'>
-                    <div className='Training-form__layout--form-group-label'>End Time</div>
-                    <Field
-                      className='Training-form__layout--form-group-field'
-                      type='text'
-                      name='endDate'
-                      component={CustomFormikTimePicker}
-                    />
-                  </div>
-                  {isEventMatch > 0 &&
-                    <div className='Match-form__layout--form-group'>
-                      <div className='Match-form__layout--form-group-label'>Opponent Name</div>
-                      <Field
-                        className='Match-form__layout--form-group-field'
-                        type='text'
-                        name='opponent'
-                      />
-                    </div>
-                  }
-                  <div className='Training-form__layout--form-group'>
-                    <div className='Training-form__layout--form-group-label'>Additional Information</div>
-                    <Field
-                      className='Training-form__layout--form-group-field'
-                      as='textarea'
-                      name='info'
-                    />
-                  </div>
-                </div>
-              </FormikStep>
-            </FormikStepper>
-          </div>
-        </div>
-      </Popup>
-    )
+  const form = useForm<EventSchemaIn, never, EventSchemaOut>({
+    resolver: zodResolver(eventSchema),
+    defaultValues,
+  })
+
+  useEffect(() => {
+    form.reset(defaultValues, { keepDirtyValues: true })
+  }, [defaultValues, form])
+
+  async function onSubmit(values: EventSchemaOut) {
+    if(!props.selectedEvent) return
+    const data = {
+      type: 'match',
+      startDate: combinedDate(new Date(values.date), values.startTime),
+      endDate: combinedDate(new Date(values.date), values.endTime),
+      location: values.location,
+      eventLocation: values.eventLocation,
+      opponent: values.opponent,
+      info: values.info,
+      teamId: props.selectedEvent.teamId,
+      userId: props.selectedEvent.userId,
+    }
+    await dispatch(updateEventThunk({ data, eventId: props.eventId }))
+      .unwrap()
+      .then(() => {
+        toast({
+          variant: 'success',
+          description: 'Match updated successfully',
+        })
+        props.onClose()
+      })
+      .catch(() => {
+        toast({
+          variant: 'error',
+          description: 'Error updated match',
+        })
+      })
   }
+
+  return (
+    <Popup onClose={props.onClose} className='Selected-event'>
+      <div className='p-10 bg-at-white w-[600px]'>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <div>
+              <div className='text-lg font-bold'>Match Information</div>
+              <div className='text-sm text-gray-500'>Fill in the information below to create an event</div>
+            </div>
+            <div className='my-5'>
+              <FormField
+                control={form.control as Control}
+                name='location'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      {props.selectedEvent &&
+                        <RadioGroup onValueChange={field.onChange}
+                          defaultValue={props.selectedEvent.location}
+                          className='flex gap-10'>
+                          <div className='flex items-center space-x-2'>
+                            <RadioGroupItem value='home' id='home'/>
+                            <Label htmlFor='home'>Home</Label>
+                          </div>
+                          <div className='flex items-center space-x-2'>
+                            <RadioGroupItem value='away' id='away'/>
+                            <Label htmlFor='away'>Away</Label>
+                          </div>
+                        </RadioGroup>}
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className='grid grid-cols-2 md:grid-cols-2 sm:grid-cols-1 gap-5 mb-5'>
+              <InputFormField
+                control={form.control}
+                label='Date'
+                name='date'
+                placeholder='Date'
+                type='date'
+              />
+              <InputFormField
+                control={form.control}
+                label='Start Time'
+                name='startTime'
+                placeholder='Start Time'
+                type='time'
+              />
+            </div>
+            <div className='grid grid-cols-2 md:grid-cols-2 sm:grid-cols-1 gap-5 mb-5'>
+              <InputFormField
+                control={form.control}
+                label='End Time'
+                name='endTime'
+                placeholder='End Time'
+                type='time'
+              />
+              <InputFormField
+                control={form.control}
+                label='Event Location'
+                name='eventLocation'
+                placeholder='Event Location'
+                type='text'
+              />
+            </div>
+            <div className='grid grid-cols-2 md:grid-cols-2 sm:grid-cols-1 gap-5 mb-5'>
+              <InputFormField
+                control={form.control}
+                label='Opponent Name'
+                name='opponent'
+                placeholder='Opponent Name'
+                type='text'
+              />
+              <InputFormField
+                control={form.control}
+                label='Additional Information'
+                name='info'
+                placeholder='Additional Information'
+                type='text'
+              />
+            </div>
+            <div className='my-5'>
+              <Button type='submit' className='bg-dark-purple text-white'>Update</Button>
+            </div>
+          </form>
+        </Form>
+      </div>
+    </Popup>
+  )
 }
 
 export const SelectedEventModal: FC<SelectedEventModal> = ({ onClose, id }) => {
