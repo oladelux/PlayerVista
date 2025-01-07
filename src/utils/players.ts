@@ -469,19 +469,20 @@ export function getOffensiveData(data: PlayerActions): OffensiveFullPlayerData {
   const totalShots = data.shots.length ?? 0
   const shotsOnTarget = data.shots.filter((shot) => shot.value === 'SUCCESSFUL').length ?? 0
   const shotsOffTarget = data.shots.filter((shot) => shot.value === 'UNSUCCESSFUL').length ?? 0
-  const shotsAccuracy = totalShots > 0 ? (shotsOnTarget / totalShots) * 100 : 0 ?? 0
+  const shotsAccuracy = totalShots > 0 ? Math.round((shotsOnTarget / totalShots) * 100) : 0 ?? 0
   const totalDribbles = data.dribbles.length ?? 0
   const successfulDribbles = data.dribbles.filter((dribble) => dribble.value === 'SUCCESSFUL').length ?? 0
-  const dribblesAccuracy = totalDribbles > 0 ? (successfulDribbles / totalDribbles) * 100 : 0 ?? 0
+  const dribblesAccuracy = totalDribbles > 0 ?
+    Math.round((successfulDribbles / totalDribbles) * 100) : 0 ?? 0
   const totalPasses = data.passes.length ?? 0
   const successfulPasses = data.passes.filter((pass) => pass.value === 'SUCCESSFUL').length ?? 0
-  const passAccuracy = totalPasses > 0 ? (successfulPasses / totalPasses) * 100 : 0 ?? 0
+  const passAccuracy = totalPasses > 0 ? Math.round((successfulPasses / totalPasses) * 100) : 0 ?? 0
   const totalGoals = data.goals.length ?? 0
   const totalAssists = data.assists.length ?? 0
   const penaltiesScored = data.penalty.filter((x) => x.value === 'SUCCESSFUL').length ?? 0
   const penaltiesLost = data.penalty.filter((x) => x.value === 'UNSUCCESSFUL').length ?? 0
   const penaltiesAccuracy = penaltiesScored > 0 ?
-    (penaltiesScored / (penaltiesScored + penaltiesLost)) * 100 : 0 ?? 0
+    Math.round((penaltiesScored / (penaltiesScored + penaltiesLost)) * 100) : 0 ?? 0
 
   return {
     totalShots,
@@ -592,17 +593,19 @@ export type goalkeeperFullPlayerData = {
 export function getGoalkeeperData(data: PlayerActions): goalkeeperFullPlayerData {
   const shotsOnTargetAgainst = data.shots.length ?? 0
   const saves = data.saves.length ?? 0
-  const savePercentage = shotsOnTargetAgainst > 0 ? (saves / shotsOnTargetAgainst) * 100 : 0 ?? 0
+  const savePercentage = shotsOnTargetAgainst > 0 ?
+    Math.round((saves / shotsOnTargetAgainst) * 100) : 0
   const penaltySaves = data.penaltySaves.length ?? 0
   const penaltyMisses = data.penalty.filter((penalty) => penalty.value === 'UNSUCCESSFUL').length ?? 0
   const penaltySavePercentage = penaltySaves > 0 ?
-    (penaltySaves / (penaltySaves + penaltyMisses)) * 100 : 0 ?? 0
+    (penaltySaves / Math.round((penaltySaves + penaltyMisses)) * 100) : 0 ?? 0
   const directFreeKickFaced = data.freekick.length ?? 0
   const freeKickSaved = data.freekickSaves.length ?? 0
   const freeKickGoalSaved = data.freekickSaves.filter((freeKick) => freeKick.value === 'SUCCESSFUL').length ?? 0
   const oneVOneFaced = data.OneVOneSaves.length ?? 0
   const oneVOneSaved = data.OneVOneSaves.filter((oneVOne) => oneVOne.value === 'SUCCESSFUL').length ?? 0
-  const oneVOneSavedPercentage = oneVOneFaced > 0 ? (oneVOneSaved / oneVOneFaced) * 100 : 0 ?? 0
+  const oneVOneSavedPercentage = oneVOneFaced > 0 ?
+    Math.round((oneVOneSaved / oneVOneFaced) * 100) : 0 ?? 0
 
   return {
     shotsOnTargetAgainst,

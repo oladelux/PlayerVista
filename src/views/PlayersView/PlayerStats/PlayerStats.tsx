@@ -183,8 +183,8 @@ export default function PlayerStats() {
             data={{
               player,
               team,
-              totalMatchesPlayed: filteredData.length,
-              totalMinutesPlayed: 0,
+              totalMatchesPlayed: numberOfMatchesPlayed,
+              totalMinutesPlayed,
               calculatedAge: calculateAge(player.birthDate),
               offensiveData,
               defensiveData,

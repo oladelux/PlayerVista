@@ -86,6 +86,7 @@ export const PlayerEventStats:FC<PlayerEventStatsProps> = ({ events, teams }) =>
               team,
               isEvent,
               isTeam,
+              totalMinutesPlayed: playerPerformance?.minutePlayed,
               offensiveData: singleMatchData?.offensiveData,
               defensiveData: singleMatchData?.defensiveData,
               possessionData: singleMatchData?.possessionData,
