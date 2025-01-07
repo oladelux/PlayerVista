@@ -302,7 +302,6 @@ function YearlyPlan() {
         subscriptionPlan: plan,
         planPeriod: type,
       })
-      console.log(response)
       if (response.redirectUrl) {
         window.location.href = response.redirectUrl
       } else {

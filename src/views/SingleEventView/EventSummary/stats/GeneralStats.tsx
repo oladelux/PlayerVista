@@ -1,7 +1,7 @@
 import { FC, Fragment, useEffect, useState } from 'react'
 import { Slider } from '@/components/ui/slider.tsx'
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table.tsx'
-import { convertSecondsToGameMinute, getPlayerActions } from '@/utils/players.ts'
+import { getPlayerActions } from '@/utils/players.ts'
 import { Player, PlayerActions } from '@/api'
 import { useSelector } from 'react-redux'
 import { getPerformanceByEventThunk, playerPerformanceSelector } from '@/store/slices/PlayerPerformanceSlice.ts'
@@ -130,8 +130,7 @@ export const GeneralStats: FC<GeneralStatsProps> = ({ players }) => {
                 <TableRow key={`${player.firstName}-${player.id}`}>
                   <TableCell className='border-r'>{player.uniformNumber}</TableCell>
                   <TableCell className='border-r'>{player.position}</TableCell>
-                  <TableCell className='border-r'>{matchData?.minutePlayed ?
-                    convertSecondsToGameMinute(matchData.minutePlayed) : 0}
+                  <TableCell className='border-r'>{matchData?.minutePlayed}
                   </TableCell>
                   <TableCell className='border-r'>
                     <Link to={`${player.id}`}>{`${player.firstName} ${player.lastName}`}</Link>
