@@ -17,6 +17,7 @@ import { clearLocalStorage } from '../utils/localStorage.ts'
 import { clearStaffState } from '../store/slices/StaffSlice.ts'
 import { clearReporterState } from '../store/slices/ReporterSlice.ts'
 import { SubscriptionStatus } from '../api'
+import { useToast } from '@/hooks/use-toast.ts'
 
 export type AuthenticationHook = ReturnType<typeof useAuthentication>
 
@@ -25,6 +26,7 @@ export function useAuthentication (
   afterLogin: (user: api.AuthenticatedUserData) => Promise<void>,
 ) {
   const navigate = useNavigate()
+  const { toast } = useToast()
   const dispatch = useAppDispatch()
 
   const [loggingIn, setLoggingIn] = useState(false)
@@ -53,6 +55,7 @@ export function useAuthentication (
     setLoggingIn(true)
     api.loginAuthentication(data)
       .then(async res => {
+        console.log('Logged in', res)
         addCookie('access-token', res.token, res.tokenExpires.toString())
         addCookie('refresh-token', res.refreshToken, res.tokenExpires.toString())
         const userData = await user.refreshUserData()
@@ -74,8 +77,11 @@ export function useAuthentication (
           navigate(routes.selectPlan)
         }
       })
-      .catch(e => {
-        console.log('Logging in failed', e)
+      .catch(() => {
+        toast({
+          variant: 'error',
+          description: 'An unexpected error occurred. Please try again later.',
+        })
       })
       .finally(() => setLoggingIn(false))
   }

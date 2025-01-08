@@ -44,7 +44,7 @@ import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
 export const AppRoutes: FC = () => {
   const controller = useAppController()
 
-  const { user, players, events, logger, logs, teams, staffs, stateIsLoading } = controller
+  const { user, players, events, logger, logs, teams, staffs } = controller
   const accessToken = getCookie('access-token')
 
   if (user.data === undefined && accessToken) {
@@ -73,9 +73,6 @@ export const AppRoutes: FC = () => {
         </Routes>
       </>
     )
-  }
-  if (stateIsLoading) {
-    return <LoadingPage message='Playervista is Loading' />
   }
 
   return (

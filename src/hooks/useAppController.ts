@@ -18,7 +18,6 @@ import {
 import { getEventsByTeamThunk } from '../store/slices/EventsSlice.ts'
 import { getStaffsThunk, staffSelector } from '../store/slices/StaffSlice.ts'
 import { getPlayersByTeamIdThunk, getPlayersByUserIdThunk, playersSelector } from '@/store/slices/PlayersSlice.ts'
-import { useStateSelector } from '@/hooks/useStateSelector.ts'
 
 export type AppController = ReturnType<typeof useAppController>
 let didInit = false
@@ -36,7 +35,6 @@ export function useAppController () {
   const logger = useUpdates()
   const { players } = usePlayers()
   const events = useEvents()
-  const { stateIsLoading } = useStateSelector()
   const authentication = useAuthentication(user, async (userData) => {
     await dispatch(getTeamsThunk({ userId: userData.id }))
     await dispatch(getTeamThunk({ id: activeTeamId }))
@@ -90,6 +88,5 @@ export function useAppController () {
     events,
     logger,
     logs,
-    stateIsLoading,
   }
 }
