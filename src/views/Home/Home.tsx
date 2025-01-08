@@ -6,13 +6,8 @@ import ConnectWithoutContactOutlinedIcon from '@mui/icons-material/ConnectWithou
 
 import { routes } from '../../constants/routes'
 
-import Metrics from '../../assets/images/metrics.png'
 import PlayerVistaLogo from '../../assets/images/icons/playervista.png'
 
-import Sponsor1 from '../../assets/images/sponsor1.png'
-import Sponsor2 from '../../assets/images/sponsor2.png'
-import Sponsor3 from '../../assets/images/sponsor3.png'
-import Sponsor4 from '../../assets/images/sponsor4.png'
 
 import './Home.scss'
 

@@ -3,11 +3,12 @@ import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import InputFormField from '@/components/form/InputFormField.tsx'
-import { Button } from '@/components/ui/button.tsx'
 import { AuthenticatedUserData } from '@/api'
 import bcrypt from 'bcryptjs'
 import { useState } from 'react'
 import { useUser } from '@/hooks/useUser.ts'
+import { useToast } from '@/hooks/use-toast'
+import LoadingButton from '@/component/LoadingButton/LoadingButton.tsx'
 
 const changePasswordSchema = z.object({
   currentPassword: z.string(),
@@ -26,8 +27,9 @@ type changePasswordSchemaIn = Partial<z.input<typeof changePasswordSchema>>
 type changePasswordSchemaOut = z.output<typeof changePasswordSchema>
 
 export default function ChangePasswordForm({ user }: ChangePasswordFormProps) {
-  const [isUpdated, setIsUpdated] = useState(false)
+  const [loading, setLoading] = useState(false)
   const userHook = useUser()
+  const { toast } = useToast()
   const defaultValues: changePasswordSchemaIn = {
     currentPassword: '',
     newPassword: '',
@@ -40,21 +42,37 @@ export default function ChangePasswordForm({ user }: ChangePasswordFormProps) {
   })
 
   async function onSubmit(values: changePasswordSchemaOut) {
-    const hashNewPassword = await bcrypt.hash(values.newPassword, 10)
-    const updatePasswordData= {
-      oldPassword: values.currentPassword,
-      password: hashNewPassword,
+    setLoading(true)
+    try {
+      const hashNewPassword = await bcrypt.hash(values.newPassword, 10)
+      const updatePasswordData= {
+        oldPassword: values.currentPassword,
+        password: hashNewPassword,
+      }
+      const isMatch = await bcrypt.compare(values.currentPassword, user.password)
+      if(!isMatch){
+        console.error('Current password does not match input')
+        toast({
+          variant: 'error',
+          description: 'Current password does not match input',
+        })
+        setLoading(false)
+        return
+      }
+      await userHook.updateUserData(updatePasswordData)
+      setLoading(false)
+      toast({
+        variant: 'success',
+        title: 'Password updated successfully',
+      })
+    } catch (error) {
+      setLoading(false)
+      toast({
+        variant: 'error',
+        description: 'Error updating password',
+      })
+      console.error('Error updating password:', error)
     }
-    const isMatch = await bcrypt.compare(values.currentPassword, user.password)
-    if(!isMatch){
-      console.log('Current password does not match input')
-      return
-    }
-
-    await userHook.updateUserData(updatePasswordData)
-    setIsUpdated(true)
-    // Hide the message after a delay (optional)
-    setTimeout(() => setIsUpdated(false), 3000)
   }
 
   return (
@@ -89,11 +107,14 @@ export default function ChangePasswordForm({ user }: ChangePasswordFormProps) {
             />
           </div>
           <div className='my-5'>
-            <Button className='bg-dark-purple text-white'>Update Password</Button>
+            <LoadingButton
+              isLoading={loading}
+              type='submit'
+              className='bg-dark-purple text-white'
+            >
+              Update Password
+            </LoadingButton>
           </div>
-          {isUpdated && (
-            <p className='text-green-500 mt-4'>Profile updated successfully!</p>
-          )}
         </form>
       </Form>
     </div>

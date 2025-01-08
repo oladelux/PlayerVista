@@ -1,12 +1,11 @@
 import { DashboardLayout } from '@/component/DashboardLayout/DashboardLayout.tsx'
-import React, { useEffect, useMemo } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Form, FormLabel } from '@/components/ui/form.tsx'
 import InputFormField from '@/components/form/InputFormField.tsx'
 import SelectFormField from '@/components/form/SelectFormField.tsx'
-import { Button } from '@/components/ui/button.tsx'
 import { useToast } from '@/hooks/use-toast.ts'
 import { getStaffThunk, staffSelector } from '@/store/slices/StaffSlice.ts'
 import { getStaffDefaultValues } from '@/views/UserManagementView/Staffs/EditStaff/staffDefaultValues.ts'
@@ -16,6 +15,7 @@ import { StaffData } from '@/api'
 import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
 import { AppDispatch } from '@/store/types.ts'
 import { useParams } from 'react-router-dom'
+import LoadingButton from '@/component/LoadingButton/LoadingButton.tsx'
 
 export function EditStaff() {
   const dispatch = useDispatch<AppDispatch>()
@@ -24,6 +24,7 @@ export function EditStaff() {
   const { staff } = useSelector(staffSelector)
   const { roles } = useSelector(settingsSelector)
   const staffHook = useStaff(staff?.id)
+  const [loading, setLoading] = useState(false)
 
   const defaultValues = useMemo(() => {
     return getStaffDefaultValues(staff)
@@ -38,6 +39,7 @@ export function EditStaff() {
 
   async function onSubmit(values: StaffSchemaOut) {
     if(!staff) return
+    setLoading(true)
     try {
       const data: Partial<StaffData> = {
         firstName: values.firstName,
@@ -46,11 +48,13 @@ export function EditStaff() {
         role: values.role,
       }
       await staffHook.updateStaff(data)
+      setLoading(false)
       toast({
         variant: 'success',
         title: 'Staff Member updated successfully',
       })
     } catch (error) {
+      setLoading(false)
       toast({
         variant: 'error',
         description: 'Error updating staff',
@@ -110,7 +114,13 @@ export function EditStaff() {
                 </div>
               </div>
               <div className='my-5'>
-                <Button className='bg-dark-purple text-white'>Update</Button>
+                <LoadingButton
+                  isLoading={loading}
+                  type='submit'
+                  className='bg-dark-purple text-white'
+                >
+                  Update
+                </LoadingButton>
               </div>
             </form>
           </Form>

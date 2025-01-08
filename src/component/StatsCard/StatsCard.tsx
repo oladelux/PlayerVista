@@ -100,7 +100,7 @@ export const StatsCard: FC<StatsCardProps> = props => {
             <div className='Stats-card__header-info-data-title'>Players</div>
           </div>
           <div className='Stats-card__header-info-data'>
-            <div className='Stats-card__header-info-data-value'>{averageAge}</div>
+            <div className='Stats-card__header-info-data-value'>{Math.round(averageAge)}</div>
             <div className='Stats-card__header-info-data-title'>Average age</div>
           </div>
         </div>

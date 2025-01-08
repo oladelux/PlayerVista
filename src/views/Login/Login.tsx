@@ -1,15 +1,16 @@
 import { ChangeEvent, FC, FormEvent, useState } from 'react'
 import { Link } from 'react-router-dom'
 
-import { AppController } from '../../hooks/useAppController'
-import { routes } from '../../constants/routes'
-import { getRandomQuote } from '../../constants/randomQuotes'
+import { AppController } from '@/hooks/useAppController.ts'
+import { routes } from '@/constants/routes.ts'
+import { getRandomQuote } from '@/constants/randomQuotes.ts'
 
 import { InputField } from '../../component/InputField/InputField'
-import { Button } from '../../component/Button/Button'
 import { PasswordInputField } from '../../component/PasswordInputField/PasswordInputField'
 
 import './Login.scss'
+import LoadingButton from '@/component/LoadingButton/LoadingButton.tsx'
+import { useToast } from '@/hooks/use-toast.ts'
 
 const randomQuote = getRandomQuote()
 
@@ -18,8 +19,9 @@ type LoginProps = {
 }
 
 export const Login: FC<LoginProps> = props => {
-
   const { authentication } = props.controller
+  const { toast } = useToast()
+  const [loading, setLoading] = useState(false)
 
   const [loginData, setLoginData] = useState({
     email: '',
@@ -37,9 +39,18 @@ export const Login: FC<LoginProps> = props => {
     })
   }
 
-  const onLogin = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    authentication.loginUser(loginData)
+  function onLogin (event: FormEvent<HTMLFormElement>) {
+    setLoading(true)
+    try {
+      event.preventDefault()
+      authentication.loginUser(loginData)
+    } catch (error) {
+      setLoading(false)
+      toast({
+        variant: 'error',
+        description: 'An error occurred',
+      })
+    }
   }
 
   return(
@@ -73,7 +84,14 @@ export const Login: FC<LoginProps> = props => {
               onChange={handleInputChange}
             />
           </div>
-          <Button type='submit' className='Login__form-body--btn'>Sign in</Button>
+
+          <LoadingButton
+            isLoading={loading}
+            type='submit'
+            className='w-full bg-dark-purple text-white rounded-lg border-none px-4 py-2 text-base'
+          >
+            Sign in
+          </LoadingButton>
         </form>
         {error && <p>error</p>}
         <div className='Login__form-footer'>
