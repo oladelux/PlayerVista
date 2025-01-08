@@ -4,7 +4,7 @@ import PersonIcon from '@mui/icons-material/Person'
 import EventAvailableIcon from '@mui/icons-material/EventAvailable'
 import ConnectWithoutContactOutlinedIcon from '@mui/icons-material/ConnectWithoutContactOutlined'
 
-import { routes } from '../../constants/routes'
+import { routes } from '@/constants/routes.ts'
 
 import PlayerVistaLogo from '../../assets/images/icons/playervista.png'
 
@@ -60,15 +60,6 @@ export const Home = () => {
         </div>
         <Link to={routes.demoBooking} className='Home__hero-link'>Schedule demo</Link>
       </div>
-      {/*<div className='Home__content'>
-        <img src={Metrics} className='Home__content-img' alt='metrics'/>
-        <div className='Home__content-sponsors'>
-          <img src={Sponsor1} className='Home__content-sponsors-img' alt='sponsor'/>
-          <img src={Sponsor2} className='Home__content-sponsors-img' alt='sponsor'/>
-          <img src={Sponsor3} className='Home__content-sponsors-img' alt='sponsor'/>
-          <img src={Sponsor4} className='Home__content-sponsors-img' alt='sponsor'/>
-        </div>
-      </div>*/}
       <div className='Home__features'>
         <div className='Home__features-title'>What we provide</div>
         <div className='Home__features-text'>The amazing features we offer our users</div>
