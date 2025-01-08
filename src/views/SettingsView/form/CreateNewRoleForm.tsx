@@ -5,7 +5,6 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import CheckboxFormField from '@/components/form/CheckboxFormField.tsx'
 import { AllPermissions } from '@/utils/allPermissions.ts'
-import { Button } from '@/components/ui/button.tsx'
 import { useDispatch } from 'react-redux'
 import { AppDispatch } from '@/store/types.ts'
 import { createRoleThunk } from '@/store/slices/SettingsSlice.ts'
@@ -13,6 +12,8 @@ import { AuthenticatedUserData, RoleFormData } from '@/api'
 import { capitalize } from '@mui/material'
 import { UseUpdates } from '@/hooks/useUpdates.ts'
 import { useToast } from '@/hooks/use-toast.ts'
+import { useState } from 'react'
+import LoadingButton from '@/component/LoadingButton/LoadingButton.tsx'
 
 const createNewRoleSchema = z.object({
   roleName: z.string(),
@@ -31,6 +32,7 @@ type CreateNewRoleFormProps = {
 export default function CreateNewRoleForm({ user, logger, setDialogOpen }: CreateNewRoleFormProps) {
   const dispatch = useDispatch<AppDispatch>()
   const { toast } = useToast()
+  const [loading, setLoading] = useState(false)
   const defaultValues: createNewRoleSchemaIn = {
     roleName: '',
     permissions: [],
@@ -42,6 +44,7 @@ export default function CreateNewRoleForm({ user, logger, setDialogOpen }: Creat
   })
 
   async function onSubmit (values: createNewRoleSchemaOut){
+    setLoading(true)
     try {
       const data: RoleFormData = {
         groupId: user.groupId,
@@ -54,6 +57,7 @@ export default function CreateNewRoleForm({ user, logger, setDialogOpen }: Creat
       }))
         .unwrap()
         .then(() => {
+          setLoading(false)
           logger.setUpdate({ message: 'added a new role', userId: user.id, groupId: user.groupId })
           logger.sendUpdates(user.groupId)
           setDialogOpen(false)
@@ -63,6 +67,7 @@ export default function CreateNewRoleForm({ user, logger, setDialogOpen }: Creat
           })
         })
     } catch (error) {
+      setLoading(false)
       toast({
         variant: 'error',
         description: 'Error creating role',
@@ -90,9 +95,13 @@ export default function CreateNewRoleForm({ user, logger, setDialogOpen }: Creat
             ))}
           </div>
         </div>
-        <Button type='submit' className='mt-10 mb-3 bg-dark-purple text-white'>
+        <LoadingButton
+          isLoading={loading}
+          type='submit'
+          className='t-10 mb-3 bg-dark-purple text-white'
+        >
           Save
-        </Button>
+        </LoadingButton>
       </form>
     </Form>
   )

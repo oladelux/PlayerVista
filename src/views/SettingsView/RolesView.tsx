@@ -9,9 +9,9 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useDispatch } from 'react-redux'
 import { AppDispatch } from '@/store/types.ts'
 import { updateRolePermissionsThunk } from '@/store/slices/SettingsSlice.ts'
-import { Button } from '@/components/ui/button.tsx'
 import { AllPermissions } from '@/utils/allPermissions.ts'
 import { useToast } from '@/hooks/use-toast.ts'
+import LoadingButton from '@/component/LoadingButton/LoadingButton.tsx'
 
 const capitalize = (text: string) => {
   return text.replace(/\b\w/g, (char) => char.toUpperCase()).replace(/_/g, ' ')
@@ -33,6 +33,7 @@ type rolesSchemaIn = Partial<z.input<typeof rolesSchema>>
 type rolesSchemaOut = z.output<typeof rolesSchema>
 
 export default function RolesView({ roles }: RolesViewProps) {
+  const [loading, setLoading] = useState(false)
   const dispatch = useDispatch<AppDispatch>()
   const { toast } = useToast()
   const [activeRole, setActiveRole] = useState<string>('admin')
@@ -51,20 +52,26 @@ export default function RolesView({ roles }: RolesViewProps) {
   const updatedPermissions = form.watch(`roles.${activeRoleIndex}.permissions`) as string[]
 
   async function onSubmit(){
-    dispatch(updateRolePermissionsThunk({
-      roleId: roles[activeRoleIndex].id,
-      updatedPermissions,
-    })).unwrap().then(() => {
-      toast({
-        variant: 'success',
-        description: 'Permissions updated successfully',
+    setLoading(true)
+    try {
+      dispatch(updateRolePermissionsThunk({
+        roleId: roles[activeRoleIndex].id,
+        updatedPermissions,
+      })).unwrap().then(() => {
+        setLoading(false)
+        toast({
+          variant: 'success',
+          description: 'Permissions updated successfully',
+        })
       })
-    }).catch(() => {
+    } catch (error) {
+      setLoading(false)
       toast({
         variant: 'error',
         description: 'Error updating permissions',
       })
-    })
+      console.error('Error updating permissions:', error)
+    }
   }
 
   useEffect(() => {
@@ -114,9 +121,13 @@ export default function RolesView({ roles }: RolesViewProps) {
                 </CheckboxFormField>
               ))}
             </div>
-            <Button type='submit' className='mt-4 px-4 py-2 bg-dark-purple text-white rounded hover:bg-blue-600'>
+            <LoadingButton
+              isLoading={loading}
+              type='submit'
+              className='mt-4 px-4 py-2 bg-dark-purple text-white rounded hover:bg-blue-600'
+            >
               Save changes
-            </Button>
+            </LoadingButton>
           </div>
         </div>
       </form>

@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo } from 'react'
+import React, { FC, useEffect, useMemo, useState } from 'react'
 import ReactDOM from 'react-dom'
 import { useParams } from 'react-router-dom'
 
@@ -9,7 +9,6 @@ import { eventSchema, EventSchemaIn, EventSchemaOut } from '@/component/EventFor
 import InputFormField from '@/components/form/InputFormField.tsx'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group.tsx'
 import { Label } from '@/components/ui/label.tsx'
-import { Button } from '@/components/ui/button.tsx'
 import { combinedDate } from '@/services/helper.ts'
 import { useAppDispatch } from '@/store/types.ts'
 import { createEventThunk } from '@/store/slices/EventsSlice.ts'
@@ -20,6 +19,7 @@ import { Popup } from '../Popup/Popup.tsx'
 
 import './EventFormModal.scss'
 import { useToast } from '@/hooks/use-toast.ts'
+import LoadingButton from '@/component/LoadingButton/LoadingButton.tsx'
 
 
 type EventFormModalProps = {
@@ -36,6 +36,7 @@ const EventFormModal: FC<EventFormModalProps> = ({ onClose, startDate, logger, u
   const dispatch = useAppDispatch()
   const { toast } = useToast()
   const { teamId } = useParams()
+  const [loading, setLoading] = useState(false)
 
   const defaultValues = useMemo(() => {
     return {
@@ -60,6 +61,7 @@ const EventFormModal: FC<EventFormModalProps> = ({ onClose, startDate, logger, u
 
   async function onSubmit(values: EventSchemaOut) {
     if(!teamId) return
+    setLoading(true)
     const data = {
       type: 'match',
       startDate: combinedDate(new Date(values.date), values.startTime),
@@ -80,8 +82,10 @@ const EventFormModal: FC<EventFormModalProps> = ({ onClose, startDate, logger, u
           variant: 'success',
           description: 'Match created successfully',
         })
+        setLoading(false)
         onClose()
       }).catch(() => {
+        setLoading(false)
         toast({
           variant: 'error',
           description: 'Error creating match',
@@ -169,7 +173,13 @@ const EventFormModal: FC<EventFormModalProps> = ({ onClose, startDate, logger, u
               />
             </div>
             <div className='my-5'>
-              <Button type='submit' className='bg-dark-purple text-white'>Create Match</Button>
+              <LoadingButton
+                isLoading={loading}
+                type='submit'
+                className='bg-dark-purple text-white'
+              >
+                Create Match
+              </LoadingButton>
             </div>
           </form>
         </Form>

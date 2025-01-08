@@ -2,15 +2,16 @@ import { Form } from '@/components/ui/form.tsx'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import InputFormField from '@/components/form/InputFormField.tsx'
-import { Button } from '@/components/ui/button.tsx'
 import { AuthenticatedUserData } from '@/api'
 import SelectFormField from '@/components/form/SelectFormField.tsx'
 import { useUser } from '@/hooks/useUser.ts'
 import { useSelector } from 'react-redux'
 import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
 import { capitalize } from '@mui/material'
+import LoadingButton from '@/component/LoadingButton/LoadingButton.tsx'
+import { useToast } from '@/hooks/use-toast.ts'
 
 type ProfileFormProps = {
   user: AuthenticatedUserData
@@ -28,7 +29,9 @@ type ProfileSchemaIn = Partial<z.input<typeof profileSchema>>
 type ProfileSchemaOut = z.output<typeof profileSchema>
 
 export default function ProfileForm({ user, canManageRole }: ProfileFormProps) {
+  const [loading, setLoading] = useState(false)
   const { roles } = useSelector(settingsSelector)
+  const { toast } = useToast()
   const userHook = useUser()
   const defaultValues = useMemo(() => {
     const typedDefaultValues: ProfileSchemaIn = {
@@ -46,8 +49,23 @@ export default function ProfileForm({ user, canManageRole }: ProfileFormProps) {
   })
 
   async function onSubmit(values: ProfileSchemaOut) {
-    values.role = canManageRole ? values.role : user.role
-    await userHook.updateUserData(values)
+    setLoading(true)
+    try {
+      values.role = canManageRole ? values.role : user.role
+      await userHook.updateUserData(values)
+      setLoading(false)
+      toast({
+        variant: 'success',
+        title: 'Profile updated successfully',
+      })
+    } catch (error) {
+      console.error('Error updating user:', error)
+      setLoading(false)
+      toast({
+        variant: 'error',
+        description: 'Error updating profile',
+      })
+    }
   }
 
   return (
@@ -86,7 +104,13 @@ export default function ProfileForm({ user, canManageRole }: ProfileFormProps) {
           />
         </div>
         <div className='my-5'>
-          <Button className='bg-dark-purple text-white'>Update</Button>
+          <LoadingButton
+            isLoading={loading}
+            type='submit'
+            className='bg-dark-purple text-white'
+          >
+            Update
+          </LoadingButton>
         </div>
       </form>
     </Form>

@@ -13,7 +13,6 @@ import { SinglePlayerView } from './views/SinglePlayerView/SinglePlayerView'
 import { TrainingData } from './views/TrainingData/TrainingData'
 import { EventsView } from './views/EventsView/EventsView'
 import { MyAccount } from './views/MyAccount/MyAccount'
-import { Spinner } from './component/Spinner/Spinner'
 import { AddPlayer } from './views/PlayersView/AddPlayer/AddPlayer'
 import { SignUp } from './views/SignUp/SignUp'
 import { ForgotPassword } from './views/ForgotPassword/ForgotPassword'
@@ -40,15 +39,16 @@ import PaymentCallback from '@/views/SelectPlan/PaymentCallback.tsx'
 import { Teams } from '@/views/Teams/Teams.tsx'
 import { ManageTeam } from '@/views/Teams/form/ManageTeam.tsx'
 import { EditStaff } from '@/views/UserManagementView/Staffs/EditStaff/EditStaff.tsx'
+import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
 
 export const AppRoutes: FC = () => {
   const controller = useAppController()
 
-  const { user, players, events, logger, logs, teams, staffs } = controller
+  const { user, players, events, logger, logs, teams, staffs, stateIsLoading } = controller
   const accessToken = getCookie('access-token')
 
   if (user.data === undefined && accessToken) {
-    return <Spinner />
+    return <LoadingPage message='Playervista is Loading' />
   }
 
   if (!user.data) {
@@ -73,6 +73,9 @@ export const AppRoutes: FC = () => {
         </Routes>
       </>
     )
+  }
+  if (stateIsLoading) {
+    return <LoadingPage message='Playervista is Loading' />
   }
 
   return (

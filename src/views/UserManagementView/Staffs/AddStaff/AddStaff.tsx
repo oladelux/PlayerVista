@@ -10,7 +10,6 @@ import { createStaffThunk, staffSelector } from '@/store/slices/StaffSlice.ts'
 import { UseUpdates } from '@/hooks/useUpdates.ts'
 
 import { DashboardLayout } from '@/component/DashboardLayout/DashboardLayout.tsx'
-import { Spinner } from '@/component/Spinner/Spinner.tsx'
 import { FormikStep, FormikStepper } from '../../../TeamView/CreateTeam/Step'
 import { SuccessConfirmationPopup } from '@/component/SuccessConfirmation/SuccessConfirmation.tsx'
 
@@ -133,7 +132,6 @@ const AddStaffMultiStep: FC<AddStaffProps> = ({ user, logger }) => {
           </div>
         </FormikStep>
       </FormikStepper>
-      {isPending && <div className='Add-staff__Multi-step--spinner'><Spinner/></div>}
       {isActiveConfirmationPopup && <SuccessConfirmationPopup
         onClose={closeConfirmationPopup} title='Staff added successfully' />}
     </div>

@@ -1,5 +1,4 @@
 import { FC, useMemo } from 'react'
-import { Link } from 'react-router-dom'
 
 import { LogType } from '@/api'
 import { useUserName } from '@/hooks/useUsername.ts'
