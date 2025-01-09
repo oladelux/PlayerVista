@@ -40,6 +40,7 @@ import { Teams } from '@/views/Teams/Teams.tsx'
 import { ManageTeam } from '@/views/Teams/form/ManageTeam.tsx'
 import { EditStaff } from '@/views/UserManagementView/Staffs/EditStaff/EditStaff.tsx'
 import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
+import SubscriptionGuard from '@/component/SubscriptionGuard.tsx'
 
 export const AppRoutes: FC = () => {
   const controller = useAppController()
@@ -53,39 +54,38 @@ export const AppRoutes: FC = () => {
 
   if (!user.data) {
     return (
-      <>
-        <Routes>
-          <Route path={routes.home} element={<Home />} />
-          <Route
-            path={routes.login}
-            element={<Login controller={controller} />}
-          />
-          <Route
-            path={routes.signUp}
-            element={<SignUp controller={controller} />}
-          />
-          <Route path={routes.forgotPassword} element={<ForgotPassword />} />
-          <Route
-            path={routes.changePassword}
-            element={<ChangePasswordView />}
-          />
-          <Route path='*' element={<Navigate replace to={routes.login} />} />
-        </Routes>
-      </>
+      <Routes>
+        <Route path={routes.home} element={<Home />} />
+        <Route
+          path={routes.login}
+          element={<Login controller={controller} />}
+        />
+        <Route
+          path={routes.signUp}
+          element={<SignUp controller={controller} />}
+        />
+        <Route path={routes.forgotPassword} element={<ForgotPassword />} />
+        <Route
+          path={routes.changePassword}
+          element={<ChangePasswordView />}
+        />
+        <Route path='*' element={<Navigate replace to={routes.login} />} />
+      </Routes>
     )
   }
 
   return (
-    <>
-      <Routes>
-        <Route
-          path={routes.paymentCallback} element={<PaymentCallback />}
-        />
-        <Route path={routes.selectPlan} element={<SelectPlan teams={controller.teams} />} />
-        <Route path={routes.home} element={<Home />} />
+    <Routes>
+      <Route
+        path={routes.paymentCallback} element={<PaymentCallback />}
+      />
+      <Route path={routes.selectPlan} element={<SelectPlan teams={controller.teams} />} />
+      <Route path={routes.home} element={<Home />} />
+      <Route element={<SubscriptionGuard />}>
         <Route
           path={routes.team}
-          element={<TeamView teams={controller.teams} user={user.data} />}
+          element={
+            <TeamView teams={controller.teams} user={user.data} />}
         />
         <Route
           path={routes.createTeam}
@@ -188,18 +188,18 @@ export const AppRoutes: FC = () => {
         />
         <Route path={routes.manageTeam} element={<ManageTeam />} />
         <Route path={routes.account} element={<MyAccount />} />
-        <Route path={routes.logout} element={<MyAccount />} />
-        <Route
-          path={routes.login}
-          element={<Login controller={controller} />}
-        />
-        <Route
-          path={routes.emailVerification}
-          element={
-            <EmailVerification teams={teams} user={user.data} userHook={user} />
-          }
-        />
-      </Routes>
-    </>
+      </Route>
+      <Route path={routes.logout} element={<MyAccount />} />
+      <Route
+        path={routes.login}
+        element={<Login controller={controller} />}
+      />
+      <Route
+        path={routes.emailVerification}
+        element={
+          <EmailVerification teams={teams} user={user.data} userHook={user} />
+        }
+      />
+    </Routes>
   )
 }

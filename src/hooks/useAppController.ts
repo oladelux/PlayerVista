@@ -36,11 +36,7 @@ export function useAppController () {
   const { players } = usePlayers()
   const events = useEvents()
   const authentication = useAuthentication(user, async (userData) => {
-    await dispatch(getTeamsThunk({ userId: userData.id }))
-    await dispatch(getTeamThunk({ id: activeTeamId }))
-    await dispatch(getPlayersByUserIdThunk({ userId: userData.id }))
-    await dispatch(getApplicationLogsThunk({ groupId: userData.groupId }))
-    await dispatch(getRolesByGroupIdThunk({ groupId: userData.groupId }))
+    // Dispatch core updates during login
     dispatch(setActiveTeamId({ teamId: activeTeamId }))
     dispatch(setUserRole({ role: userData.role }))
     dispatch(setUserId({ id: userData.id }))
