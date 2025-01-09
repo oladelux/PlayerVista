@@ -1,7 +1,6 @@
 import { FC, useMemo } from 'react'
 
 import { LogType } from '@/api'
-import { useUserName } from '@/hooks/useUsername.ts'
 import { formatDate, formattedTime } from '@/services/helper.ts'
 import { sortApplicationLogs } from '@/utils/logs.ts'
 
@@ -32,14 +31,13 @@ export const Update:FC<UpdateProps> = ({ applicationLogs }) => {
 }
 
 function LogMessage({ log }: { log: LogType }) {
-  const username = useUserName(log.userId)
   return (
     <div className='Update__notifications-stack'>
       <div className='Update__notifications-stack--date'>{formatDate(log.createdAt)}</div>
       <div className='Update__notifications-stack--alerts'>
         <ul className='Update__notifications-stack--alerts-list'>
           <li className='Update__notifications-stack--alerts-list-item'>
-            {username} {log.message}
+            {log.username} {log.message}
           </li>
         </ul>
       </div>
