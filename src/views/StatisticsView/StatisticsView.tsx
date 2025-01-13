@@ -84,8 +84,8 @@ const EventCard: FC<EventCardProps> = ({ event, teamId }) => {
         {formatSingleEventDate(event.startDate)}
       </div>
       <div className='w-1/4 font-medium'>vs. {event.opponent}</div>
-      <div className='bg-[#37003c] rounded-lg p-2 ' title={event.location}>
-        {event.location === 'Home' ? (
+      <div className='bg-[#37003c] rounded-lg p-2 ' title={event.location.toUpperCase()}>
+        {event.location === 'home' ? (
           <img src={HomeIcon} width={20} alt='home-icon'/>
         ) : (
           <img src={AwayIcon} width={20} alt='awayicon' />
