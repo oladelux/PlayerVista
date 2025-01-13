@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 
 import * as api from '../api'
-import { ApiError, AuthenticationCredentials, SignUpFormData } from '@/api'
+import { ApiError, AuthenticationCredentials, SignUpFormData, SubscriptionStatus } from '@/api'
 import { routes } from '../constants/routes'
 import { UserHook } from './useUser'
 import { addCookie, removeCookie } from '../services/cookies'
@@ -16,9 +16,9 @@ import { clearEventState } from '../store/slices/EventsSlice.ts'
 import { clearLocalStorage } from '../utils/localStorage.ts'
 import { clearStaffState } from '../store/slices/StaffSlice.ts'
 import { clearReporterState } from '../store/slices/ReporterSlice.ts'
-import { SubscriptionStatus } from '../api'
 import { useToast } from '@/hooks/use-toast.ts'
 import { useSelector } from 'react-redux'
+import { getUserDataThunk } from '@/store/slices/UserSlice.ts'
 
 export type AuthenticationHook = ReturnType<typeof useAuthentication>
 
@@ -67,6 +67,7 @@ export function useAuthentication (
 
         // Perform critical dispatch calls
         await Promise.all([
+          dispatch(getUserDataThunk()),
           dispatch(getTeamsThunk({ userId: parentUserId })),
           dispatch(getTeamThunk({ id: activeTeamId })),
         ])

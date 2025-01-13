@@ -50,9 +50,13 @@ const playerStatsSchema = z.object({
   }),
 })
 
+const currentYear = new Date().getFullYear()
 const yearSelect = [
-  { label: 'all', value: 'All' },
-  { label: '2024', value: '2024' },
+  { label: 'All', value: 'All' },
+  ...Array.from({ length: 5 }, (_, i) => {
+    const year = currentYear - i
+    return { label: year.toString(), value: year.toString() }
+  }),
 ]
 
 type playerStatsSchemaIn = Partial<z.input<typeof playerStatsSchema>>
