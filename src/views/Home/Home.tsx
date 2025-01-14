@@ -53,10 +53,11 @@ export const Home = () => {
       <HomeHeader />
       <div className='Home__hero'>
         <div className='Home__hero-title'>
-          Empower Your Team with Affordable Player Tracking
+          Manage Your Team, Master the Game
         </div>
         <div className='Home__hero-text'>
-          Affordable player tracking for teams, scouts, and media.
+          Effortlessly <span className='border-b-2 border-dark-purple font-bold'>manage</span> your players, <span className='border-b-2 border-dark-purple font-bold'>track</span> real-time stats,
+          and <span className='border-b-2 border-dark-purple font-bold'>unlock</span> insights to <span className='border-b-2 border-dark-purple font-bold'>elevate</span> your game — all in one platform.
         </div>
         <Link to={routes.demoBooking} className='Home__hero-link'>Schedule demo</Link>
       </div>
