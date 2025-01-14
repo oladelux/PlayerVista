@@ -10,7 +10,6 @@ import { useAppDispatch } from '@/store/types.ts'
 
 import { DashboardLayout } from '../../component/DashboardLayout/DashboardLayout'
 import { InputField } from '../../component/InputField/InputField'
-import { Button } from '../../component/Button/Button.tsx'
 import { SelectPlayerPosition } from '../../component/SelectPlayerPosition/SelectPlayerPosition.tsx'
 
 import './SinglePlayerView.scss'
@@ -18,19 +17,20 @@ import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
 import { usePermission } from '@/hooks/usePermission.ts'
 import ProfileTeamImage from '@/component/ProfileTeamImage/ProfileTeamImage.tsx'
 import { useUser } from '@/hooks/useUser.ts'
+import LoadingButton from '@/component/LoadingButton/LoadingButton.tsx'
+import { useToast } from '@/hooks/use-toast.ts'
 
 export const SinglePlayerView: FC = () => {
   const dispatch = useAppDispatch()
   const { userRole } = useSelector(settingsSelector)
+  const { toast } = useToast()
   const { canManagePlayer } = usePermission(userRole)
   const { playerId, teamId } = useParams()
-  const { players, loadingUpdatingPlayer } = useSelector(playersSelector)
+  const { players } = useSelector(playersSelector)
   const { userId } = useSelector(settingsSelector)
 
-  const [isUpdateSuccessful, setIsUpdateSuccessful] = useState(false)
+  const [loading, setLoading] = useState(false)
   const [dateValue, setDateValue] = useState<Dayjs | null>(null)
-
-  const isUpdatingPending = loadingUpdatingPlayer === 'pending'
 
   const user = useUser()
   const player = players && teamId && players.find(l => playerId === l.id)
@@ -80,16 +80,31 @@ export const SinglePlayerView: FC = () => {
     })
   }
 
-  const updatePlayerData = () => {
-    id && dispatch(updatePlayerThunk({
-      data: {
-        ...updateFormData,
-        birthDate: dateValue ? dateValue.toDate() : updateFormData.birthDate,
-      },
-      playerId: id,
-    })).finally(() => {
-      setIsUpdateSuccessful(true)
-    })
+  const updatePlayerData = async () => {
+    setLoading(true)
+    if (id) {
+      try {
+        await dispatch(updatePlayerThunk({
+          data: {
+            ...updateFormData,
+            birthDate: dateValue ? dateValue.toDate() : updateFormData.birthDate,
+          },
+          playerId: id,
+        }))
+        setLoading(false)
+        toast({
+          variant: 'success',
+          title: 'Player updated successfully',
+        })
+      } catch (error) {
+        console.error('Error updating player:', error)
+        setLoading(false)
+        toast({
+          variant: 'error',
+          description: 'Error updating player',
+        })
+      }
+    }
   }
 
   useEffect(() => {
@@ -102,18 +117,6 @@ export const SinglePlayerView: FC = () => {
       }
     }
   }, [players, teamId, playerId, user.data])
-
-  useEffect(() => {
-    if(isUpdateSuccessful) {
-      const timeoutId = setTimeout(() => {
-        setIsUpdateSuccessful(false)
-      }, 5000)
-
-      return () => {
-        clearTimeout(timeoutId)
-      }
-    }
-  }, [isUpdateSuccessful])
 
   return (
     <DashboardLayout>
@@ -228,8 +231,15 @@ export const SinglePlayerView: FC = () => {
           </div>
         </div>
         {canManagePlayer &&
-          <Button onClick={updatePlayerData} disabled={isUpdatingPending}>Update</Button>}
-        {isUpdateSuccessful && <div className='Single-player-view__status'>Player successfully updated !!!</div>}
+          <LoadingButton
+            isLoading={loading}
+            type='button'
+            className='t-10 mb-3 bg-dark-purple text-white'
+            onClick={updatePlayerData}
+          >
+            Save
+          </LoadingButton>
+        }
       </div>
     </DashboardLayout>
   )

@@ -22,17 +22,20 @@ const currentYearValue = new Date().getFullYear()
 
 export const StatisticsView: FC<StatisticsViewProps> = ({ teamEvent }) => {
   const [selectedEvent, setSelectedEvent] = useState<Event[]>([])
-  const [currentYear, setCurrentYear] = useState<number>(currentYearValue)
+  const [currentSelectedYear, setCurrentSelectedYear] = useState<number>(currentYearValue)
   const { teamId } = useParams()
 
+  const currentYear = new Date().getFullYear()
+  const years = Array.from({ length: 5 }, (_, i) => currentYear - i)
+
   const handleYearChange = (selectedYear: string) => {
-    setCurrentYear(parseInt(selectedYear))
+    setCurrentSelectedYear(parseInt(selectedYear))
   }
 
   useEffect(() => {
-    const getCurrentEventBYYear = teamEvent(currentYear)
+    const getCurrentEventBYYear = teamEvent(currentSelectedYear)
     setSelectedEvent(getCurrentEventBYYear)
-  }, [currentYear, teamEvent])
+  }, [currentSelectedYear, teamEvent])
 
   //Sort events by date
   const sortedEvents = selectedEvent.sort((a, b) => {
@@ -44,14 +47,15 @@ export const StatisticsView: FC<StatisticsViewProps> = ({ teamEvent }) => {
       <div className='Statistics-view'>
         <Select
           onValueChange={handleYearChange}
-          defaultValue={currentYear.toString()}
+          defaultValue={currentSelectedYear.toString()}
         >
           <SelectTrigger className='w-[180px]'>
             <SelectValue placeholder='Year' />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value='2024'>2024</SelectItem>
-            <SelectItem value='2023'>2023</SelectItem>
+            {years.map((year) => (
+              <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
+            ))}
           </SelectContent>
         </Select>
         <div className='mt-5 flex flex-col gap-5'>
@@ -80,8 +84,8 @@ const EventCard: FC<EventCardProps> = ({ event, teamId }) => {
         {formatSingleEventDate(event.startDate)}
       </div>
       <div className='w-1/4 font-medium'>vs. {event.opponent}</div>
-      <div className='bg-[#37003c] rounded-lg p-2 ' title={event.location}>
-        {event.location === 'Home' ? (
+      <div className='bg-[#37003c] rounded-lg p-2 ' title={event.location.toUpperCase()}>
+        {event.location === 'home' ? (
           <img src={HomeIcon} width={20} alt='home-icon'/>
         ) : (
           <img src={AwayIcon} width={20} alt='awayicon' />

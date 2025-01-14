@@ -620,6 +620,7 @@ export async function sendLog(data: UpdateType): Promise<Response> {
 export type LogType = {
   userId: string
   message: string
+  username: string
   createdAt: Date
 }
 

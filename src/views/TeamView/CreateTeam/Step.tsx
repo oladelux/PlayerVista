@@ -2,7 +2,7 @@ import React, { PropsWithChildren, useState } from 'react'
 import { Form, Formik, FormikConfig, FormikValues } from 'formik'
 
 import { FormikStepProps, ProgressBar } from './ProgressBar'
-import { Button } from '../../../component/Button/Button'
+import LoadingButton from '@/component/LoadingButton/LoadingButton.tsx'
 
 export const FormikStep = ({ children }: FormikStepProps) => {
   return <>{children}</>
@@ -39,20 +39,18 @@ export const FormikStepper =
             { currentChild }
             <div className='Formik-stepper__btn'>
               {step > 0 ?
-                <Button
-                  className='Formik-stepper__btn--back'
-                  disabled={isSubmitting}
+                <LoadingButton
+                  isLoading={isSubmitting}
+                  className='bg-white border text-dark-purple border-dark-purple hover:bg-white'
                   type='button'
                   onClick={() => setStep(s => s - 1)}
-                >Back</Button> : <div></div>
+                >
+                  Back
+                </LoadingButton> : <div></div>
               }
-              <Button
-                className='Formik-stepper__btn--submit'
-                disabled={isSubmitting}
-                type='submit'
-              >
+              <LoadingButton isLoading={isSubmitting} className='bg-dark-purple hover:bg-dark-purple' type='submit' >
                 {isLastStep() && isUpdatePage() ? 'Update' : isLastStep() ? 'Submit' : 'Next'}
-              </Button>
+              </LoadingButton>
             </div>
           </Form>
         )}

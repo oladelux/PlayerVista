@@ -4,15 +4,10 @@ import PersonIcon from '@mui/icons-material/Person'
 import EventAvailableIcon from '@mui/icons-material/EventAvailable'
 import ConnectWithoutContactOutlinedIcon from '@mui/icons-material/ConnectWithoutContactOutlined'
 
-import { routes } from '../../constants/routes'
+import { routes } from '@/constants/routes.ts'
 
-import Metrics from '../../assets/images/metrics.png'
 import PlayerVistaLogo from '../../assets/images/icons/playervista.png'
 
-import Sponsor1 from '../../assets/images/sponsor1.png'
-import Sponsor2 from '../../assets/images/sponsor2.png'
-import Sponsor3 from '../../assets/images/sponsor3.png'
-import Sponsor4 from '../../assets/images/sponsor4.png'
 
 import './Home.scss'
 
@@ -58,22 +53,14 @@ export const Home = () => {
       <HomeHeader />
       <div className='Home__hero'>
         <div className='Home__hero-title'>
-          Empower Your Team with Affordable Player Tracking
+          Manage Your Team, Master the Game
         </div>
         <div className='Home__hero-text'>
-          Affordable player tracking for teams, scouts, and media.
+          Effortlessly <span className='border-b-2 border-dark-purple font-bold'>manage</span> your players, <span className='border-b-2 border-dark-purple font-bold'>track</span> real-time stats,
+          and <span className='border-b-2 border-dark-purple font-bold'>unlock</span> insights to <span className='border-b-2 border-dark-purple font-bold'>elevate</span> your game — all in one platform.
         </div>
         <Link to={routes.demoBooking} className='Home__hero-link'>Schedule demo</Link>
       </div>
-      {/*<div className='Home__content'>
-        <img src={Metrics} className='Home__content-img' alt='metrics'/>
-        <div className='Home__content-sponsors'>
-          <img src={Sponsor1} className='Home__content-sponsors-img' alt='sponsor'/>
-          <img src={Sponsor2} className='Home__content-sponsors-img' alt='sponsor'/>
-          <img src={Sponsor3} className='Home__content-sponsors-img' alt='sponsor'/>
-          <img src={Sponsor4} className='Home__content-sponsors-img' alt='sponsor'/>
-        </div>
-      </div>*/}
       <div className='Home__features'>
         <div className='Home__features-title'>What we provide</div>
         <div className='Home__features-text'>The amazing features we offer our users</div>

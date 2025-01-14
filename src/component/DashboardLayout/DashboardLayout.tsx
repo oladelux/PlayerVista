@@ -2,7 +2,6 @@ import React, { FC, PropsWithChildren } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useLocation, useParams } from 'react-router-dom'
 import { FiArrowLeft } from 'react-icons/fi'
-import Person2Icon from '@mui/icons-material/Person2'
 
 import { useAppController } from '@/hooks/useAppController.ts'
 import { TeamResponse } from '@/api'
@@ -20,8 +19,15 @@ import './DashboardLayout.scss'
 import { useMediaQuery } from '@mui/material'
 import { MobileNav } from '@/component/MobileNav/MobileNav.tsx'
 import { getPlayersByTeamIdThunk } from '@/store/slices/PlayersSlice.ts'
-import { useUser } from '@/hooks/useUser.ts'
 import { setActiveTeamId } from '@/store/slices/SettingsSlice.ts'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.tsx'
+import { userSelector } from '@/store/slices/UserSlice.ts'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu.tsx'
 
 type DashboardHeaderProps = {
   teams: TeamResponse[]
@@ -30,7 +36,8 @@ type DashboardHeaderProps = {
 export const DashboardHeader: FC<DashboardHeaderProps> = ({ teams }) => {
   const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
-  const user = useUser()
+  const { user } = useSelector(userSelector)
+  const { authentication } = useAppController()
   const { teamId } = useParams()
   const activeTeamName = teams ? teams.find((team) => team.id === teamId)?.teamName : ''
 
@@ -41,8 +48,14 @@ export const DashboardHeader: FC<DashboardHeaderProps> = ({ teams }) => {
     dispatch(setActiveTeamId({ teamId: id }))
     dispatch(getPlayersByTeamIdThunk({ teamId: id }))
     dispatch(getEventsByTeamThunk({ teamId: id }))
-    user.data && dispatch(getStaffsThunk({ groupId: user.data.groupId }))
-    // dispatch(getReportersThunk({ teamId: id }))
+    user && dispatch(getStaffsThunk({ groupId: user.groupId }))
+  }
+
+  function getUserInitials(): string {
+    if (!user) return ''
+    const firstInitial = user.firstName.charAt(0).toUpperCase()
+    const lastInitial = user.lastName.charAt(0).toUpperCase()
+    return `${firstInitial}${lastInitial}`
   }
 
   return (
@@ -68,8 +81,20 @@ export const DashboardHeader: FC<DashboardHeaderProps> = ({ teams }) => {
                 : <option>Select team</option>}
             </select>}
         </form>}
-        <div className='Dashboard-Layout__header-nav-profile'>
-          <Person2Icon/>
+        <div className='Dashboard-Layout__header-nav-profile mr-[30px]'>
+          <DropdownMenu>
+            <DropdownMenuTrigger className='focus-visible:outline-none'>
+              <Avatar>
+                <AvatarImage src='' />
+                <AvatarFallback>{getUserInitials()}</AvatarFallback>
+              </Avatar>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem className='hover:bg-dark-purple hover:text-white cursor-pointer'>
+                <div onClick={authentication.logout}>Log out</div>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </div>
