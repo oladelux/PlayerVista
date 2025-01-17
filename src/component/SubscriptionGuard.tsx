@@ -22,7 +22,7 @@ export default function SubscriptionGuard() {
         setLoading(false)
       }
     }
-    checkSubscription()
+    if(userId) checkSubscription()
   }, [userId])
 
   if (loading) return <LoadingPage />
