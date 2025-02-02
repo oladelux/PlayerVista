@@ -13,6 +13,7 @@ export const usePlayer = (playerId?: string, teamId?: string) => {
   const userId = userData?.id
 
   useEffect(() => {
+    console.log('Player: checking thus shit')
     const playerSubscription = playerService.player$.subscribe(state => {
       setPlayers(state.players)
       setAllUserPlayers(state.allUserPlayers)
