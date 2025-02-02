@@ -36,7 +36,7 @@ export function useAppController () {
   const logger = useUpdates()
   const { players } = usePlayers()
   const events = useEvents()
-  const team = useTeams(user.data?.id)
+  const team = useTeams()
   const loading = useAppLoading()
 
   useEffect(() => {

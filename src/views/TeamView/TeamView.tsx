@@ -7,7 +7,7 @@ import { DashboardHeader } from '@/component/DashboardLayout/DashboardLayout.tsx
 import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
 import { routes } from '@/constants/routes.ts'
 import { usePermission } from '@/hooks/usePermission.ts'
-import { useTeam } from '@/hooks/useTeam.ts'
+import { useTeams } from '@/hooks/useTeams.ts'
 import { playersSelector } from '@/store/slices/PlayersSlice.ts'
 import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
 import './TeamView.scss'
@@ -26,7 +26,7 @@ const NoTeamView: FC = () => {
 
 export function TeamView() {
   const { allPlayers } = useSelector(playersSelector)
-  const { teams, error, loading } = useTeam()
+  const { teams, error, loading } = useTeams()
   const isTeamsAvailable = teams.length > 0
 
   if (loading) return <LoadingPage />
