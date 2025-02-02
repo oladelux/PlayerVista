@@ -1,3 +1,7 @@
+import { useState } from 'react'
+
+import { AuthenticatedUserData } from '@/api'
+import { Button } from '@/components/ui/button.tsx'
 import {
   Dialog,
   DialogContent,
@@ -5,11 +9,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog.tsx'
-import { Button } from '@/components/ui/button.tsx'
-import { useState } from 'react'
-import CreateNewRoleForm from '@/views/SettingsView/form/CreateNewRoleForm.tsx'
-import { AuthenticatedUserData } from '@/api'
 import { UseUpdates } from '@/hooks/useUpdates.ts'
+import CreateNewRoleForm from '@/views/SettingsView/form/CreateNewRoleForm.tsx'
 
 type CreateNewRoleDialogProps = {
   user: AuthenticatedUserData
@@ -21,7 +22,7 @@ export default function CreateNewRoleDialog({ user, logger }: CreateNewRoleDialo
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger className='my-5' asChild>
-        <Button className='bg-dark-purple text-white px-6 py-2 hover:bg-dark-purple'>Create Role</Button>
+        <Button className='bg-dark-purple px-6 py-2 text-white hover:bg-dark-purple'>Create Role</Button>
       </DialogTrigger>
       <DialogContent className='sm:max-w-md'>
         <DialogHeader>

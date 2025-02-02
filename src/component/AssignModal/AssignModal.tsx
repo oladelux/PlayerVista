@@ -1,14 +1,14 @@
+import Switch from '@mui/material/Switch'
 import { ChangeEvent, FC } from 'react'
 import ReactDOM from 'react-dom'
 import { useSelector } from 'react-redux'
-import Switch from '@mui/material/Switch'
-
-import { Event, TeamResponse } from '@/api'
-import { formatSingleEventDate, formatSingleEventTime } from '@/utils/date.ts'
-import { useAppDispatch } from '@/store/types.ts'
-import { assignReporterThunk, reporterSelector, retractReporterThunk } from '@/store/slices/ReporterSlice.ts'
 
 import { Popup } from '../Popup/Popup.tsx'
+import { Event, TeamResponse } from '@/api'
+import { assignReporterThunk, reporterSelector, retractReporterThunk } from '@/store/slices/ReporterSlice.ts'
+import { useAppDispatch } from '@/store/types.ts'
+import { formatSingleEventDate, formatSingleEventTime } from '@/utils/date.ts'
+
 
 import './AssignModal.scss'
 

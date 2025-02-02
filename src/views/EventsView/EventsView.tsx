@@ -1,21 +1,19 @@
-import React, { FC } from 'react'
-
-import { AuthenticatedUserData } from '@/api'
-import { UseUpdates } from '@/hooks/useUpdates.ts'
-import { useEvents } from '@/hooks/useEvents.ts'
+import React from 'react'
 
 import { DashboardLayout } from '../../component/DashboardLayout/DashboardLayout'
 import { EventCalender } from '../../component/EventCalender/EventCalender.tsx'
+import { useEvents } from '@/hooks/useEvents.ts'
+import { useUpdates } from '@/hooks/useUpdates.ts'
+
 
 import './EventsView.scss'
+import { useParams } from 'react-router-dom'
 
-type EventsViewProps = {
-  logger: UseUpdates
-  user: AuthenticatedUserData
-}
 
-export const EventsView: FC<EventsViewProps> = props => {
-  const { events } = useEvents()
+export function EventsView() {
+  const { teamId } = useParams()
+  const { events } = useEvents(teamId, undefined)
+  const logger = useUpdates()
   const pastMatches = events.filter(match => new Date(match.endDate) < new Date())
   const upcomingMatches = events.filter(match => new Date(match.endDate) > new Date())
 
@@ -37,7 +35,7 @@ export const EventsView: FC<EventsViewProps> = props => {
           </div>
         </div>
         <div className='Events-view__content'>
-          <EventCalender events={events} user={props.user} logger={props.logger} />
+          <EventCalender events={events} logger={logger} />
         </div>
       </div>
     </DashboardLayout>

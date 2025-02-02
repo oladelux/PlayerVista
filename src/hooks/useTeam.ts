@@ -1,24 +1,44 @@
-import { useAppDispatch } from '@/store/types.ts'
-import { useEffect } from 'react'
-import { getTeamThunk, teamSelector, updateTeamThunk } from '@/store/slices/TeamSlice.ts'
-import { useSelector } from 'react-redux'
-import { TeamFormData } from '@/api'
+import { useEffect, useState } from 'react'
+
+import { TeamResponse } from '@/api'
+import { appService, teamService } from '@/singletons'
 
 export const useTeam = (teamId?: string) => {
-  const dispatch = useAppDispatch()
-  const { team } = useSelector(teamSelector)
+  const userData = appService.getUserData()
+  const userId = userData?.id
 
-  async function updateTeam(data: TeamFormData) {
+  const [team, setTeam] = useState<TeamResponse | null>(null)
+  const [teams, setTeams] = useState<TeamResponse[]>([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | undefined>(undefined)
+
+  /*  async function updateTeam(data: TeamFormData) {
     if (teamId) {
       await dispatch(updateTeamThunk({ teamId, data }))
     }
-  }
+  }*/
 
   useEffect(() => {
-    if (teamId) {
-      dispatch(getTeamThunk({ id: teamId }))
+    const teamSubscription = teamService.team$.subscribe(state => {
+      setTeams(state.teams)
+      setTeam(state.team)
+      setLoading(state.loading)
+      setError(state.error)
+    })
+    teamService.getTeams(userId)
+    if (teamId){
+      teamService.getTeam(teamId)
     }
-  }, [dispatch, teamId])
 
-  return { team, updateTeam }
+    return () => {
+      teamSubscription.unsubscribe()
+    }
+  }, [teamId, userId])
+
+  return {
+    team,
+    teams,
+    error,
+    loading,
+  }
 }

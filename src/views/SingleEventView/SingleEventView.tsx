@@ -1,51 +1,45 @@
 import { FC, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
+import ClubLogo from '../../assets/images/club.png'
+import { DashboardLayout } from '../../component/DashboardLayout/DashboardLayout.tsx'
 import { TeamResponse, Event } from '@/api'
+import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
+import { useEvents } from '@/hooks/useEvents.ts'
+import { useTeam } from '@/hooks/useTeam.ts'
 import { formatDate } from '@/services/helper.ts'
+import { appService } from '@/singletons'
 import {
   formatSingleEventDate,
   formatSingleEventTime,
 } from '@/utils/date.ts'
-import { EventsHook } from '@/hooks/useEvents.ts'
 
-import { DashboardLayout } from '../../component/DashboardLayout/DashboardLayout.tsx'
 
-import ClubLogo from '../../assets/images/club.png'
 
 import './SingleEventView.scss'
 
-type SingleEventViewProps = {
-  events: EventsHook;
-  teams: TeamResponse[];
-};
-
 const now = new Date()
 
-export const SingleEventView: FC<SingleEventViewProps> = (props) => {
-  const { events, teams } = props
+export function SingleEventView() {
+  const { events } = useEvents()
   const { teamId, eventId } = useParams()
+  const { team, error, loading } = useTeam(teamId)
+  const userData = appService.getUserData()
 
   const isEvent = useMemo(() => {
     if (teamId) {
       return (
-        events.events &&
-        events.events.find((event) => event.id === eventId)
+        events &&
+        events.find((event) => event.id === eventId)
       )
     }
   }, [teamId, events, eventId])
 
-  const isTeam = useMemo(() => {
-    if (teams) {
-      return teams.find((team) => team.id === teamId)
-    }
-  }, [teamId, teams])
-
   const isMatches = useMemo(() => {
     if (teamId) {
       return (
-        events.events &&
-        events.events.filter(
+        events &&
+        events.filter(
           (event) => event.type === 'match' && new Date(event.startDate) > now,
         )
       )
@@ -55,8 +49,8 @@ export const SingleEventView: FC<SingleEventViewProps> = (props) => {
   const isTraining = useMemo(() => {
     if (teamId) {
       return (
-        events.events &&
-        events.events.filter(
+        events &&
+        events.filter(
           (event) =>
             event.type === 'training' && new Date(event.startDate) > now,
         )
@@ -64,23 +58,27 @@ export const SingleEventView: FC<SingleEventViewProps> = (props) => {
     }
   }, [teamId, events])
 
+  if (loading) return <LoadingPage />
+  //TODO: Create Error Page
+  if (error || !userData) return 'This is an error page'
+
   return (
     <DashboardLayout>
       <div className='Single-event'>
         <div className='Single-event__header'>
           <div className='Single-event__header-title'>Event Updates</div>
         </div>
-        {isEvent && isTeam && isTraining && isEvent.type === 'training' && (
+        {isEvent && team && isTraining && isEvent.type === 'training' && (
           <SingleTraining
             isEvent={isEvent}
-            isTeam={isTeam}
+            isTeam={team}
             isTraining={isTraining}
           />
         )}
-        {isEvent && isTeam && isMatches && isEvent.type === 'match' && (
+        {isEvent && team && isMatches && isEvent.type === 'match' && (
           <SingleMatch
             isEvent={isEvent}
-            isTeam={isTeam}
+            isTeam={team}
             isMatches={isMatches}
           />
         )}

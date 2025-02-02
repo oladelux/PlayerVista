@@ -1,51 +1,50 @@
 import { FC } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 
+import { DashboardLayout } from './component/DashboardLayout/DashboardLayout.tsx'
 import { routes } from './constants/routes'
 import { useAppController } from './hooks/useAppController'
 import { getCookie } from './services/cookies'
-
+import { ChangePasswordView } from './views/ChangePasswordView/ChangePasswordView'
+import { Dashboard } from './views/Dashboard/Dashboard'
+import { EmailVerification } from './views/EmailVerification/EmailVerification.tsx'
+import { EventsView } from './views/EventsView/EventsView'
+import { ForgotPassword } from './views/ForgotPassword/ForgotPassword'
 import { Home } from './views/Home/Home'
 import { Login } from './views/Login/Login'
-import { Dashboard } from './views/Dashboard/Dashboard'
-import { PlayersView } from './views/PlayersView/PlayersView'
-import { SinglePlayerView } from './views/SinglePlayerView/SinglePlayerView'
-import { TrainingData } from './views/TrainingData/TrainingData'
-import { EventsView } from './views/EventsView/EventsView'
 import { MyAccount } from './views/MyAccount/MyAccount'
 import { AddPlayer } from './views/PlayersView/AddPlayer/AddPlayer'
+import { EditPlayer } from './views/PlayersView/EditPlayer/EditPlayer.tsx'
+import { PlayersView } from './views/PlayersView/PlayersView'
+import { AddReporter } from './views/ReportersView/AddReporter/AddReporter.tsx'
+import { ReportersView } from './views/ReportersView/ReportersView.tsx'
 import { SignUp } from './views/SignUp/SignUp'
-import { ForgotPassword } from './views/ForgotPassword/ForgotPassword'
-import { ChangePasswordView } from './views/ChangePasswordView/ChangePasswordView'
-import { TeamView } from './views/TeamView/TeamView'
+import { EventSummary } from './views/SingleEventView/EventSummary/EventSummary.tsx'
+import { SingleEventView } from './views/SingleEventView/SingleEventView.tsx'
+import { StatisticsView } from './views/StatisticsView/StatisticsView.tsx'
 import {
   CreateTeam,
   DashboardCreateTeam,
 } from './views/TeamView/CreateTeam/CreateTeam'
-import { Staffs } from './views/UserManagementView/Staffs/Staffs'
-import { DashboardLayout } from './component/DashboardLayout/DashboardLayout.tsx'
-import { SingleEventView } from './views/SingleEventView/SingleEventView.tsx'
-import { EventSummary } from './views/SingleEventView/EventSummary/EventSummary.tsx'
+import { TeamView } from './views/TeamView/TeamView'
+import { TrainingData } from './views/TrainingData/TrainingData'
 import { AddStaff } from './views/UserManagementView/Staffs/AddStaff/AddStaff.tsx'
-import { EmailVerification } from './views/EmailVerification/EmailVerification.tsx'
-import { ReportersView } from './views/ReportersView/ReportersView.tsx'
-import { AddReporter } from './views/ReportersView/AddReporter/AddReporter.tsx'
-import { StatisticsView } from './views/StatisticsView/StatisticsView.tsx'
-import { PlayerEventStats } from '@/views/SingleEventView/PlayerEventStats/PlayerEventStats.tsx'
-import { SettingsView } from '@/views/SettingsView/SettingsView.tsx'
-import PlayerStats from '@/views/PlayersView/PlayerStats/PlayerStats.tsx'
-import SelectPlan from '@/views/SelectPlan/SelectPlan.tsx'
-import PaymentCallback from '@/views/SelectPlan/PaymentCallback.tsx'
-import { Teams } from '@/views/Teams/Teams.tsx'
-import { ManageTeam } from '@/views/Teams/form/ManageTeam.tsx'
-import { EditStaff } from '@/views/UserManagementView/Staffs/EditStaff/EditStaff.tsx'
+import { Staffs } from './views/UserManagementView/Staffs/Staffs'
 import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
 import SubscriptionGuard from '@/component/SubscriptionGuard.tsx'
+import PlayerStats from '@/views/PlayersView/PlayerStats/PlayerStats.tsx'
+import PaymentCallback from '@/views/SelectPlan/PaymentCallback.tsx'
+import SelectPlan from '@/views/SelectPlan/SelectPlan.tsx'
+import { SettingsView } from '@/views/SettingsView/SettingsView.tsx'
+import { PlayerEventStats } from '@/views/SingleEventView/PlayerEventStats/PlayerEventStats.tsx'
+import { ManageTeam } from '@/views/Teams/form/ManageTeam.tsx'
+import { Teams } from '@/views/Teams/Teams.tsx'
+import { EditStaff } from '@/views/UserManagementView/Staffs/EditStaff/EditStaff.tsx'
 
 export const AppRoutes: FC = () => {
   const controller = useAppController()
 
-  const { user, players, events, logger, logs, teams, staffs } = controller
+  const { user, players, events, logger, teams, staffs } = controller
   const accessToken = getCookie('access-token')
 
   if (user.data === undefined && accessToken) {
@@ -58,13 +57,13 @@ export const AppRoutes: FC = () => {
         <Route path={routes.home} element={<Home />} />
         <Route
           path={routes.login}
-          element={<Login controller={controller} />}
+          element={<Login />}
         />
         <Route
           path={routes.signUp}
-          element={<SignUp controller={controller} />}
+          element={<SignUp />}
         />
-        <Route path={routes.forgotPassword} element={<ForgotPassword controller={controller} />} />
+        <Route path={routes.forgotPassword} element={<ForgotPassword />} />
         <Route
           path={routes.changePassword}
           element={<ChangePasswordView />}
@@ -85,66 +84,56 @@ export const AppRoutes: FC = () => {
         <Route
           path={routes.team}
           element={
-            <TeamView teams={controller.teams} user={user.data} />}
+            <TeamView />}
         />
         <Route
-          path={routes.createTeam}
+          path={routes.addTeam}
           element={
-            <CreateTeam user={user.data} logger={logger} teams={teams} />
+            <CreateTeam />
           }
         />
         <Route
           path={routes.dashboardCreateTeam}
           element={
             <DashboardLayout>
-              <DashboardCreateTeam
-                user={user.data}
-                logger={logger}
-                teams={teams}
-              />
+              <DashboardCreateTeam />
             </DashboardLayout>
           }
         />
         <Route
           path={routes.dashboard}
           element={
-            <Dashboard
-              teams={controller.teams}
-              applicationLogs={logs}
-              user={user.data}
-              authentication={controller.authentication}
-            />
+            <Dashboard />
           }
         />
         <Route
           path={routes.teams}
-          element={<Teams teams={controller.teams}
-            team={controller.singleTeam} players={controller.allPlayers} />}
+          element={<Teams />}
         />
         <Route
           path={routes.players}
-          element={<PlayersView players={players} />}
+          element={<PlayersView />}
         />
         <Route
           path={routes.addPlayer}
-          element={<AddPlayer user={user.data} logger={logger} />}
+          element={<AddPlayer />}
         />
         <Route
           path={routes.statistics}
-          element={<StatisticsView teamEvent={events.getTeamEvent} />}
+          element={<StatisticsView />}
         />
         <Route
           path={routes.settings}
-          element={<SettingsView user={user.data} logger={logger} />}
+          element={<SettingsView />}
         />
-        <Route path={routes.singlePlayer} element={<SinglePlayerView />} />
+        <Route path={routes.singlePlayer} element={<EditPlayer />} />
         <Route
           path={routes.staffs}
-          element={<Staffs staffs={staffs} user={user.data} logger={logger} />}
+          element={<Staffs />}
         />
         <Route
           path={routes.addStaff}
-          element={<AddStaff user={user.data} logger={logger} />}
+          element={<AddStaff />}
         />
         <Route path={routes.manageStaff} element={<EditStaff />} />
         <Route
@@ -164,16 +153,16 @@ export const AppRoutes: FC = () => {
         <Route path={routes.trainingData} element={<TrainingData />} />
         <Route
           path={routes.events}
-          element={<EventsView user={user.data} logger={logger} />}
+          element={<EventsView />}
         />
         <Route
           path={routes.singleEvent}
-          element={<SingleEventView events={events} teams={teams} />}
+          element={<SingleEventView />}
         />
         <Route
           path={routes.eventSummary}
           element={
-            <EventSummary players={players} events={events} teams={teams} />
+            <EventSummary />
           }
         />
         <Route
@@ -183,7 +172,7 @@ export const AppRoutes: FC = () => {
         <Route
           path={routes.playerEventStats}
           element={
-            <PlayerEventStats events={events} teams={teams} />
+            <PlayerEventStats />
           }
         />
         <Route path={routes.manageTeam} element={<ManageTeam />} />
@@ -198,9 +187,9 @@ export const AppRoutes: FC = () => {
       />
       <Route
         path={routes.login}
-        element={<Login controller={controller} />}
+        element={<Login />}
       />
-      <Route path={routes.forgotPassword} element={<ForgotPassword controller={controller} />} />
+      <Route path={routes.forgotPassword} element={<ForgotPassword />} />
     </Routes>
   )
 }

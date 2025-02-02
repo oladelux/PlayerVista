@@ -1,4 +1,5 @@
 import { FC } from 'react'
+
 import { Table } from '../Table/Table.tsx'
 
 import './Offensive.scss'

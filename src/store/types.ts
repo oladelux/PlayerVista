@@ -1,4 +1,5 @@
 import { useDispatch } from 'react-redux'
+
 import { rootReducer, setupStore } from './index'
 
 export type AppDispatch = typeof setupStore.dispatch

@@ -1,18 +1,17 @@
-import React, { FC, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
-import { useSelector } from 'react-redux'
 import { Field } from 'formik'
 import generator from 'generate-password-ts'
+import React, { FC, useState } from 'react'
+import { useSelector } from 'react-redux'
+import { useNavigate, useParams } from 'react-router-dom'
 
-import { useAppDispatch } from '../../../store/types'
 import { AuthenticatedUserData, ReporterData } from '../../../api'
-import { createReporterThunk, reporterSelector } from '../../../store/slices/ReporterSlice.ts'
-import { UseUpdates } from '../../../hooks/useUpdates.ts'
-
 import { DashboardLayout } from '../../../component/DashboardLayout/DashboardLayout'
 import { Spinner } from '../../../component/Spinner/Spinner.tsx'
-import { FormikStep, FormikStepper } from '../../TeamView/CreateTeam/Step'
 import { SuccessConfirmationPopup } from '../../../component/SuccessConfirmation/SuccessConfirmation.tsx'
+import { UseUpdates } from '../../../hooks/useUpdates.ts'
+import { createReporterThunk, reporterSelector } from '../../../store/slices/ReporterSlice.ts'
+import { useAppDispatch } from '../../../store/types'
+import { FormikStep, FormikStepper } from '../../TeamView/CreateTeam/Step'
 
 import './AddReporter.scss'
 

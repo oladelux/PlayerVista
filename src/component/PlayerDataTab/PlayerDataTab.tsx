@@ -7,8 +7,8 @@ interface PlayerDataTabProps {
 }
 export default function PlayerDataTab({ actions, metrics }: PlayerDataTabProps) {
   if(!actions) return (
-    <div className='flex justify-center items-center bg-card-stat-bg py-5 px-6 rounded-md'>
-      <div className='text-sub-text text-xs text-text-grey-1'>No data</div>
+    <div className='flex items-center justify-center rounded-md bg-card-stat-bg px-6 py-5'>
+      <div className='text-xs text-sub-text text-text-grey-1'>No data</div>
     </div>
   )
   const playerActions = groupActionsByCategory(actions, metrics)
@@ -16,9 +16,9 @@ export default function PlayerDataTab({ actions, metrics }: PlayerDataTabProps) 
   return (
     <div className='grid grid-cols-3 gap-5'>
       {playerActions.map(action => (
-        <div key={action.label} className='flex justify-between items-center bg-card-stat-bg py-5 px-6 rounded-md'>
-          <div className='text-sub-text text-xs text-text-grey-1'>{action.label}</div>
-          <div className='text-xs p-2.5 bg-white rounded-lg border-b'
+        <div key={action.label} className='flex items-center justify-between rounded-md bg-card-stat-bg px-6 py-5'>
+          <div className='text-xs text-sub-text text-text-grey-1'>{action.label}</div>
+          <div className='rounded-lg border-b bg-white p-2.5 text-xs'
             style={{
               color: `${action.color}`,
               borderBottomColor: `${action.color}`,

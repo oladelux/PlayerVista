@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux'
 
-import { AppDispatch } from '../store/types'
 import { getTeamsThunk, teamSelector } from '../store/slices/TeamSlice'
+import { AppDispatch } from '../store/types'
 import { Fixtures } from '@/api'
 
 /**

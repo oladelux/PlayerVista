@@ -1,15 +1,12 @@
-import { FC, Fragment, useEffect, useState } from 'react'
-import { Player, PlayerActions } from '@/api'
+import { FC, Fragment, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { useAppDispatch } from '@/store/types.ts'
-import { useSelector } from 'react-redux'
-import {
-  getPerformanceByEventThunk,
-  playerPerformanceSelector,
-} from '@/store/slices/PlayerPerformanceSlice.ts'
-import { convertSecondsToGameMinute, getPlayerActions } from '@/utils/players.ts'
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table.tsx'
+
+import { Player, PlayerActions } from '@/api'
+import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
 import { Slider } from '@/components/ui/slider.tsx'
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table.tsx'
+import { usePerformance } from '@/hooks/usePerformance.ts'
+import { convertSecondsToGameMinute, getPlayerActions } from '@/utils/players.ts'
 
 interface AttackingStatsProps {
   players: Player[]
@@ -19,11 +16,9 @@ type AttackingActionType = 'shots' | 'dribbles' | 'freekick' | 'goals' | 'assist
 
 export const AttackingStats: FC<AttackingStatsProps> = ({ players }) => {
   const { eventId } = useParams()
-  const dispatch = useAppDispatch()
   const [timeRange, setTimeRange] = useState<number[]>([0, 90])
-  const { performance } = useSelector(playerPerformanceSelector)
-
-  const data = getPlayerActions(players, performance)
+  const { performanceByEvent, loading, error } = usePerformance(undefined, eventId)
+  const data = getPlayerActions(players, performanceByEvent)
 
   const renderPlayerActions = (actions: PlayerActions | undefined) => {
     const actionTypes: AttackingActionType[] = ['shots', 'dribbles', 'freekick', 'goals', 'assists']
@@ -32,7 +27,7 @@ export const AttackingStats: FC<AttackingStatsProps> = ({ players }) => {
         if(type === 'goals' || type === 'assists') {
           return (
             <Fragment key={type}>
-              <TableCell className='text-center border-r'>
+              <TableCell className='border-r text-center'>
                 0
               </TableCell>
             </Fragment>
@@ -40,8 +35,8 @@ export const AttackingStats: FC<AttackingStatsProps> = ({ players }) => {
         }
         return (
           <Fragment key={type}>
-            <TableCell className='text-center border-r' key={`${type}-total`}>0</TableCell>
-            <TableCell className='text-center border-r' key={`${type}-successful`}>0</TableCell>
+            <TableCell className='border-r text-center' key={`${type}-total`}>0</TableCell>
+            <TableCell className='border-r text-center' key={`${type}-successful`}>0</TableCell>
           </Fragment>
         ) })
     }
@@ -52,7 +47,7 @@ export const AttackingStats: FC<AttackingStatsProps> = ({ players }) => {
       if(type === 'goals' || type === 'assists') {
         return (
           <Fragment key={type}>
-            <TableCell className='text-center border-r'>
+            <TableCell className='border-r text-center'>
               {filteredActions?.length ?? 0}
             </TableCell>
           </Fragment>
@@ -60,10 +55,10 @@ export const AttackingStats: FC<AttackingStatsProps> = ({ players }) => {
       }
       return (
         <Fragment key={type}>
-          <TableCell className='text-center border-r'>
+          <TableCell className='border-r text-center'>
             {filteredActions?.length ?? 0}
           </TableCell>
-          <TableCell className='text-center border-r'>
+          <TableCell className='border-r text-center'>
             {filteredActions?.filter((action) => action.value === 'SUCCESSFUL').length ?? 0}
           </TableCell>
         </Fragment>
@@ -80,11 +75,12 @@ export const AttackingStats: FC<AttackingStatsProps> = ({ players }) => {
       return undefined
     }
 
-  useEffect(() => {
-    if(eventId) {
-      dispatch(getPerformanceByEventThunk({ eventId }))
-    }
-  }, [dispatch, eventId])
+  if (loading) return <LoadingPage />
+  //TODO: Create Error Page
+  if (error) {
+    return 'This is an error page'
+  }
+
   return (
     <>
       <div className='my-8'>
@@ -102,9 +98,9 @@ export const AttackingStats: FC<AttackingStatsProps> = ({ players }) => {
               <TableHead className='border-r'>Pos.</TableHead>
               <TableHead className='border-r'>Mins.</TableHead>
               <TableHead className='border-r'>Name</TableHead>
-              <TableHead colSpan={2} className='text-center border-r'>Shots</TableHead>
-              <TableHead colSpan={2} className='text-center border-r'>Dribble</TableHead>
-              <TableHead colSpan={2} className='text-center border-r'>Free Kick</TableHead>
+              <TableHead colSpan={2} className='border-r text-center'>Shots</TableHead>
+              <TableHead colSpan={2} className='border-r text-center'>Dribble</TableHead>
+              <TableHead colSpan={2} className='border-r text-center'>Free Kick</TableHead>
               <TableHead className='border-r'>Goals</TableHead>
               <TableHead className='border-r'>Assists</TableHead>
             </TableRow>
@@ -113,12 +109,12 @@ export const AttackingStats: FC<AttackingStatsProps> = ({ players }) => {
               <TableHead className='border-r'></TableHead>
               <TableHead className='border-r'></TableHead>
               <TableHead className='border-r'></TableHead>
-              <TableHead className='text-center border-r' title='Shots on'>Sht.On</TableHead>
-              <TableHead className='text-center border-r' title='Shots Off'>Sht.Off</TableHead>
-              <TableHead className='text-center border-r' title='Attempted Dribble'>ATT.Drb</TableHead>
-              <TableHead className='text-center border-r' title='Successful Dribble'>SUC.Drb</TableHead>
-              <TableHead className='text-center border-r' title='Free Kick Won'>FK.Won</TableHead>
-              <TableHead className='text-center border-r' title='Free Kick Given'>FK.Given</TableHead>
+              <TableHead className='border-r text-center' title='Shots on'>Sht.On</TableHead>
+              <TableHead className='border-r text-center' title='Shots Off'>Sht.Off</TableHead>
+              <TableHead className='border-r text-center' title='Attempted Dribble'>ATT.Drb</TableHead>
+              <TableHead className='border-r text-center' title='Successful Dribble'>SUC.Drb</TableHead>
+              <TableHead className='border-r text-center' title='Free Kick Won'>FK.Won</TableHead>
+              <TableHead className='border-r text-center' title='Free Kick Given'>FK.Given</TableHead>
               <TableHead className='border-r'></TableHead>
               <TableHead className='border-r'></TableHead>
             </TableRow>
@@ -134,7 +130,7 @@ export const AttackingStats: FC<AttackingStatsProps> = ({ players }) => {
                     convertSecondsToGameMinute(matchData.minutePlayed) : 0}
                   </TableCell>
                   <TableCell className='border-r'>
-                    <Link to={`${player.id}`}>{`${player.firstName} ${player.lastName}`}</Link>
+                    <Link to={`player/${player.id}`}>{`${player.firstName} ${player.lastName}`}</Link>
                   </TableCell>
                   {renderPlayerActions(matchData?.actions)}
                 </TableRow>

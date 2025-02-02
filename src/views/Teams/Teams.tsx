@@ -1,25 +1,20 @@
-import { FC, useState } from 'react'
-import { FiSearch } from 'react-icons/fi'
+import { EyeIcon } from 'lucide-react'
+import { useState } from 'react'
 import { FaPlus } from 'react-icons/fa'
+import { FiSearch } from 'react-icons/fi'
+import { useSelector } from 'react-redux'
 import { Link, useParams } from 'react-router-dom'
-
-import { Player, TeamResponse } from '@/api'
-import { formatDate } from '@/services/helper.ts'
 
 import { DashboardLayout } from '../../component/DashboardLayout/DashboardLayout'
 import { Table } from '../../component/Table/Table'
+import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
+import { usePermission } from '@/hooks/usePermission.ts'
+import { usePlayer } from '@/hooks/usePlayer.ts'
+import { useTeam } from '@/hooks/useTeam.ts'
+import { formatDate } from '@/services/helper.ts'
+import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
 
 import './Teams.scss'
-import { useSelector } from 'react-redux'
-import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
-import { usePermission } from '@/hooks/usePermission.ts'
-import { EyeIcon } from 'lucide-react'
-
-type TeamsProps = {
-  teams: TeamResponse[]
-  players: Player[]
-  team: TeamResponse | null
-}
 
 const columns = [
   { key: 'name', title: 'Name' },
@@ -29,7 +24,7 @@ const columns = [
   {
     key: 'action',
     title: 'Action',
-    render: (value: { manageLink: string, viewStatsLink: string }) => (<div className='flex gap-2 items-center'>
+    render: (value: { manageLink: string, viewStatsLink: string }) => (<div className='flex items-center gap-2'>
       <Link className='table-link' to={value.manageLink}><EyeIcon width={16} /></Link>
       {/*<Link className='table-link border-l border-l-border-line px-2'
       to={value.viewStatsLink}>View Stats</Link>*/}
@@ -37,18 +32,28 @@ const columns = [
   },
 ]
 
-export const Teams:FC<TeamsProps> = ({ teams, players, team }) => {
+export function Teams() {
   const { userRole } = useSelector(settingsSelector)
   const { canCreateTeam } = usePermission(userRole)
   const { teamId } = useParams()
+
+  const { teams, error, loading } = useTeam(teamId)
+  const {
+    allUserPlayers: players,
+    loading: playersLoading,
+    error: playersError,
+  } = usePlayer(undefined, teamId)
+
   const [searchQuery, setSearchQuery] = useState('')
+  const team = teams.find(team => team.id === teamId)
+
   const data = teams.length > 0 ? teams.map(team => ({
     name: team.teamName,
     noOfPlayers: players.filter(player => player.teamId === team.id).length,
     dateCreated: formatDate(new Date(team.creationYear)),
     homeStadium: team.stadiumName,
     action: {
-      manageLink: 'manage-team',
+      manageLink: `${team.id}/manage-team`,
       viewStatsLink: 'view-stats',
     },
   })) : team ? [{
@@ -61,6 +66,10 @@ export const Teams:FC<TeamsProps> = ({ teams, players, team }) => {
       viewStatsLink: 'view-stats',
     },
   }] : []
+
+  if (loading || playersLoading) return <LoadingPage />
+  //TODO: Create Error Page
+  if (error || playersError) return 'This is an error page'
 
   return (
     <DashboardLayout>
@@ -78,7 +87,7 @@ export const Teams:FC<TeamsProps> = ({ teams, players, team }) => {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          {canCreateTeam && <Link to={`/team/${teamId}/team/create-team`} className='Manage-teams__header-link'>
+          {canCreateTeam && <Link to={`/${teamId}/add-team`} className='Manage-teams__header-link'>
             <FaPlus/>
             <span className='Manage-teams__header-link--text'>Add Team</span>
           </Link>}

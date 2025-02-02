@@ -1,23 +1,25 @@
-import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
+import { useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 
 import * as api from '../api'
-import { ApiError, AuthenticationCredentials, SignUpFormData, SubscriptionStatus, ClientError } from '@/api'
-import { routes } from '../constants/routes'
 import { UserHook } from './useUser'
+import { routes } from '../constants/routes'
 import { addCookie, removeCookie } from '../services/cookies'
-import { useAppDispatch } from '../store/types.ts'
+import { clearEventState } from '../store/slices/EventsSlice.ts'
+import { clearPlayerState, getPlayersByUserIdThunk } from '../store/slices/PlayersSlice.ts'
+import { clearReporterState } from '../store/slices/ReporterSlice.ts'
 import {
   clearSettingsState, getApplicationLogsThunk, getRolesByGroupIdThunk, settingsSelector,
 } from '../store/slices/SettingsSlice.ts'
-import { clearTeamState, getTeamsThunk, getTeamThunk } from '../store/slices/TeamSlice.ts'
-import { clearPlayerState, getPlayersByUserIdThunk } from '../store/slices/PlayersSlice.ts'
-import { clearEventState } from '../store/slices/EventsSlice.ts'
-import { clearLocalStorage } from '../utils/localStorage.ts'
 import { clearStaffState } from '../store/slices/StaffSlice.ts'
-import { clearReporterState } from '../store/slices/ReporterSlice.ts'
+import { clearTeamState, getTeamsThunk, getTeamThunk } from '../store/slices/TeamSlice.ts'
+import { useAppDispatch } from '../store/types.ts'
+import { clearLocalStorage } from '../utils/localStorage.ts'
+import { ApiError, AuthenticationCredentials, SignUpFormData, SubscriptionStatus, ClientError } from '@/api'
 import { useToast } from '@/hooks/use-toast.ts'
-import { useSelector } from 'react-redux'
+import { toLocalSession } from '@/services/localSession.ts'
+import { appService } from '@/singletons'
 import { getUserDataThunk } from '@/store/slices/UserSlice.ts'
 
 export type AuthenticationHook = ReturnType<typeof useAuthentication>
@@ -63,18 +65,20 @@ export function useAuthentication (
         if (!userData) {
           throw new Error('Unexpected no user data after logging in')
         }
-        const parentUserId = userData.parentUserId || userData.id
+        const userId = userData.parentUserId || userData.id
+        appService.setUserId(userData.id)
+        appService.setUserData(userData)
 
         // Perform critical dispatch calls
         await Promise.all([
           dispatch(getUserDataThunk()),
-          dispatch(getTeamsThunk({ userId: parentUserId })),
+          dispatch(getTeamsThunk({ userId })),
           dispatch(getTeamThunk({ id: activeTeamId })),
         ])
 
         await afterLogin(userData)
 
-        const subscription = await user.getSubscriptionData(parentUserId)
+        const subscription = await user.getSubscriptionData(userId)
         const nextRoute =
           subscription?.status === SubscriptionStatus.ACTIVE
             ? routes.team
@@ -86,7 +90,7 @@ export function useAuthentication (
 
         // Fetch additional data after navigation
         await Promise.all([
-          dispatch(getPlayersByUserIdThunk({ userId: parentUserId })),
+          dispatch(getPlayersByUserIdThunk({ userId })),
           dispatch(getApplicationLogsThunk({ groupId: userData.groupId })),
           dispatch(getRolesByGroupIdThunk({ groupId: userData.groupId })),
         ])

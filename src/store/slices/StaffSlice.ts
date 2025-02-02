@@ -1,4 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+
+import { AsyncThunkLoading, RootState } from '../types.ts'
 import {
   ClientError,
   createStaff, deleteStaff,
@@ -9,7 +11,6 @@ import {
   StaffDataResponse, updateStaff,
   UserDetailsResponse,
 } from '@/api'
-import { AsyncThunkLoading, RootState } from '../types.ts'
 
 type InitialStaffState = {
   staffs: Staff[]

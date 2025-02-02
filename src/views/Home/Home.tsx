@@ -1,12 +1,12 @@
-import { Link } from 'react-router-dom'
-import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined'
-import PersonIcon from '@mui/icons-material/Person'
-import EventAvailableIcon from '@mui/icons-material/EventAvailable'
 import ConnectWithoutContactOutlinedIcon from '@mui/icons-material/ConnectWithoutContactOutlined'
-
-import { routes } from '@/constants/routes.ts'
+import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined'
+import EventAvailableIcon from '@mui/icons-material/EventAvailable'
+import PersonIcon from '@mui/icons-material/Person'
+import { Link } from 'react-router-dom'
 
 import PlayerVistaLogo from '../../assets/images/icons/playervista.png'
+import { routes } from '@/constants/routes.ts'
+
 
 
 import './Home.scss'

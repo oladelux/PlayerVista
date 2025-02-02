@@ -1,7 +1,8 @@
 import { ReactNode } from 'react'
 import { Control, FieldPath, FieldValues } from 'react-hook-form'
-import { FormField, FormItem, FormMessage } from '@/components/ui/form.tsx'
+
 import { Checkbox } from '@/components/ui/checkbox.tsx'
+import { FormField, FormItem, FormMessage } from '@/components/ui/form.tsx'
 
 interface CheckboxFormFieldProps<
   TName extends FieldPath<TFieldValues>,

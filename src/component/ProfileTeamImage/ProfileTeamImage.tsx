@@ -1,5 +1,5 @@
-import { useTeam } from '@/hooks/useTeam.ts'
 import { usePlayer } from '@/hooks/usePlayer.ts'
+import { useTeam } from '@/hooks/useTeam.ts'
 
 type ProfileTeamImageProps = {
   playerId: string | undefined
@@ -15,8 +15,8 @@ export default function ProfileTeamImage({ playerId, teamId }: ProfileTeamImageP
   }
   return (
     <div className='grid grid-cols-2 gap-3'>
-      <div className='w-28 h-28 bg-gray-200 rounded-full grid items-center p-2 justify-center overflow-hidden'>
-        <img className='max-w-full h-auto' src={player.imageSrc} alt={player.firstName}/>
+      <div className='grid size-28 items-center justify-center overflow-hidden rounded-full bg-gray-200 p-2'>
+        <img className='h-auto max-w-full' src={player.imageSrc} alt={player.firstName}/>
       </div>
       <div className='flex flex-col justify-center'>
         <p className='text-[20px] leading-4'>{player.firstName}</p>

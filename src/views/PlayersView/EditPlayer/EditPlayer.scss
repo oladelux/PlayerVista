@@ -1,5 +1,5 @@
-@use '../../assets/styles/colors';
-@use '../../assets/styles/fonts';
+@use '../../../assets/styles/colors';
+@use '../../../assets/styles/fonts';
 
 @keyframes showStatus {
   from { opacity: 0; transform: translateY(20px); }

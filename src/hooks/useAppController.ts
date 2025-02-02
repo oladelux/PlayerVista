@@ -1,22 +1,24 @@
-import { useUser } from './useUser'
-import { useAuthentication } from './useAuthentication'
 import { useEffect } from 'react'
-import { useAppLoading } from './useAppLoading'
-import { getTeamsThunk, getTeamThunk, teamSelector } from '../store/slices/TeamSlice'
 import { useDispatch, useSelector } from 'react-redux'
-import { AppDispatch } from '../store/types'
-import { useTeams } from './useTeams'
-import { usePlayers } from './usePlayers'
+
+import { useAppLoading } from './useAppLoading'
+import { useAuthentication } from './useAuthentication'
 import { useEvents } from './useEvents.ts'
+import { usePlayers } from './usePlayers'
+import { useTeams } from './useTeams'
 import { useUpdates } from './useUpdates.ts'
+import { useUser } from './useUser'
+import { getEventsByTeamThunk } from '../store/slices/EventsSlice.ts'
 import {
   getApplicationLogsThunk,
   getRolesByGroupIdThunk,
   setActiveTeamId,
   settingsSelector, setUserId, setUserRole,
 } from '../store/slices/SettingsSlice.ts'
-import { getEventsByTeamThunk } from '../store/slices/EventsSlice.ts'
 import { getStaffsThunk, staffSelector } from '../store/slices/StaffSlice.ts'
+import { getTeamsThunk, getTeamThunk, teamSelector } from '../store/slices/TeamSlice'
+import { AppDispatch } from '../store/types'
+import { appService } from '@/singletons'
 import { getPlayersByTeamIdThunk, getPlayersByUserIdThunk, playersSelector } from '@/store/slices/PlayersSlice.ts'
 import { getUserDataThunk } from '@/store/slices/UserSlice.ts'
 
@@ -51,6 +53,8 @@ export function useAppController () {
       user.initializeApp()
         .then(async data => {
           if (data) {
+            appService.setUserId(data.id)
+            appService.setUserData(data)
             dispatch(setActiveTeamId({ teamId: data.teamId }))
             dispatch(setUserRole({ role: data.role }))
             dispatch(setUserId({ id: data.id }))
