@@ -11,9 +11,10 @@ export const useTeam = (teamId?: string) => {
   useEffect(() => {
     if(!teamId) return
     const teamSubscription = teamService.team$.subscribe(state => {
-      setTeam(prevTeam => (prevTeam !== state.team ? state.team : prevTeam))
+      setTeam(state.team)
       setLoading(state.loading)
       setError(state.error)
+      console.log('team loaging', state.loading)
     })
     teamService.getTeam(teamId)
 
