@@ -64,6 +64,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const { user, token, refreshToken, tokenExpires } = await loginAuthentication(credentials)
         addCookie('access-token', token, tokenExpires.toString())
         addCookie('refresh-token', refreshToken, tokenExpires.toString())
+        appService.setUserData(user)
         const sessionData: LocalSessionType = {
           userId: user.id,
           parentUserId: user.parentUserId,

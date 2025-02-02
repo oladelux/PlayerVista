@@ -4,7 +4,6 @@ import { Snackbar } from '@mui/material'
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
-
 import PointIcon from '../../assets/images/icons/point.png'
 import { Card } from '../../component/Card/Card'
 import { DashboardLayout } from '../../component/DashboardLayout/DashboardLayout'
@@ -12,17 +11,15 @@ import { StatsCard } from '../../component/StatsCard/StatsCard'
 import { UpcomingMatch } from '../../component/UpcomingMatch/UpcomingMatch'
 import { Update } from '../../component/Update/Update'
 import { ApiError, LogType } from '@/api'
-import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
-import { appService, logService } from '@/singletons'
-
-import './Dashboard.scss'
-import { useTeam } from '@/hooks/useTeam.ts'
 import * as api from '@/api'
+import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
+import { useTeam } from '@/hooks/useTeam.ts'
+import { appService, logService } from '@/singletons'
+import './Dashboard.scss'
 
 export function Dashboard() {
   const { teamId } = useParams()
   const userData = appService.getUserData()
-  const userId = appService.getUserId()
 
   const { team: currentTeam, error, loading } = useTeam(teamId)
 
@@ -60,11 +57,11 @@ export function Dashboard() {
     return () => {
       logSubscription.unsubscribe()
     }
-  }, [userId])
+  }, [])
 
   if (loading || logsLoading) return <LoadingPage />
   //TODO: Create Error Page
-  if (error || logsError || !userId || !userData) return 'This is an error page'
+  if (error || logsError || !userData) return 'This is an error page'
 
   return (
     <DashboardLayout>
