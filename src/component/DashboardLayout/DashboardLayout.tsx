@@ -2,7 +2,7 @@ import { useMediaQuery } from '@mui/material'
 import * as React from 'react'
 import { FC, PropsWithChildren } from 'react'
 import { FiArrowLeft } from 'react-icons/fi'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { useNavigate, useLocation, useParams } from 'react-router-dom'
 
 import PlayerVistaLogo from '../../assets/images/icons/playervista.png'
@@ -22,13 +22,11 @@ import { getEventsByTeamThunk } from '@/store/slices/EventsSlice.ts'
 import { getPlayersByTeamIdThunk } from '@/store/slices/PlayersSlice.ts'
 import { setActiveTeamId } from '@/store/slices/SettingsSlice.ts'
 import { getStaffsThunk } from '@/store/slices/StaffSlice.ts'
-import { teamSelector } from '@/store/slices/TeamSlice.ts'
-import { userSelector } from '@/store/slices/UserSlice.ts'
 import { AppDispatch } from '@/store/types.ts'
 import useAuth from '@/useAuth.ts'
 import { setCurrentTeam } from '@/utils/localStorage.ts'
 import './DashboardLayout.scss'
-
+import { useTeam } from '@/hooks/useTeam.ts'
 
 type DashboardHeaderProps = {
   teams: TeamResponse[]
@@ -37,7 +35,7 @@ type DashboardHeaderProps = {
 export const DashboardHeader: FC<DashboardHeaderProps> = ({ teams }) => {
   const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
-  const { user } = useSelector(userSelector)
+  const userData = appService.getUserData()
   const { signOut } = useAuth()
   const { teamId } = useParams()
   const activeTeamName = teams ? teams.find((team) => team.id === teamId)?.teamName : ''
@@ -49,13 +47,13 @@ export const DashboardHeader: FC<DashboardHeaderProps> = ({ teams }) => {
     dispatch(setActiveTeamId({ teamId: id }))
     dispatch(getPlayersByTeamIdThunk({ teamId: id }))
     dispatch(getEventsByTeamThunk({ teamId: id }))
-    user && dispatch(getStaffsThunk({ groupId: user.groupId }))
+    userData && dispatch(getStaffsThunk({ groupId: userData.groupId }))
   }
 
   function getUserInitials(): string {
-    if (!user) return ''
-    const firstInitial = user.firstName.charAt(0).toUpperCase()
-    const lastInitial = user.lastName.charAt(0).toUpperCase()
+    if (!userData) return ''
+    const firstInitial = userData.firstName.charAt(0).toUpperCase()
+    const lastInitial = userData.lastName.charAt(0).toUpperCase()
     return `${firstInitial}${lastInitial}`
   }
 
@@ -108,7 +106,7 @@ export const DashboardHeader: FC<DashboardHeaderProps> = ({ teams }) => {
 
 export const DashboardLayout: FC<PropsWithChildren> = props => {
   const { pathname } = useLocation()
-  const { teams } = useSelector(teamSelector)
+  const { teams } = useTeam()
   const navigate = useNavigate()
   const isMobile = useMediaQuery('(max-width:767px)')
 
