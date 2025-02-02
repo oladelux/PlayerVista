@@ -2,7 +2,6 @@ import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { useAppLoading } from './useAppLoading'
-import { useAuthentication } from './useAuthentication'
 import { useEvents } from './useEvents.ts'
 import { usePlayers } from './usePlayers'
 import { useTeams } from './useTeams'
@@ -22,7 +21,6 @@ import { appService } from '@/singletons'
 import { getPlayersByTeamIdThunk, getPlayersByUserIdThunk, playersSelector } from '@/store/slices/PlayersSlice.ts'
 import { getUserDataThunk } from '@/store/slices/UserSlice.ts'
 
-export type AppController = ReturnType<typeof useAppController>
 let didInit = false
 
 export function useAppController () {
@@ -31,19 +29,13 @@ export function useAppController () {
   const { teams } = useSelector(teamSelector)
   const { team: singleTeam } = useSelector(teamSelector)
   const { allPlayers } = useSelector(playersSelector)
-  const { logs, activeTeamId } = useSelector(settingsSelector)
+  const { logs } = useSelector(settingsSelector)
   const { staffs } = useSelector(staffSelector)
   //const { reporters } = useSelector(reporterSelector)
   const user = useUser()
   const logger = useUpdates()
   const { players } = usePlayers()
   const events = useEvents()
-  const authentication = useAuthentication(user, async (userData) => {
-    // Dispatch core updates during login
-    dispatch(setActiveTeamId({ teamId: activeTeamId }))
-    dispatch(setUserRole({ role: userData.role }))
-    dispatch(setUserId({ id: userData.id }))
-  })
   const team = useTeams(user.data?.id)
   const loading = useAppLoading()
 
@@ -78,7 +70,6 @@ export function useAppController () {
   return {
     user,
     loading,
-    authentication,
     team,
     singleTeam,
     players,

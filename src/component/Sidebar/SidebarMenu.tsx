@@ -18,11 +18,9 @@ import TeamsActiveIcon from '../../assets/images/icons/teams-active.svg'
 import TeamsIcon from '../../assets/images/icons/teams.svg'
 import UserManagementActiveIcon from '../../assets/images/icons/user-management-active.svg'
 import UserManagementIcon from '../../assets/images/icons/user-management.svg'
-import { AppController } from '@/hooks/useAppController.ts'
-
 import './SidebarMenu.scss'
-
 import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
+import useAuth from '@/useAuth.ts'
 
 type SidebarMenuProps = {
   menu: SideBarTabsType;
@@ -160,14 +158,11 @@ const SidebarFooterMenu: FC<SidebarFooterMenuProps> = (props) => {
   )
 }
 
-type SidebarProps = {
-  controller: AppController;
-};
-
-export const Sidebar: FC<SidebarProps> = (props) => {
+export const Sidebar: FC = () => {
   const { pathname } = useLocation()
   const { teamId } = useParams()
   const { userRole } = useSelector(settingsSelector)
+  const { signOut } = useAuth()
 
   const sideBarTabs: SideBarTabsType[] = [
     {
@@ -264,7 +259,7 @@ export const Sidebar: FC<SidebarProps> = (props) => {
         ))}
       </div>
       <div className='Sidebar__nav-footer-nav'>
-        <SidebarFooterMenu onClick={props.controller.authentication.logout} />
+        <SidebarFooterMenu onClick={signOut} />
       </div>
     </div>
   )

@@ -1,6 +1,14 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import * as React from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
-import { AuthenticationCredentials, getAuthenticatedUser, loginAuthentication, UnauthorizedError } from '@/api'
+import {
+  AuthenticationCredentials,
+  getAuthenticatedUser,
+  loginAuthentication,
+  logout,
+  register, SignUpFormData,
+  UnauthorizedError,
+} from '@/api'
 import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
 import { addCookie, removeCookie } from '@/services/cookies.ts'
 import { toLocalSession } from '@/services/localSession.ts'
@@ -72,6 +80,35 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     [updateSession],
   )
 
+  const signUp = useCallback(async (data: SignUpFormData) => {
+    try {
+      const res = await register(data)
+      if (res.status === 204) {
+        const loginData = { email: data.email, password: data.password }
+        await signIn(loginData)
+      } else {
+        console.log('Unexpected response from registration')
+      }
+    } catch (e) {
+      console.error('Registration failed', e)
+      throw e
+    }
+  }, [signIn])
+
+  const signOut = useCallback(async () => {
+    try {
+      logout().then(() => {
+        removeCookie('access-token')
+        removeCookie('refresh-token')
+        clearLocalStorage()
+      })
+      await updateSession(null)
+    } catch (e) {
+      console.error('Error during sign-out:', e)
+      throw e
+    }
+  }, [updateSession])
+
   useEffect(() => {
     setIsAuthenticationLoading(true)
     const fetchLocalSession = async () => {
@@ -93,7 +130,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ localSession, signIn }}>
+    <AuthContext.Provider value={{ localSession, signUp, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   )

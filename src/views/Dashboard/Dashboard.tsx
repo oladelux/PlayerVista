@@ -11,17 +11,16 @@ import { DashboardLayout } from '../../component/DashboardLayout/DashboardLayout
 import { StatsCard } from '../../component/StatsCard/StatsCard'
 import { UpcomingMatch } from '../../component/UpcomingMatch/UpcomingMatch'
 import { Update } from '../../component/Update/Update'
-import { LogType } from '@/api'
+import { ApiError, LogType } from '@/api'
 import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
 import { appService, logService } from '@/singletons'
-import { useAppController } from '@/hooks/useAppController.ts'
 
 import './Dashboard.scss'
 import { useTeam } from '@/hooks/useTeam.ts'
+import * as api from '@/api'
 
 export function Dashboard() {
   const { teamId } = useParams()
-  const { authentication } = useAppController()
   const userData = appService.getUserData()
   const userId = appService.getUserId()
 
@@ -30,8 +29,26 @@ export function Dashboard() {
   const [ logs, setLogs ] = useState<LogType[]>([])
   const [logsLoading, setLogsLoading] = useState(false)
   const [logsError, setLogsError] = useState<string | undefined>(undefined)
+  const [emailVerificationSent, setEmailVerificationSent] = useState(false)
 
-  const { sendEmailVerification, emailVerificationSent } = authentication
+  function sendEmailVerification() {
+    api.sendEmailVerification()
+      .then(() => {
+        setEmailVerificationSent(true)
+
+        setTimeout(() => {
+          setEmailVerificationSent(false)
+        }, 3000)
+      })
+      .catch(e => {
+        if (e instanceof ApiError) {
+          console.error({ message: 'sending email verification failed', reason: e })
+        } else {
+          console.error('Unhandled error sending email verification', e)
+        }
+      })
+  }
+
   useEffect(() => {
     const logSubscription = logService.log$.subscribe(state => {
       setLogs(state.logs)
@@ -44,6 +61,7 @@ export function Dashboard() {
       logSubscription.unsubscribe()
     }
   }, [userId])
+
   if (loading || logsLoading) return <LoadingPage />
   //TODO: Create Error Page
   if (error || logsError || !userId || !userData) return 'This is an error page'

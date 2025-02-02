@@ -1,11 +1,13 @@
 import { createContext, useContext } from 'react'
 
-import { AuthenticationCredentials } from '@/api'
+import { AuthenticationCredentials, SignUpFormData } from '@/api'
 import { LocalSessionType } from '@/utils/LocalSessionType.ts'
 
 export type AuthContextType = {
   localSession: LocalSessionType | null
   signIn: (credentials: AuthenticationCredentials) => Promise<void>
+  signOut: () => void
+  signUp: (data: SignUpFormData) => Promise<void>
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(
@@ -19,6 +21,12 @@ export const useAuth = () => {
     return {
       localSession: null,
       signIn: async () => {
+        throw new Error('useAuth not properly initialized')
+      },
+      signOut: () => {
+        throw new Error('useAuth not properly initialized')
+      },
+      signUp: async () => {
         throw new Error('useAuth not properly initialized')
       },
     } satisfies AuthContextType

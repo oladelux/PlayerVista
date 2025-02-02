@@ -4,14 +4,14 @@ import { useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom'
 import { z } from 'zod'
 
+import * as api from '@/api'
+import { ApiError, ClientError } from '@/api'
 import PlayerVistaLogo from '@/assets/images/playervista.svg'
 import LoadingButton from '@/component/LoadingButton/LoadingButton.tsx'
 import InputFormField from '@/components/form/InputFormField.tsx'
 import { Form } from '@/components/ui/form.tsx'
 import { routes } from '@/constants/routes.ts'
-import { AppController, useAppController } from '@/hooks/useAppController.ts'
-
-
+import { useToast } from '@/hooks/use-toast.ts'
 
 const forgotPasswordSchema = z.object({
   email: z.string().email(),
@@ -21,9 +21,8 @@ type ForgotPasswordSchemaIn = Partial<z.input<typeof forgotPasswordSchema>>
 type ForgotPasswordSchemaOut = z.output<typeof forgotPasswordSchema>
 
 export function ForgotPassword() {
-  const appController = useAppController()
-  const { authentication } = appController
   const [loading, setLoading] = useState(false)
+  const { toast } = useToast()
 
   const form = useForm<ForgotPasswordSchemaIn, never, ForgotPasswordSchemaOut>({
     resolver: zodResolver(forgotPasswordSchema),
@@ -32,11 +31,43 @@ export function ForgotPassword() {
     },
   })
 
-  function onForgotPassword(values: ForgotPasswordSchemaOut) {
+  async function onForgotPassword(values: ForgotPasswordSchemaOut) {
     setLoading(true)
-    authentication.resetPassword({
-      email: values.email,
-    }).then(() => setLoading(false))
+    try {
+      const data = {
+        email: values.email,
+      }
+      const res = await api.forgotPassword(data)
+      if (res.status === 204) {
+        toast({
+          variant: 'success',
+          description: 'Password reset link sent to your email.',
+        })
+      }
+    } catch (e) {
+      if (e instanceof ClientError) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        if(e.responseBody.errors.email === 'emailNotExists') {
+          toast({
+            variant: 'error',
+            title: 'Error resetting password',
+            description: 'Email does not exist',
+          })
+          console.error('Unhandled error resetting password', e.responseBody)
+        }
+      }
+      if (e instanceof ApiError) {
+        toast({
+          variant: 'error',
+          description: 'Reset password failed',
+        })
+        console.error({ message: 'Reset password failed', reason: e })
+      }
+    }
+    finally {
+      setLoading(false)
+    }
   }
 
   return (

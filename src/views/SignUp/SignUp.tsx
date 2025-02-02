@@ -1,27 +1,23 @@
 import cl from 'classnames'
-import { ChangeEvent, FC, FormEvent, useState } from 'react'
+import { ChangeEvent, FormEvent, useState } from 'react'
 import { FaRegCheckCircle } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
 
-
-import { Button } from '../../component/Button/Button'
 import { InputField } from '../../component/InputField/InputField'
 import { PasswordInputField } from '../../component/PasswordInputField/PasswordInputField'
 import LoadingButton from '@/component/LoadingButton/LoadingButton.tsx'
 import { getRandomQuote } from '@/constants/randomQuotes.ts'
 import { routes } from '@/constants/routes.ts'
 import { useToast } from '@/hooks/use-toast.ts'
-import { AppController, useAppController } from '@/hooks/useAppController.ts'
 import { isPasswordValid } from '@/services/validation.ts'
-
 import './SignUp.scss'
+import useAuth from '@/useAuth.ts'
 
 
 const randomQuote = getRandomQuote()
 
 export function SignUp() {
-  const appController = useAppController()
-  const { authentication } = appController
+  const { signUp } = useAuth()
   const [loading, setLoading] = useState(false)
   const { toast } = useToast()
   const [registrationData, setRegistrationData] = useState({
@@ -52,7 +48,7 @@ export function SignUp() {
       ...registrationData,
       role: 'admin',
     }
-    authentication.register(data)
+    signUp(data)
       .catch(() => {
         setLoading(false)
         toast({

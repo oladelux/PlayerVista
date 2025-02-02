@@ -5,7 +5,7 @@ import { Table } from '../Table/Table.tsx'
 import './Offensive.scss'
 
 export type OffensiveData = {
-  number: string
+  number: number
   name: string
   position: string
   minutePlayed: number
