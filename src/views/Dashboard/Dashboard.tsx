@@ -47,6 +47,7 @@ export function Dashboard() {
   }
 
   useEffect(() => {
+    console.log('Logs: checking')
     const logSubscription = logService.log$.subscribe(state => {
       setLogs(state.logs)
       setLogsLoading(state.loading)

@@ -5,6 +5,7 @@ import { appService, teamService } from '@/singletons'
 
 export const useTeam = (teamId?: string) => {
   const userData = appService.getUserData()
+  const userId = userData?.id
   const [team, setTeam] = useState<TeamResponse | null>(null)
   const [teams, setTeams] = useState<TeamResponse[]>([])
   const [loading, setLoading] = useState(false)
@@ -17,13 +18,14 @@ export const useTeam = (teamId?: string) => {
   }*/
 
   useEffect(() => {
+    console.log('Team: checking thus shit')
     const teamSubscription = teamService.team$.subscribe(state => {
       setTeams(state.teams)
       setTeam(state.team)
       setLoading(state.loading)
       setError(state.error)
     })
-    teamService.getTeams(userData?.id)
+    teamService.getTeams(userId)
     if (teamId){
       teamService.getTeam(teamId)
     }
@@ -31,7 +33,7 @@ export const useTeam = (teamId?: string) => {
     return () => {
       teamSubscription.unsubscribe()
     }
-  }, [teamId, userData?.id])
+  }, [teamId, userId])
 
   return {
     team,
