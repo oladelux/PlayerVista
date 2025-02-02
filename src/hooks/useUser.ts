@@ -1,49 +1,46 @@
 import { useState } from 'react'
+
 import * as api from '../api'
-import { useNavigate } from 'react-router-dom'
-import { routes } from '../constants/routes'
 import { isAccessToken } from '../services/helper'
 import { RegistrationDetails } from '@/api'
 import { useToast } from '@/hooks/use-toast.ts'
 import { removeCookie } from '@/services/cookies.ts'
+import { LocalSessionType } from '@/utils/LocalSessionType.ts'
 import { clearLocalStorage } from '@/utils/localStorage.ts'
 
 export type UserHook = ReturnType<typeof useUser>
 
 export function useUser() {
   const [data, setData] = useState<api.AuthenticatedUserData>()
-  const navigate = useNavigate()
+  const [localSession, setLocalSession] = useState<LocalSessionType | null>(null)
   const { toast } = useToast()
 
-  function refreshUserData(): Promise<api.AuthenticatedUserData | undefined> {
-    return api.getAuthenticatedUser()
-      .then(user => {
-        setData(user)
-        return user
-      })
-      .catch(e => {
-        if (e instanceof api.UnauthorizedError) {
-          removeCookie('access-token')
-          removeCookie('refresh-token')
-          clearLocalStorage()
-          navigate(routes.login)
-        } else {
-          console.error('Unhandled error getting user data', e)
-        }
-        return undefined
-      })
+  async function refreshUserData(): Promise<api.AuthenticatedUserData | undefined> {
+    try {
+      const user = await api.getAuthenticatedUser()
+      setData(user)
+      return user
+    } catch (e) {
+      if (e instanceof api.UnauthorizedError) {
+        setLocalSession(null)
+        removeCookie('access-token')
+        removeCookie('refresh-token')
+        clearLocalStorage()
+      } else {
+        console.error('Unhandled error getting user data', e)
+      }
+      return undefined
+    }
 
   }
 
-  function getSubscriptionData(userId: string): Promise<api.Subscription | undefined> {
-    return api.getSubscription(userId)
-      .then(subscription => {
-        return subscription
-      })
-      .catch(e => {
-        console.error('Unhandled error getting subscription data', e)
-        return undefined
-      })
+  async function getSubscriptionData(): Promise<api.Subscription | undefined> {
+    try {
+      return await api.getSubscription()
+    } catch (e) {
+      console.error('Unhandled error getting subscription data', e)
+      return undefined
+    }
   }
 
   async function getUserName(id: string): Promise<string> {
@@ -91,6 +88,7 @@ export function useUser() {
 
   return {
     data,
+    localSession,
     refreshUserData,
     getSubscriptionData,
     /**

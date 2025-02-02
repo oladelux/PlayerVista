@@ -1,8 +1,9 @@
 import { Action, Player, PlayerActions, PlayerPerformance } from '@/api'
 import { getHalfData, HalfType } from '@/utils/phaseMetrics.ts'
+import { PlayerPositionType } from '@/views/PlayersView/form/PlayerPosition.ts'
 
-export type PlayerPositionType = 'GK' | 'LB' | 'LCB' | 'RCB' | 'CB' | 'RB'
-  | 'LWB' | 'RWB' | 'DM' | 'CDM' | 'CM' | 'CAM' | 'LCM' | 'RCM' | 'LM' | 'RM' | 'RW' | 'LW' | 'ST' | 'CF'
+/*export type PlayerPositionType = 'GK' | 'LB' | 'LCB' | 'RCB' | 'CB' | 'RB'
+  | 'LWB' | 'RWB' | 'DM' | 'CDM' | 'CM' | 'CAM' | 'LCM' | 'RCM' | 'LM' | 'RM' | 'RW' | 'LW' | 'ST' | 'CF'*/
 
 export type PlayerStats = 'shotsOnTarget' | 'shotsOffTarget' | 'tacklesWon' | 'tacklesLost' | 'goals' | 'pass' |
   'assists' | 'interceptions' | 'clearance' | 'blockedShots' | 'aerialDuels' | 'aerialClearance' |

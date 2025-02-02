@@ -1,19 +1,18 @@
-import { useSelector } from 'react-redux'
-import { useParams } from 'react-router-dom'
+import { useEffect, useState } from 'react'
 
-import { eventsSelector, getEventsByTeamThunk } from '../store/slices/EventsSlice.ts'
-import { useEffect } from 'react'
-import { useAppDispatch } from '@/store/types.ts'
+import { Event, SingleEventType } from '@/api'
+import { eventService } from '@/singletons'
 
 export type EventsHook = ReturnType<typeof useEvents>
 
 /**
  * Hook to manage events.
  */
-export const useEvents = () => {
-  const { events } = useSelector(eventsSelector)
-  const { teamId } = useParams()
-  const dispatch = useAppDispatch()
+export const useEvents = (teamId?: string, eventId?: string) => {
+  const [events, setEvents] = useState<Event[]>([])
+  const [event, setEvent] = useState<SingleEventType | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | undefined>(undefined)
   const currentTimestamp = new Date().getTime()
 
   const matches = events.filter(event => event.type === 'match')
@@ -23,20 +22,35 @@ export const useEvents = () => {
   })
 
   function getTeamEvent(year: number) {
-    teamId && console.log('year', teamId)
     return events.filter(
       (event) => new Date(event.startDate).getFullYear() === year,
     )
   }
 
   useEffect(() => {
-    if(teamId) {
-      dispatch(getEventsByTeamThunk({ teamId }))
+    const eventSubscription = eventService.event$.subscribe(state => {
+      setEvents(state.events)
+      setEvent(state.event)
+      setLoading(state.loading)
+      setError(state.error)
+    })
+    if(teamId){
+      eventService.getEventsByTeamId(teamId)
     }
-  }, [dispatch, teamId])
+    if(eventId){
+      eventService.getEvent(eventId)
+    }
+
+    return () => {
+      eventSubscription.unsubscribe()
+    }
+  }, [eventId, teamId])
 
   return {
     events,
+    event,
+    error,
+    loading,
     scheduledMatches,
     getTeamEvent,
   }

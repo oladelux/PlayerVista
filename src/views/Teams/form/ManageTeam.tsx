@@ -1,20 +1,23 @@
-import { DashboardLayout } from '@/component/DashboardLayout/DashboardLayout.tsx'
-import React, { ChangeEvent, useEffect, useMemo, useState } from 'react'
-import { getTeamDefaultValues } from '@/views/Teams/form/teamDefaultValues.ts'
-import { useSelector } from 'react-redux'
-import { teamSelector } from '@/store/slices/TeamSlice.ts'
-import { useForm } from 'react-hook-form'
-import { teamSchema, TeamSchemaIn, TeamSchemaOut } from '@/views/Teams/form/teamSchema.ts'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Form, FormLabel } from '@/components/ui/form.tsx'
+import CenterFocusWeakIcon from '@mui/icons-material/CenterFocusWeak'
+import { ChangeEvent, useEffect, useMemo, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { useParams } from 'react-router-dom'
+
+import { TeamFormData, uploadImageToCloudinary } from '@/api'
+import { DashboardLayout } from '@/component/DashboardLayout/DashboardLayout.tsx'
+import LoadingButton from '@/component/LoadingButton/LoadingButton.tsx'
+import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
 import InputFormField from '@/components/form/InputFormField.tsx'
 import SelectFormField from '@/components/form/SelectFormField.tsx'
 import { Button } from '@/components/ui/button.tsx'
-import { useTeam } from '@/hooks/useTeam.ts'
-import { useToast } from '@/hooks/use-toast.ts'
-import { TeamFormData, uploadImageToCloudinary } from '@/api'
-import CenterFocusWeakIcon from '@mui/icons-material/CenterFocusWeak'
+import { Form, FormLabel } from '@/components/ui/form.tsx'
 import { cloudName, cloudUploadPresets } from '@/config/constants.ts'
+import { useToast } from '@/hooks/use-toast.ts'
+import { useTeam } from '@/hooks/useTeam.ts'
+import { teamService } from '@/singletons'
+import { getTeamDefaultValues } from '@/views/Teams/form/teamDefaultValues.ts'
+import { teamSchema, TeamSchemaIn, TeamSchemaOut } from '@/views/Teams/form/teamSchema.ts'
 
 const teamGender = [
   { label: 'male', value: 'Male' },
@@ -34,13 +37,14 @@ const teamAgeGroup = [
 ]
 
 export function ManageTeam() {
-  const { team } = useSelector(teamSelector)
   const { toast } = useToast()
-  const teamHook = useTeam(team?.id)
-
-  const [selectedImage, setSelectedImage] = useState<string>(team?.logo || '')
+  const { selectedTeamId } = useParams()
   const [file, setFile] = useState<string>('')
   const [isUploading, setIsUploading] = useState(false)
+  const [formLoading, setFormLoading] = useState(false)
+  const { team, error, loading } = useTeam(selectedTeamId)
+
+  const [selectedImage, setSelectedImage] = useState<string>(team?.logo || '')
 
   const defaultValues = useMemo(() => {
     return getTeamDefaultValues(team)
@@ -78,6 +82,7 @@ export function ManageTeam() {
 
   async function onSubmit(values: TeamSchemaOut) {
     if(!team) return
+    setFormLoading(true)
     try {
       const data: TeamFormData = {
         userId: team.userId,
@@ -104,12 +109,14 @@ export function ManageTeam() {
         city: values.stadiumLocationCity,
         country: values.stadiumLocationCountry,
       }
-      await teamHook.updateTeam(data)
+      await teamService.patch(team.id, data)
+      setFormLoading(false)
       toast({
         variant: 'success',
         title: 'Team updated successfully',
       })
     } catch (error) {
+      setFormLoading(false)
       toast({
         variant: 'error',
         description: 'Error updating team',
@@ -122,9 +129,13 @@ export function ManageTeam() {
     form.reset(defaultValues, { keepDirtyValues: true })
   }, [defaultValues, form])
 
+  if (loading) return <LoadingPage />
+  //TODO: Create Error Page
+  if (error) return 'This is an error page'
+
   return (
     <DashboardLayout>
-      <div className='py-2 px-2.5 mb-5 md:py-10 md:px-12 bg-white rounded-md'>
+      <div className='mb-5 rounded-md bg-white px-2.5 py-2 md:px-12 md:py-10'>
         <div className=''>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -150,7 +161,7 @@ export function ManageTeam() {
                   Choose your team logo
                 </div>
               </div>
-              <div className='grid grid-cols-2 md:grid-cols-2 sm:grid-cols-1 gap-5 mb-5'>
+              <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
                 <InputFormField
                   control={form.control}
                   label='Team Name'
@@ -166,7 +177,7 @@ export function ManageTeam() {
                   type='text'
                 />
               </div>
-              <div className='grid grid-cols-2 md:grid-cols-2 sm:grid-cols-1 gap-5 mb-5'>
+              <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
                 <div>
                   <FormLabel htmlFor='teamGender'>Team Gender</FormLabel>
                   <SelectFormField
@@ -186,9 +197,9 @@ export function ManageTeam() {
                   />
                 </div>
               </div>
-              <div className='border-b my-10'></div>
-              <div className='grid grid-cols-2 md:grid-cols-2 sm:grid-cols-1 gap-5 mb-5'>
-                <div className='grid grid-cols-2 md:grid-cols-2 sm:grid-cols-1 gap-5 mb-5'>
+              <div className='my-10 border-b'></div>
+              <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
+                <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
                   <InputFormField
                     control={form.control}
                     label='Head Coach'
@@ -204,7 +215,7 @@ export function ManageTeam() {
                     type='text'
                   />
                 </div>
-                <div className='grid grid-cols-2 md:grid-cols-2 sm:grid-cols-1 gap-5 mb-5'>
+                <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
                   <InputFormField
                     control={form.control}
                     label='Assistant Coach'
@@ -221,8 +232,8 @@ export function ManageTeam() {
                   />
                 </div>
               </div>
-              <div className='grid grid-cols-2 md:grid-cols-2 sm:grid-cols-1 gap-5 mb-5'>
-                <div className='grid grid-cols-2 md:grid-cols-2 sm:grid-cols-1 gap-5 mb-5'>
+              <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
+                <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
                   <InputFormField
                     control={form.control}
                     label='Medical Personnel'
@@ -238,7 +249,7 @@ export function ManageTeam() {
                     type='text'
                   />
                 </div>
-                <div className='grid grid-cols-2 md:grid-cols-2 sm:grid-cols-1 gap-5 mb-5'>
+                <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
                   <InputFormField
                     control={form.control}
                     label='Kit Manager'
@@ -255,8 +266,8 @@ export function ManageTeam() {
                   />
                 </div>
               </div>
-              <div className='grid grid-cols-2 md:grid-cols-2 sm:grid-cols-1 gap-5 mb-5'>
-                <div className='grid grid-cols-2 md:grid-cols-2 sm:grid-cols-1 gap-5 mb-5'>
+              <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
+                <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
                   <InputFormField
                     control={form.control}
                     label='Media Manager'
@@ -272,7 +283,7 @@ export function ManageTeam() {
                     type='text'
                   />
                 </div>
-                <div className='grid grid-cols-2 md:grid-cols-2 sm:grid-cols-1 gap-5 mb-5'>
+                <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
                   <InputFormField
                     control={form.control}
                     label='Logistics Coordinator'
@@ -289,8 +300,8 @@ export function ManageTeam() {
                   />
                 </div>
               </div>
-              <div className='border-b my-10'></div>
-              <div className='grid grid-cols-2 md:grid-cols-2 sm:grid-cols-1 gap-5 mb-5'>
+              <div className='my-10 border-b'></div>
+              <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
                 <div className='col-span-1'>
                   <InputFormField
                     control={form.control}
@@ -301,7 +312,7 @@ export function ManageTeam() {
                   />
                 </div>
               </div>
-              <div className='grid grid-cols-2 md:grid-cols-4 sm:grid-cols-1 gap-5 mb-5'>
+              <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-4'>
                 <InputFormField
                   control={form.control}
                   label='Street'
@@ -331,9 +342,13 @@ export function ManageTeam() {
                   type='text'
                 />
               </div>
-              <div className='my-5'>
-                <Button className='bg-dark-purple text-white'>Update</Button>
-              </div>
+              <LoadingButton
+                isLoading={formLoading}
+                type='submit'
+                className='t-10 mb-3 bg-dark-purple text-white'
+              >
+                Save
+              </LoadingButton>
             </form>
           </Form>
         </div>

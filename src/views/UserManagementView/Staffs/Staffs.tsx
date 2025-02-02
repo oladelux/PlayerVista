@@ -1,25 +1,28 @@
-import { FC } from 'react'
-import { FiSearch } from 'react-icons/fi'
-import { Link, useParams } from 'react-router-dom'
-import { FaPlus } from 'react-icons/fa'
 import classnames from 'classnames'
-
-import { usePlayers } from '@/hooks/usePlayers.ts'
-import { AuthenticatedUserData, Staff } from '@/api'
+import { FaPlus } from 'react-icons/fa'
+import { FiSearch } from 'react-icons/fi'
+import { useDispatch, useSelector } from 'react-redux'
+import { Link, useParams } from 'react-router-dom'
 
 import { DashboardLayout } from '@/component/DashboardLayout/DashboardLayout.tsx'
 import { Column, Table } from '@/component/Table/Table.tsx'
+import { useToast } from '@/hooks/use-toast.ts'
+import { usePermission } from '@/hooks/usePermission.ts'
+import { usePlayers } from '@/hooks/usePlayers.ts'
+
 
 import './Staffs.scss'
-import { useDispatch, useSelector } from 'react-redux'
+
+import { useStaff } from '@/hooks/useStaff.ts'
+import { useUpdates } from '@/hooks/useUpdates.ts'
 import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
-import { usePermission } from '@/hooks/usePermission.ts'
+
 import { EyeIcon } from 'lucide-react'
-import { ConfirmStaffDeletion } from '@/views/UserManagementView/Staffs/ConfirmStaffDeletion.tsx'
-import { AppDispatch } from '@/store/types.ts'
-import { useToast } from '@/hooks/use-toast.ts'
-import { UseUpdates } from '@/hooks/useUpdates.ts'
+
 import { deleteStaffThunk } from '@/store/slices/StaffSlice.ts'
+import { AppDispatch } from '@/store/types.ts'
+import useAuth from '@/useAuth.ts'
+import { ConfirmStaffDeletion } from '@/views/UserManagementView/Staffs/ConfirmStaffDeletion.tsx'
 
 const staffColumns: Column<never>[] = [
   { key: 'name', title: 'Name' },
@@ -38,35 +41,37 @@ const staffColumns: Column<never>[] = [
   {
     key: 'action',
     title: 'Action',
-    render: (value: { manageLink: string, deleteStaffLink: () => void }) => (<div className='flex gap-2 items-center'>
+    render: (value: { manageLink: string, deleteStaffLink: () => void }) => (<div className='flex items-center gap-2'>
       <Link className='table-link' to={value.manageLink}><EyeIcon width={16} /></Link>
       <ConfirmStaffDeletion onDeleted={value.deleteStaffLink} />
     </div>),
   },
 ]
 
-type StaffsProps = {
-  staffs: Staff[]
-  user: AuthenticatedUserData
-  logger: UseUpdates
-}
-
-export const Staffs: FC<StaffsProps> = ({ staffs, user, logger }) => {
+export function Staffs() {
   const { teamId } = useParams()
   const { toast } = useToast()
+  const logger = useUpdates()
   const dispatch = useDispatch<AppDispatch>()
   const { userRole } = useSelector(settingsSelector)
   const { canCreateStaff } = usePermission(userRole)
   const { searchPlayerValue, handleSearchInput } = usePlayers()
-  const filteredStaffs = staffs.filter((item) => item.id !== user.id && item.teamId === teamId)
+  const { staffs } = useStaff()
+  const { localSession } = useAuth()
+
+  if(!localSession) {
+    return null
+  }
+  const filteredStaffs = staffs.filter((item) =>
+    item.id !== localSession.userId && item.teamId === teamId)
 
   const handleDeleteStaff = (staffId: string) => {
     try {
       dispatch(deleteStaffThunk({ id: staffId } ))
         .unwrap()
         .then(() => {
-          logger.setUpdate({ message: 'deleted a staff', userId: user.id, groupId: user.groupId })
-          logger.sendUpdates(user.groupId)
+          logger.setUpdate({ message: 'deleted a staff', userId: localSession.userId, groupId: localSession.groupId })
+          logger.sendUpdates(localSession.groupId)
           toast({
             variant: 'success',
             description: 'Staff member successfully deleted',
@@ -87,7 +92,7 @@ export const Staffs: FC<StaffsProps> = ({ staffs, user, logger }) => {
     role: staff.role,
     verified: staff.isEmailVerified,
     action: {
-      manageLink: `/team/${teamId}/staffs/${staff.id}`,
+      manageLink: `/${teamId}/staffs/${staff.id}`,
       deleteStaffLink: () => handleDeleteStaff(staff.id),
     },
   }))
@@ -108,7 +113,7 @@ export const Staffs: FC<StaffsProps> = ({ staffs, user, logger }) => {
               onChange={handleSearchInput}
             />
           </div>
-          {canCreateStaff && <Link to={`/team/${teamId}/staffs/add-staff`} className='Staffs__header-link'>
+          {canCreateStaff && <Link to='add-staff' className='Staffs__header-link'>
             <FaPlus/>
             <span className='Staffs__header-link--text'>Add New Staff</span>
           </Link>}

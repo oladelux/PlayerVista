@@ -1,5 +1,5 @@
-import React, { FC, useEffect } from 'react'
 import cl from 'classnames'
+import React, { FC, useEffect } from 'react'
 
 import './Popup.scss'
 

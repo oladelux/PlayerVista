@@ -1,26 +1,16 @@
-import { FC, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { FC } from 'react'
 import { useSelector } from 'react-redux'
+import { Link, useNavigate } from 'react-router-dom'
 
+import { Player, TeamResponse } from '@/api'
+import { DashboardHeader } from '@/component/DashboardLayout/DashboardLayout.tsx'
+import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
 import { routes } from '@/constants/routes.ts'
-import { useAppDispatch } from '@/store/types.ts'
-import { getPlayersByTeamIdThunk, getPlayersByUserIdThunk, playersSelector } from '@/store/slices/PlayersSlice.ts'
-import { getStaffsThunk } from '@/store/slices/StaffSlice.ts'
-import { getEventsByTeamThunk } from '@/store/slices/EventsSlice.ts'
-import { setCurrentTeam } from '@/utils/localStorage.ts'
-import { getTeamThunk, teamSelector } from '@/store/slices/TeamSlice.ts'
-import { AuthenticatedUserData, Player, TeamResponse } from '@/api'
-import { setActiveTeamId, settingsSelector } from '@/store/slices/SettingsSlice.ts'
-
-import { DashboardHeader } from '../../component/DashboardLayout/DashboardLayout'
-
-import './TeamView.scss'
 import { usePermission } from '@/hooks/usePermission.ts'
-
-type TeamViewProps = {
-  teams: TeamResponse[]
-  user: AuthenticatedUserData
-}
+import { useTeam } from '@/hooks/useTeam.ts'
+import { playersSelector } from '@/store/slices/PlayersSlice.ts'
+import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
+import './TeamView.scss'
 
 const NoTeamView: FC = () => {
 
@@ -29,45 +19,31 @@ const NoTeamView: FC = () => {
   return (
     <div className='No-team-view'>
       <div className='No-team-view__title'>You have no team created</div>
-      {canCreateTeam && <Link to={routes.createTeam} className='No-team-view__link'>Create team</Link>}
+      {canCreateTeam && <Link to={routes.addTeam} className='No-team-view__link'>Create team</Link>}
     </div>
   )
 }
 
-export const TeamView: FC<TeamViewProps> = props => {
-  const navigate = useNavigate()
-  const dispatch = useAppDispatch()
-  const { teams } = useSelector(teamSelector)
+export function TeamView() {
   const { allPlayers } = useSelector(playersSelector)
-  const isTeamsAvailable = props.teams.length > 0
+  const { teams, error, loading } = useTeam()
+  const isTeamsAvailable = teams.length > 0
 
-  const setActiveTeam = (teamId: string) => {
-    navigate(`/team/${teamId}`)
-    setCurrentTeam(teamId)
-    dispatch(setActiveTeamId({ teamId }))
-    dispatch(getTeamThunk({ id: teamId }))
-    dispatch(getPlayersByTeamIdThunk({ teamId }))
-    dispatch(getEventsByTeamThunk({ teamId }))
-    dispatch(getStaffsThunk({ groupId: props.user.groupId }))
-    // dispatch(getReportersThunk({ teamId }))
-  }
-
-  useEffect(() => {
-    dispatch(getPlayersByUserIdThunk({ userId: props.user.id }))
-  }, [dispatch, props.user.id])
+  if (loading) return <LoadingPage />
+  //TODO: Create Error Page
+  if (error) return 'This is an error page'
 
   return (
     <>
       <DashboardHeader teams={teams}/>
       <div className='Team-view'>
         { isTeamsAvailable ?
-          <div className='flex flex-col md:flex-row gap-3'>
-            {props.teams.map(team =>
+          <div className='grid grid-cols-1 gap-3 md:grid-cols-4 '>
+            {teams.map(team =>
               <TeamViewCard
                 key={team.id}
                 team={team}
                 players={allPlayers.filter(player => player.teamId === team.id)}
-                setActiveTeam={setActiveTeam}
               />,
             )}
           </div>
@@ -83,13 +59,12 @@ export const TeamView: FC<TeamViewProps> = props => {
 
 interface TeamViewCardProps {
   team: TeamResponse
-  setActiveTeam: (teamId: string) => void
   players: Player[]
 }
-const TeamViewCard: FC<TeamViewCardProps> = ({ team, players, setActiveTeam }) => {
-
+const TeamViewCard: FC<TeamViewCardProps> = ({ team, players }) => {
+  const navigate = useNavigate()
   return (
-    <div onClick={() => setActiveTeam(team.id)} className='Team-view__team-card md:w-1/4'>
+    <div className='Team-view__team-card' onClick={() => navigate(`/${team.id}`)}>
       <div className='Team-view__team-card--media'>
         <img className='Team-view__team-card--media-image' src={team.logo} alt='team-logo'/>
       </div>

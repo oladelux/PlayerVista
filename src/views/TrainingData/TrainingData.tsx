@@ -1,5 +1,6 @@
-import {FC} from "react"
-import {DashboardLayout} from "../../component/DashboardLayout/DashboardLayout";
+import { FC } from 'react'
+
+import { DashboardLayout } from '../../component/DashboardLayout/DashboardLayout'
 
 export const TrainingData: FC = () => {
 

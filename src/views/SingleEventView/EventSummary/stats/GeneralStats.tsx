@@ -1,12 +1,12 @@
-import { FC, Fragment, useEffect, useState } from 'react'
+import { FC, Fragment, useState } from 'react'
+import { Link, useParams } from 'react-router-dom'
+
+import { Player, PlayerActions } from '@/api'
+import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
 import { Slider } from '@/components/ui/slider.tsx'
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table.tsx'
+import { usePerformance } from '@/hooks/usePerformance.ts'
 import { getPlayerActions } from '@/utils/players.ts'
-import { Player, PlayerActions } from '@/api'
-import { useSelector } from 'react-redux'
-import { getPerformanceByEventThunk, playerPerformanceSelector } from '@/store/slices/PlayerPerformanceSlice.ts'
-import { Link, useParams } from 'react-router-dom'
-import { useAppDispatch } from '@/store/types.ts'
 
 interface GeneralStatsProps {
   players: Player[]
@@ -15,11 +15,9 @@ type GeneralActionType = 'passes' | 'tackles' | 'shots' | 'aerialDuels' | 'goals
 
 export const GeneralStats: FC<GeneralStatsProps> = ({ players }) => {
   const { eventId } = useParams()
-  const dispatch = useAppDispatch()
   const [timeRange, setTimeRange] = useState<number[]>([0, 90])
-  const { performance } = useSelector(playerPerformanceSelector)
-
-  const data = getPlayerActions(players, performance)
+  const { performanceByEvent, loading, error } = usePerformance(undefined, eventId)
+  const data = getPlayerActions(players, performanceByEvent)
 
   const getPlayerDataById =
   (id: string): { actions: PlayerActions | undefined, minutePlayed: number } | undefined => {
@@ -37,7 +35,7 @@ export const GeneralStats: FC<GeneralStatsProps> = ({ players }) => {
         if(type === 'goals' || type === 'assists') {
           return (
             <Fragment key={type}>
-              <TableCell className='text-center border-r'>
+              <TableCell className='border-r text-center'>
                 0
               </TableCell>
             </Fragment>
@@ -45,8 +43,8 @@ export const GeneralStats: FC<GeneralStatsProps> = ({ players }) => {
         }
         return (
           <Fragment key={type}>
-            <TableCell className='text-center border-r' key={`${type}-total`}>0</TableCell>
-            <TableCell className='text-center border-r' key={`${type}-successful`}>0</TableCell>
+            <TableCell className='border-r text-center' key={`${type}-total`}>0</TableCell>
+            <TableCell className='border-r text-center' key={`${type}-successful`}>0</TableCell>
           </Fragment>
         ) })
     }
@@ -57,7 +55,7 @@ export const GeneralStats: FC<GeneralStatsProps> = ({ players }) => {
       if(type === 'goals' || type === 'assists') {
         return (
           <Fragment key={type}>
-            <TableCell className='text-center border-r'>
+            <TableCell className='border-r text-center'>
               {filteredActions.length ?? 0}
             </TableCell>
           </Fragment>
@@ -65,10 +63,10 @@ export const GeneralStats: FC<GeneralStatsProps> = ({ players }) => {
       }
       return (
         <Fragment key={type}>
-          <TableCell className='text-center border-r'>
+          <TableCell className='border-r text-center'>
             {filteredActions?.length ?? 0}
           </TableCell>
-          <TableCell className='text-center border-r'>
+          <TableCell className='border-r text-center'>
             {filteredActions?.filter((action) => action.value === 'SUCCESSFUL').length ?? 0}
           </TableCell>
         </Fragment>
@@ -76,11 +74,11 @@ export const GeneralStats: FC<GeneralStatsProps> = ({ players }) => {
     })
   }
 
-  useEffect(() => {
-    if(eventId) {
-      dispatch(getPerformanceByEventThunk({ eventId }))
-    }
-  }, [dispatch, eventId])
+  if (loading) return <LoadingPage />
+  //TODO: Create Error Page
+  if (error) {
+    return 'This is an error page'
+  }
 
   return (
     <>
@@ -99,10 +97,10 @@ export const GeneralStats: FC<GeneralStatsProps> = ({ players }) => {
               <TableHead className='border-r'>Pos.</TableHead>
               <TableHead className='border-r'>Mins.</TableHead>
               <TableHead className='border-r'>Name</TableHead>
-              <TableHead colSpan={2} className='text-center border-r'>Passes</TableHead>
-              <TableHead colSpan={2} className='text-center border-r'>Tackles</TableHead>
-              <TableHead colSpan={2} className='text-center border-r'>Shooting</TableHead>
-              <TableHead colSpan={2} className='text-center border-r'>Aerial Duels</TableHead>
+              <TableHead colSpan={2} className='border-r text-center'>Passes</TableHead>
+              <TableHead colSpan={2} className='border-r text-center'>Tackles</TableHead>
+              <TableHead colSpan={2} className='border-r text-center'>Shooting</TableHead>
+              <TableHead colSpan={2} className='border-r text-center'>Aerial Duels</TableHead>
               <TableHead className='border-r'>Goals</TableHead>
               <TableHead className='border-r'>Assists</TableHead>
             </TableRow>
@@ -111,14 +109,14 @@ export const GeneralStats: FC<GeneralStatsProps> = ({ players }) => {
               <TableHead className='border-r'></TableHead>
               <TableHead className='border-r'></TableHead>
               <TableHead className='border-r'></TableHead>
-              <TableHead className='text-center border-r' title='Attempted Passes'>ATT</TableHead>
-              <TableHead className='text-center border-r' title='Completed Passes'>CMP</TableHead>
-              <TableHead className='text-center border-r' title='Attempted Tackles'>ATT</TableHead>
-              <TableHead className='text-center border-r' title='Completed Tackles'>CMP</TableHead>
-              <TableHead className='text-center border-r' title='On Target'>ON</TableHead>
-              <TableHead className='text-center border-r' title='Off Target'>OFF</TableHead>
-              <TableHead className='text-center border-r' title='Attempted Duels'>ATT</TableHead>
-              <TableHead className='text-center border-r' title='Completed Duels'>CMP</TableHead>
+              <TableHead className='border-r text-center' title='Attempted Passes'>ATT</TableHead>
+              <TableHead className='border-r text-center' title='Completed Passes'>CMP</TableHead>
+              <TableHead className='border-r text-center' title='Attempted Tackles'>ATT</TableHead>
+              <TableHead className='border-r text-center' title='Completed Tackles'>CMP</TableHead>
+              <TableHead className='border-r text-center' title='On Target'>ON</TableHead>
+              <TableHead className='border-r text-center' title='Off Target'>OFF</TableHead>
+              <TableHead className='border-r text-center' title='Attempted Duels'>ATT</TableHead>
+              <TableHead className='border-r text-center' title='Completed Duels'>CMP</TableHead>
               <TableHead className='border-r'></TableHead>
               <TableHead className='border-r'></TableHead>
             </TableRow>
@@ -133,7 +131,7 @@ export const GeneralStats: FC<GeneralStatsProps> = ({ players }) => {
                   <TableCell className='border-r'>{matchData?.minutePlayed}
                   </TableCell>
                   <TableCell className='border-r'>
-                    <Link to={`${player.id}`}>{`${player.firstName} ${player.lastName}`}</Link>
+                    <Link to={`player/${player.id}`}>{`${player.firstName} ${player.lastName}`}</Link>
                   </TableCell>
                   {renderPlayerActions(matchData?.actions)}
                 </TableRow>

@@ -1,17 +1,18 @@
-import { useEffect, useState } from 'react'
+import { zodResolver } from '@hookform/resolvers/zod'
 import classnames from 'classnames'
+import { useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { useDispatch } from 'react-redux'
+import { z } from 'zod'
+
 import { Roles } from '@/api'
+import LoadingButton from '@/component/LoadingButton/LoadingButton.tsx'
 import CheckboxFormField from '@/components/form/CheckboxFormField.tsx'
 import { Form } from '@/components/ui/form.tsx'
-import { z } from 'zod'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useDispatch } from 'react-redux'
-import { AppDispatch } from '@/store/types.ts'
-import { updateRolePermissionsThunk } from '@/store/slices/SettingsSlice.ts'
-import { AllPermissions } from '@/utils/allPermissions.ts'
 import { useToast } from '@/hooks/use-toast.ts'
-import LoadingButton from '@/component/LoadingButton/LoadingButton.tsx'
+import { updateRolePermissionsThunk } from '@/store/slices/SettingsSlice.ts'
+import { AppDispatch } from '@/store/types.ts'
+import { AllPermissions } from '@/utils/allPermissions.ts'
 
 const capitalize = (text: string) => {
   return text.replace(/\b\w/g, (char) => char.toUpperCase()).replace(/_/g, ' ')
@@ -92,14 +93,14 @@ export default function RolesView({ roles }: RolesViewProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
-        <div className='bg-at-background p-5 w-full grid grid-cols-4 gap-3'>
-          <div className='bg-at-white col-span-1 p-5'>
+        <div className='grid w-full grid-cols-4 gap-3 bg-at-background p-5'>
+          <div className='col-span-1 bg-at-white p-5'>
             {roles.slice()
               .sort((a, b) => a.name.localeCompare(b.name)).map(role => (
                 <div
                   key={role.id}
                   onClick={() => setActiveRole(role.name)}
-                  className={classnames('p-2 rounded cursor-pointer',
+                  className={classnames('cursor-pointer rounded p-2',
                     { 'bg-dark-purple text-white': activeRole === role.name })}
                 >
                   {capitalize(role.name)}
@@ -108,7 +109,7 @@ export default function RolesView({ roles }: RolesViewProps) {
           </div>
           <div className='col-span-3 bg-at-white p-5'>
             <h2 className='text-lg font-bold'>{capitalize(activeRole)} Permissions</h2>
-            <div className='grid grid-cols-2 gap-3 mt-3'>
+            <div className='mt-3 grid grid-cols-2 gap-3'>
               {AllPermissions.map((permission) => (
                 <CheckboxFormField
                   key={permission}
@@ -124,7 +125,7 @@ export default function RolesView({ roles }: RolesViewProps) {
             <LoadingButton
               isLoading={loading}
               type='submit'
-              className='mt-4 px-4 py-2 bg-dark-purple text-white rounded hover:bg-blue-600'
+              className='mt-4 rounded bg-dark-purple px-4 py-2 text-white hover:bg-blue-600'
             >
               Save changes
             </LoadingButton>

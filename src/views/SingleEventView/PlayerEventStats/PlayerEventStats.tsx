@@ -1,20 +1,26 @@
-import { DashboardLayout } from '@/component/DashboardLayout/DashboardLayout.tsx'
+import classnames from 'classnames'
+import { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
-import { FC, useEffect, useMemo, useState } from 'react'
-import { TeamResponse } from '@/api'
-import { EventsHook } from '@/hooks/useEvents.ts'
+
+import ClubLogo from '../../../assets/images/club.png'
+import { DashboardLayout } from '@/component/DashboardLayout/DashboardLayout.tsx'
+import DownloadPdfButton from '@/component/DownloadPdfButton/DownloadPdfButton.tsx'
+import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
+import PlayerDataTab from '@/component/PlayerDataTab/PlayerDataTab.tsx'
+import ProfileTeamImage from '@/component/ProfileTeamImage/ProfileTeamImage.tsx'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs.tsx'
+import { PdfType } from '@/config/PdfType.ts'
+import { useEvents } from '@/hooks/useEvents.ts'
+import { usePlayer } from '@/hooks/usePlayer.ts'
+import { useTeam } from '@/hooks/useTeam.ts'
+import { calculateAge, formatDate } from '@/services/helper.ts'
 import {
   clearPlayerPerformanceData,
   getPerformanceByEventAndPlayerThunk,
   playerPerformanceSelector,
 } from '@/store/slices/PlayerPerformanceSlice.ts'
 import { useAppDispatch } from '@/store/types.ts'
-import { useSelector } from 'react-redux'
-import { usePlayer } from '@/hooks/usePlayer.ts'
-import ProfileTeamImage from '@/component/ProfileTeamImage/ProfileTeamImage.tsx'
-import { calculateAge, formatDate } from '@/services/helper.ts'
-import classnames from 'classnames'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs.tsx'
 import {
   DefensiveMetrics,
   DisciplineMetric,
@@ -24,38 +30,17 @@ import {
   OffensiveMetrics,
   PossessionMetrics,
 } from '@/utils/phaseMetrics.ts'
-import PlayerDataTab from '@/component/PlayerDataTab/PlayerDataTab.tsx'
-import { PlayerFieldPosition } from '@/views/SingleEventView/PlayerEventStats/PlayerFieldPosition.tsx'
-import ClubLogo from '../../../assets/images/club.png'
-import { PdfType } from '@/config/PdfType.ts'
-import DownloadPdfButton from '@/component/DownloadPdfButton/DownloadPdfButton.tsx'
-import { useTeam } from '@/hooks/useTeam.ts'
 import { singleMatchOffensiveData } from '@/utils/players.ts'
+import { PlayerFieldPosition } from '@/views/SingleEventView/PlayerEventStats/PlayerFieldPosition.tsx'
 
-type PlayerEventStatsProps = {
-  events: EventsHook
-  teams: TeamResponse[]
-}
-
-export const PlayerEventStats:FC<PlayerEventStatsProps> = ({ events, teams }) => {
+export function PlayerEventStats() {
   const [selectedHalf, setSelectedHalf] = useState<HalfType>(HalfType.FullTime)
   const { eventId, playerId, teamId } = useParams()
   const dispatch = useAppDispatch()
   const { playerPerformance } = useSelector(playerPerformanceSelector)
   const { player } = usePlayer(playerId)
-  const { team } = useTeam(teamId)
-
-  const isEvent = useMemo(() => {
-    if (teamId) {
-      return events.events.find((event) => event.id === eventId)
-    }
-  }, [teamId, events, eventId])
-
-  const isTeam = useMemo(() => {
-    if (teamId) {
-      return teams.find((team) => team.id === teamId)
-    }
-  }, [teamId, teams])
+  const { team, error, loading } = useTeam(teamId)
+  const { event, loading: eventLoading, error: eventError } = useEvents(undefined, eventId)
 
   useEffect(() => {
     if (eventId && playerId) {
@@ -69,13 +54,15 @@ export const PlayerEventStats:FC<PlayerEventStatsProps> = ({ events, teams }) =>
 
   const singleMatchData = playerPerformance && singleMatchOffensiveData(playerPerformance)
 
-  if(!player) return null
+  if (loading || eventLoading) return <LoadingPage />
+  //TODO: Create Error Page
+  if (error || eventError || !player) return 'This is an error page'
 
   return (
     <DashboardLayout>
-      <div className='py-2 px-2.5 mb-5 md:py-10 md:px-12 bg-white rounded-md'>
-        <div className='text-sub-text mb-5'>Player Stats</div>
-        <div className='flex justify-between items-center pb-5 border-b border-border-line'>
+      <div className='mb-5 rounded-md bg-white px-2.5 py-2 md:px-12 md:py-10'>
+        <div className='mb-5 text-sub-text'>Player Stats</div>
+        <div className='flex items-center justify-between border-b border-border-line pb-5'>
           <ProfileTeamImage playerId={playerId} teamId={teamId}/>
           <DownloadPdfButton
             filename={`${player.lastName}_${player.firstName}`}
@@ -84,8 +71,8 @@ export const PlayerEventStats:FC<PlayerEventStatsProps> = ({ events, teams }) =>
             data={{
               player,
               team,
-              isEvent,
-              isTeam,
+              isEvent: event,
+              isTeam: team,
               totalMinutesPlayed: playerPerformance?.minutePlayed,
               offensiveData: singleMatchData?.offensiveData,
               defensiveData: singleMatchData?.defensiveData,
@@ -95,43 +82,43 @@ export const PlayerEventStats:FC<PlayerEventStatsProps> = ({ events, teams }) =>
             }}
           />
         </div>
-        <div className='grid grid-cols-3 gap-10 mt-5'>
+        <div className='mt-5 grid grid-cols-3 gap-10'>
           <div className='flex items-center justify-between'>
-            <div className='text-sub-text text-xs'>AGE</div>
+            <div className='text-xs text-sub-text'>AGE</div>
             <div className='text-xs'>{calculateAge(player.birthDate)}</div>
           </div>
           <div className='flex items-center justify-between'>
-            <div className='text-sub-text text-xs'>POSITION</div>
+            <div className='text-xs text-sub-text'>POSITION</div>
             <div className='text-xs'>{player.position}</div>
           </div>
           <div className='flex items-center justify-between'>
-            <div className='text-sub-text text-xs'>JERSEY NUMBER</div>
+            <div className='text-xs text-sub-text'>JERSEY NUMBER</div>
             <div className='text-xs'>{player.uniformNumber}</div>
           </div>
           <div className='flex items-center justify-between'>
-            <div className='text-sub-text text-xs'>MINUTE PLAYED</div>
+            <div className='text-xs text-sub-text'>MINUTE PLAYED</div>
             <div className='text-xs'>{playerPerformance?.minutePlayed ?? 0}</div>
           </div>
         </div>
       </div>
-      <div className='py-2 px-2.5 mb-5 md:py-10 md:px-12 bg-white rounded-md'>
-        <div className='text-sub-text mb-5'>Match Information</div>
-        <div className='grid md:grid-cols-3 grid-cols-1 gap-5 items-center justify-center'>
+      <div className='mb-5 rounded-md bg-white px-2.5 py-2 md:px-12 md:py-10'>
+        <div className='mb-5 text-sub-text'>Match Information</div>
+        <div className='grid grid-cols-1 items-center justify-center gap-5 md:grid-cols-3'>
           <div className='col-span-1 md:col-span-2'>
-            <div className='grid grid-cols-3 gap-5 items-center text-center'>
+            <div className='grid grid-cols-3 items-center gap-5 text-center'>
               <div className='flex flex-col items-center'>
-                <img src={isTeam?.logo} width={64} alt='team-logo' />
-                <div className='mb-5'>{isTeam?.teamName}</div>
+                <img src={team?.logo} width={64} alt='team-logo' />
+                <div className='mb-5'>{team?.teamName}</div>
               </div>
               <div>vs.</div>
               <div className='flex flex-col items-center'>
                 <img src={ClubLogo} width={64} alt='team-logo' />
-                <div className='mb-5'>{isEvent?.opponent}</div>
+                <div className='mb-5'>{event?.opponent}</div>
               </div>
             </div>
             <div className='mt-5 text-center'>
-              <div>Location: {isEvent?.eventLocation}</div>
-              <div>Date: {isEvent && formatDate(isEvent.startDate)}</div>
+              <div>Location: {event?.eventLocation}</div>
+              <div>Date: {event && formatDate(new Date(event.startDate))}</div>
             </div>
           </div>
           <div className='col-span-1'>
@@ -139,11 +126,11 @@ export const PlayerEventStats:FC<PlayerEventStatsProps> = ({ events, teams }) =>
           </div>
         </div>
       </div>
-      <div className='py-2 px-2.5 mb-5 md:py-10 md:px-12 bg-white rounded-md'>
+      <div className='mb-5 rounded-md bg-white px-2.5 py-2 md:px-12 md:py-10'>
         <div className='grid justify-end'>
-          <div className='bg-card-stat-bg grid grid-cols-3 rounded-md'>
+          <div className='grid grid-cols-3 rounded-md bg-card-stat-bg'>
             <div
-              className={classnames('p-2.5 cursor-pointer text-text-grey-2 rounded-tl-md rounded-bl-md',
+              className={classnames('cursor-pointer rounded-l-md p-2.5 text-text-grey-2',
                 selectedHalf === 'fullTime' && 'bg-dark-purple' +
                 ' text-white')}
               onClick={() => handleHalfSelection(HalfType.FullTime)}
@@ -151,7 +138,7 @@ export const PlayerEventStats:FC<PlayerEventStatsProps> = ({ events, teams }) =>
               Full Time
             </div>
             <div
-              className={classnames('p-2.5 cursor-pointer text-text-grey-2',
+              className={classnames('cursor-pointer p-2.5 text-text-grey-2',
                 selectedHalf === 'firstHalf' && 'bg-dark-purple' +
                 ' text-white')}
               onClick={() => handleHalfSelection(HalfType.FirstHalf)}
@@ -159,7 +146,7 @@ export const PlayerEventStats:FC<PlayerEventStatsProps> = ({ events, teams }) =>
               1st Half
             </div>
             <div
-              className={classnames('p-2.5 cursor-pointer text-text-grey-2 rounded-tr-md rounded-br-md',
+              className={classnames('cursor-pointer rounded-r-md p-2.5 text-text-grey-2',
                 selectedHalf === 'secondHalf' && 'bg-dark-purple' +
                 ' text-white')}
               onClick={() => handleHalfSelection(HalfType.SecondHalf)}
@@ -170,48 +157,48 @@ export const PlayerEventStats:FC<PlayerEventStatsProps> = ({ events, teams }) =>
         </div>
         <div className='my-5'>
           <Tabs defaultValue='offensive'>
-            <TabsList className='bg-transparent contents md:grid md:grid-cols-5 gap-3 p-0 mb-5'>
+            <TabsList className='mb-5 contents gap-3 bg-transparent p-0 md:grid md:grid-cols-5'>
               <TabsTrigger
                 value='offensive'
-                className='data-[state=active]:bg-light-purple data-[state=active]:text-dark-purple data-[state=active]:rounded-md data-[state=active]:border-b-2 data-[state=active]:border-dark-purple text-text-grey-3 py-2.5 px-3.5 border-b-2 border-transparent'>Offensive</TabsTrigger>
+                className='border-b-2 border-transparent px-3.5 py-2.5 text-text-grey-3 data-[state=active]:rounded-md data-[state=active]:border-b-2 data-[state=active]:border-dark-purple data-[state=active]:bg-light-purple data-[state=active]:text-dark-purple'>Offensive</TabsTrigger>
               <TabsTrigger
                 value='defensive'
-                className='data-[state=active]:bg-light-purple data-[state=active]:text-dark-purple data-[state=active]:rounded-md data-[state=active]:border-b-2 data-[state=active]:border-dark-purple text-text-grey-3 py-2.5 px-3.5 border-b-2 border-transparent'
+                className='border-b-2 border-transparent px-3.5 py-2.5 text-text-grey-3 data-[state=active]:rounded-md data-[state=active]:border-b-2 data-[state=active]:border-dark-purple data-[state=active]:bg-light-purple data-[state=active]:text-dark-purple'
               >
                 Defensive
               </TabsTrigger>
               <TabsTrigger
                 value='possession'
-                className='data-[state=active]:bg-light-purple data-[state=active]:text-dark-purple data-[state=active]:rounded-md data-[state=active]:border-b-2 data-[state=active]:border-dark-purple text-text-grey-3 py-2.5 px-3.5 border-b-2 border-transparent'
+                className='border-b-2 border-transparent px-3.5 py-2.5 text-text-grey-3 data-[state=active]:rounded-md data-[state=active]:border-b-2 data-[state=active]:border-dark-purple data-[state=active]:bg-light-purple data-[state=active]:text-dark-purple'
               >
                 Possession
               </TabsTrigger>
               <TabsTrigger
                 value='disciplinary'
-                className='data-[state=active]:bg-light-purple data-[state=active]:text-dark-purple data-[state=active]:rounded-md data-[state=active]:border-b-2 data-[state=active]:border-dark-purple text-text-grey-3 py-2.5 px-3.5 border-b-2 border-transparent'
+                className='border-b-2 border-transparent px-3.5 py-2.5 text-text-grey-3 data-[state=active]:rounded-md data-[state=active]:border-b-2 data-[state=active]:border-dark-purple data-[state=active]:bg-light-purple data-[state=active]:text-dark-purple'
               >
                 Disciplinary
               </TabsTrigger>
               <TabsTrigger
                 value='goalkeeping'
-                className='data-[state=active]:bg-light-purple data-[state=active]:text-dark-purple data-[state=active]:rounded-md data-[state=active]:border-b-2 data-[state=active]:border-dark-purple text-text-grey-3 py-2.5 px-3.5 border-b-2 border-transparent'
+                className='border-b-2 border-transparent px-3.5 py-2.5 text-text-grey-3 data-[state=active]:rounded-md data-[state=active]:border-b-2 data-[state=active]:border-dark-purple data-[state=active]:bg-light-purple data-[state=active]:text-dark-purple'
               >
                 Goalkeeping
               </TabsTrigger>
             </TabsList>
-            <TabsContent value='offensive' className='border border-border-line p-6 rounded-lg'>
+            <TabsContent value='offensive' className='rounded-lg border border-border-line p-6'>
               <PlayerDataTab metrics={OffensiveMetrics} actions={halfData}/>
             </TabsContent>
-            <TabsContent value='defensive' className='border border-border-line p-6 rounded-lg'>
+            <TabsContent value='defensive' className='rounded-lg border border-border-line p-6'>
               <PlayerDataTab metrics={DefensiveMetrics} actions={halfData}/>
             </TabsContent>
-            <TabsContent value='possession' className='border border-border-line p-6 rounded-lg'>
+            <TabsContent value='possession' className='rounded-lg border border-border-line p-6'>
               <PlayerDataTab metrics={PossessionMetrics} actions={halfData}/>
             </TabsContent>
-            <TabsContent value='disciplinary' className='border border-border-line p-6 rounded-lg'>
+            <TabsContent value='disciplinary' className='rounded-lg border border-border-line p-6'>
               <PlayerDataTab metrics={DisciplineMetric} actions={halfData}/>
             </TabsContent>
-            <TabsContent value='goalkeeping' className='border border-border-line p-6 rounded-lg'>
+            <TabsContent value='goalkeeping' className='rounded-lg border border-border-line p-6'>
               <PlayerDataTab metrics={GoalkeepingMetrics} actions={halfData}/>
             </TabsContent>
           </Tabs>

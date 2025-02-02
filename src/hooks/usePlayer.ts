@@ -1,17 +1,39 @@
-import { useAppDispatch } from '@/store/types.ts'
-import { useEffect } from 'react'
-import { useSelector } from 'react-redux'
-import { getPlayerByIdThunk, playersSelector } from '@/store/slices/PlayersSlice.ts'
+import { useEffect, useState } from 'react'
 
-export const usePlayer = (playerId?: string) => {
-  const dispatch = useAppDispatch()
-  const { player } = useSelector(playersSelector)
+import { Player } from '@/api'
+import { appService, playerService } from '@/singletons'
+
+export const usePlayer = (playerId?: string, teamId?: string) => {
+  const [allUserPlayers, setAllUserPlayers] = useState<Player[]>([])
+  const [players, setPlayers] = useState<Player[]>([])
+  const [player, setPlayer] = useState<Player | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | undefined>(undefined)
+  const userData = appService.getUserData()
+  const userId = userData?.id
 
   useEffect(() => {
-    if (playerId) {
-      dispatch(getPlayerByIdThunk({ id: playerId }))
-    }
-  }, [dispatch, playerId])
+    const playerSubscription = playerService.player$.subscribe(state => {
+      setPlayers(state.players)
+      setAllUserPlayers(state.allUserPlayers)
+      setPlayer(state.player)
+      setLoading(state.loading)
+      setError(state.error)
+    })
+    playerService.getPlayers(teamId)
+    playerService.getPlayer(playerId)
+    playerService.getAllPlayers(userId)
 
-  return { player }
+    return () => {
+      playerSubscription.unsubscribe()
+    }
+  }, [playerId, teamId, userId])
+
+  return {
+    player,
+    players,
+    allUserPlayers,
+    loading,
+    error,
+  }
 }

@@ -1,17 +1,18 @@
-import { Form } from '@/components/ui/form.tsx'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
-import { useMemo, useState } from 'react'
-import InputFormField from '@/components/form/InputFormField.tsx'
-import { AuthenticatedUserData } from '@/api'
-import SelectFormField from '@/components/form/SelectFormField.tsx'
-import { useUser } from '@/hooks/useUser.ts'
-import { useSelector } from 'react-redux'
-import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
 import { capitalize } from '@mui/material'
+import { useMemo, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { useSelector } from 'react-redux'
+import { z } from 'zod'
+
+import { AuthenticatedUserData } from '@/api'
 import LoadingButton from '@/component/LoadingButton/LoadingButton.tsx'
+import InputFormField from '@/components/form/InputFormField.tsx'
+import SelectFormField from '@/components/form/SelectFormField.tsx'
+import { Form } from '@/components/ui/form.tsx'
 import { useToast } from '@/hooks/use-toast.ts'
+import { useUser } from '@/hooks/useUser.ts'
+import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
 
 type ProfileFormProps = {
   user: AuthenticatedUserData
@@ -71,7 +72,7 @@ export default function ProfileForm({ user, canManageRole }: ProfileFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className='flex flex-col'>
-        <div className='grid gap-10 grid-cols-1 md:grid-cols-2'>
+        <div className='grid grid-cols-1 gap-10 md:grid-cols-2'>
           <InputFormField
             control={form.control}
             label='First Name'

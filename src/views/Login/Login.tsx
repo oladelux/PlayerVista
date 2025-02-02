@@ -1,17 +1,28 @@
-import { FC, useState } from 'react'
-import { Link } from 'react-router-dom'
-
-import { AppController } from '@/hooks/useAppController.ts'
-import { routes } from '@/constants/routes.ts'
-
-import LoadingButton from '@/component/LoadingButton/LoadingButton.tsx'
-import { useToast } from '@/hooks/use-toast.ts'
-import { Form } from '@/components/ui/form.tsx'
-import { z } from 'zod'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { Link, Navigate, useSearchParams } from 'react-router-dom'
+import { z } from 'zod'
+
 import PlayerVistaLogo from '../../assets/images/playervista.svg'
+import LoadingButton from '@/component/LoadingButton/LoadingButton.tsx'
 import InputFormField from '@/components/form/InputFormField.tsx'
+import { Form } from '@/components/ui/form.tsx'
+import { routes } from '@/constants/routes.ts'
+import { useToast } from '@/hooks/use-toast.ts'
+import useAuth from '@/useAuth.ts'
+
+export function Login() {
+  const [getSearchParams] = useSearchParams()
+  const redirectTo = getSearchParams.get('redirectTo')
+  const { localSession } = useAuth()
+
+  if (localSession) {
+    return <Navigate to={redirectTo || '/'} />
+  }
+
+  return <LoginForm />
+}
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -21,14 +32,10 @@ const loginSchema = z.object({
 type LoginSchemaIn = Partial<z.input<typeof loginSchema>>
 type LoginSchemaOut = z.output<typeof loginSchema>
 
-interface LoginProps {
-  controller: AppController
-}
-
-export const Login: FC<LoginProps> = props => {
-  const { authentication } = props.controller
+export function LoginForm() {
   const { toast } = useToast()
   const [loading, setLoading] = useState(false)
+  const { signIn } = useAuth()
 
   const form = useForm<LoginSchemaIn, never, LoginSchemaOut>({
     resolver: zodResolver(loginSchema),
@@ -40,7 +47,7 @@ export const Login: FC<LoginProps> = props => {
 
   function onLogin (values: LoginSchemaOut) {
     setLoading(true)
-    authentication.loginUser({
+    signIn({
       email: values.email,
       password: values.password,
     })
@@ -55,7 +62,7 @@ export const Login: FC<LoginProps> = props => {
   }
 
   return(
-    <div className='bg-white flex flex-col items-center justify-center gap-5 min-h-svh p-5'>
+    <div className='flex min-h-svh flex-col items-center justify-center gap-5 bg-white p-5'>
       <div className='w-full max-w-sm'>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onLogin)}>
@@ -81,12 +88,12 @@ export const Login: FC<LoginProps> = props => {
               <LoadingButton
                 isLoading={loading}
                 type='submit'
-                className='bg-dark-purple text-white hover:bg-dark-purple hover:text-white w-full'
+                className='w-full bg-dark-purple text-white hover:bg-dark-purple hover:text-white'
               >
                 Sign in
               </LoadingButton>
               <div>
-                <Link to={routes.forgotPassword} className='text-at-grey text-sm underline'>Forgot Password?</Link>
+                <Link to={routes.forgotPassword} className='text-sm text-at-grey underline'>Forgot Password?</Link>
               </div>
             </div>
           </form>

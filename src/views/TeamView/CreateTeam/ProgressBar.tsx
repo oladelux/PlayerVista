@@ -1,9 +1,9 @@
-import React, { FC } from 'react'
-import { FormikConfig, FormikValues } from 'formik'
-import { Step, StepIconProps, StepLabel, Stepper } from '@mui/material'
-import InfoIcon from '@mui/icons-material/Info'
 import AccountBoxIcon from '@mui/icons-material/AccountBox'
 import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox'
+import InfoIcon from '@mui/icons-material/Info'
+import { Step, StepIconProps, StepLabel, Stepper } from '@mui/material'
+import { FormikConfig, FormikValues } from 'formik'
+import React, { FC } from 'react'
 
 import { ColorLibConnector, ColorLibStepIconRoot } from '../../../services/progressBar'
 

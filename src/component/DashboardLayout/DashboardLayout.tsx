@@ -1,33 +1,34 @@
-import React, { FC, PropsWithChildren } from 'react'
+import { useMediaQuery } from '@mui/material'
+import * as React from 'react'
+import { FC, PropsWithChildren } from 'react'
+import { FiArrowLeft } from 'react-icons/fi'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useLocation, useParams } from 'react-router-dom'
-import { FiArrowLeft } from 'react-icons/fi'
-
-import { useAppController } from '@/hooks/useAppController.ts'
-import { TeamResponse } from '@/api'
-import { setCurrentTeam } from '@/utils/localStorage.ts'
-import { getEventsByTeamThunk } from '@/store/slices/EventsSlice.ts'
-import { getStaffsThunk } from '@/store/slices/StaffSlice.ts'
-import { teamSelector } from '@/store/slices/TeamSlice.ts'
-import { AppDispatch } from '@/store/types.ts'
-
-import { Sidebar } from '../Sidebar/SidebarMenu'
 
 import PlayerVistaLogo from '../../assets/images/icons/playervista.png'
-
-import './DashboardLayout.scss'
-import { useMediaQuery } from '@mui/material'
+import { Sidebar } from '../Sidebar/SidebarMenu'
+import { TeamResponse } from '@/api'
 import { MobileNav } from '@/component/MobileNav/MobileNav.tsx'
-import { getPlayersByTeamIdThunk } from '@/store/slices/PlayersSlice.ts'
-import { setActiveTeamId } from '@/store/slices/SettingsSlice.ts'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.tsx'
-import { userSelector } from '@/store/slices/UserSlice.ts'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu.tsx'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.tsx'
+import { appService } from '@/singletons'
+import { getEventsByTeamThunk } from '@/store/slices/EventsSlice.ts'
+import { getPlayersByTeamIdThunk } from '@/store/slices/PlayersSlice.ts'
+import { setActiveTeamId } from '@/store/slices/SettingsSlice.ts'
+import { getStaffsThunk } from '@/store/slices/StaffSlice.ts'
+import { teamSelector } from '@/store/slices/TeamSlice.ts'
+import { userSelector } from '@/store/slices/UserSlice.ts'
+import { AppDispatch } from '@/store/types.ts'
+import useAuth from '@/useAuth.ts'
+import { setCurrentTeam } from '@/utils/localStorage.ts'
+import './DashboardLayout.scss'
+
 
 type DashboardHeaderProps = {
   teams: TeamResponse[]
@@ -37,13 +38,13 @@ export const DashboardHeader: FC<DashboardHeaderProps> = ({ teams }) => {
   const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
   const { user } = useSelector(userSelector)
-  const { authentication } = useAppController()
+  const { signOut } = useAuth()
   const { teamId } = useParams()
   const activeTeamName = teams ? teams.find((team) => team.id === teamId)?.teamName : ''
 
-  const handleTeamChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const id = e.target.value
-    navigate(`/team/${id}`)
+  const handleTeamChange = (id: string) => {
+    navigate(`/${id}`)
+    appService.setActiveTeam(id)
     setCurrentTeam(id)
     dispatch(setActiveTeamId({ teamId: id }))
     dispatch(getPlayersByTeamIdThunk({ teamId: id }))
@@ -58,6 +59,12 @@ export const DashboardHeader: FC<DashboardHeaderProps> = ({ teams }) => {
     return `${firstInitial}${lastInitial}`
   }
 
+  function handleLogout() {
+    signOut()
+    navigate('/login')
+
+  }
+
   return (
     <div className='Dashboard-Layout__header'>
       <div className='Dashboard-Layout__header-media'>
@@ -66,20 +73,18 @@ export const DashboardHeader: FC<DashboardHeaderProps> = ({ teams }) => {
       <div className='Dashboard-Layout__header-nav'>
         {teamId && <form className='Dashboard-Layout__header-nav-form'>
           {teams.length > 1 &&
-            <select name='team' className='Dashboard-Layout__header-nav-form--select' onChange={handleTeamChange}>
-              {activeTeamName && (
-                <option value={teamId}>{activeTeamName}</option>
-              )}
-              {teams
-                ? teams.map((team) => (
+            <Select value={teamId} onValueChange={(id: string) => handleTeamChange(id)}>
+              <SelectTrigger className='w-[180px]'>
+                <SelectValue defaultValue={teamId}>{activeTeamName}</SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                {teams.map((team) => (
                   team.id !== teamId && (
-                    <option key={team.id} value={team.id}>
-                      {team.teamName}
-                    </option>
+                    <SelectItem key={team.id} className='cursor-pointer' value={team.id}>{team.teamName}</SelectItem>
                   )
-                ))
-                : <option>Select team</option>}
-            </select>}
+                ))}
+              </SelectContent>
+            </Select>}
         </form>}
         <div className='Dashboard-Layout__header-nav-profile mr-[30px]'>
           <DropdownMenu>
@@ -90,8 +95,8 @@ export const DashboardHeader: FC<DashboardHeaderProps> = ({ teams }) => {
               </Avatar>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem className='hover:bg-dark-purple hover:text-white cursor-pointer'>
-                <div onClick={authentication.logout}>Log out</div>
+              <DropdownMenuItem className='cursor-pointer hover:bg-dark-purple hover:text-white'>
+                <div onClick={handleLogout}>Log out</div>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -102,7 +107,6 @@ export const DashboardHeader: FC<DashboardHeaderProps> = ({ teams }) => {
 }
 
 export const DashboardLayout: FC<PropsWithChildren> = props => {
-  const controller = useAppController()
   const { pathname } = useLocation()
   const { teams } = useSelector(teamSelector)
   const navigate = useNavigate()
@@ -117,7 +121,7 @@ export const DashboardLayout: FC<PropsWithChildren> = props => {
       <div className='Dashboard-Layout__wrapper'>
         <div className='Dashboard-Layout__wrapper-content'>
           {!isMobile && <div className='Dashboard-Layout__wrapper-content--sidebar'>
-            <Sidebar controller={controller} />
+            <Sidebar />
           </div>}
           {isMobile && <MobileNav/>}
           <div className='Dashboard-Layout__wrapper-content--current-body'>

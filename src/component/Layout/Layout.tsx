@@ -1,20 +1,22 @@
-import React, { FC, PropsWithChildren } from 'react'
-import { useLocation } from 'react-router-dom'
-
-import MetaHead from '../MetaHead/MetaHead'
-import { title } from '../../config/constants'
+import { Navigate, Outlet } from 'react-router-dom'
 
 import './Layout.scss'
+import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
+import { routes } from '@/constants/routes.ts'
+import { usePaymentSubscription } from '@/hooks/usePaymentSubscription.ts'
 
-const Layout: FC<PropsWithChildren> = props => {
-  const location = useLocation()
+import React from 'react'
+
+
+export function Layout() {
+  const { loading, isActive } = usePaymentSubscription()
+
+  if (loading) return <LoadingPage />
+  if (!isActive) return <Navigate to={routes.selectPlan} replace />
 
   return (
     <div className='Layout'>
-      <MetaHead title={title} />
-      {props.children}
+      <Outlet />
     </div>
   )
 }
-
-export default Layout

@@ -5,11 +5,15 @@ module.exports = {
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
     'plugin:react-hooks/recommended',
+    'plugin:tailwindcss/recommended',
+    'plugin:import/recommended',
+    'plugin:import/typescript',
   ],
   ignorePatterns: ['dist', '.eslintrc.cjs'],
   parser: '@typescript-eslint/parser',
-  plugins: ['react-refresh'],
+  plugins: ['react-refresh', 'import', 'tailwindcss'],
   rules: {
+    'import/no-named-as-default': 'off',
     'react-refresh/only-export-components': [
       'warn',
       { allowConstantExport: true },
@@ -23,10 +27,31 @@ module.exports = {
         ignoreComments: false,
         ignoreRegExpLiterals: true,
         ignoreTemplateLiterals: true,
-        ignoreStrings: true
+        ignoreStrings: true,
       }
     ],
     indent: ['warn', 2, { SwitchCase: 1, flatTernaryExpressions: true }],
+    'import/order': [
+      'warn',
+      {
+        'groups': [
+          // First group: packages
+          ['builtin', 'external'],
+          // Second group: internal components
+          ['internal', 'parent', 'sibling'],
+          // Third group: types (e.g., types, interfaces)
+          ['type'],
+          // Fourth group: index files (could be your styles or default imports)
+          ['index'],
+        ],
+        'newlines-between': 'always', // Ensure newlines between groups
+        'alphabetize': {
+          'order': 'asc', // Ascending order
+          'caseInsensitive': true, // Case-insensitive sorting
+        },
+      }
+    ],
+    'import/no-unresolved': 'error',
     // Empty blocks
     'no-empty-function': 'off',
 
@@ -57,6 +82,15 @@ module.exports = {
     'comma-dangle': ['warn', 'always-multiline'],
 
     // Rules unneeded by us
-    'no-prototype-builtins': 'off'
+    'no-prototype-builtins': 'off',
+    'tailwindcss/no-custom-classname': 'off',
   },
-}
+  settings: {
+    'import/resolver': {
+      typescript: {
+        // This ensures that ESLint uses the paths defined in tsconfig.json
+        project: './tsconfig.json',
+      },
+    },
+  },
+};
