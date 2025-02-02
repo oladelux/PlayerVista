@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { TeamResponse } from '@/api'
 import { appService, teamService } from '@/singletons'
 
 export const useTeam = (teamId?: string) => {
-  const userData = appService.getUserData()
+  const userData = useMemo(() => appService.getUserData(), [])
   const userId = userData?.id
   const [team, setTeam] = useState<TeamResponse | null>(null)
   const [teams, setTeams] = useState<TeamResponse[]>([])
@@ -20,8 +20,8 @@ export const useTeam = (teamId?: string) => {
   useEffect(() => {
     console.log('Team: checking thus shit')
     const teamSubscription = teamService.team$.subscribe(state => {
-      setTeams(state.teams)
-      setTeam(state.team)
+      setTeams(prevTeams => (prevTeams !== state.teams ? state.teams : prevTeams))
+      setTeam(prevTeam => (prevTeam !== state.team ? state.team : prevTeam))
       setLoading(state.loading)
       setError(state.error)
     })
