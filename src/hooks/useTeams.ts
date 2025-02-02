@@ -1,31 +1,32 @@
-import { useDispatch, useSelector } from 'react-redux'
+import { useEffect, useMemo, useState } from 'react'
 
-import { getTeamsThunk, teamSelector } from '../store/slices/TeamSlice'
-import { AppDispatch } from '../store/types'
-import { Fixtures } from '@/api'
+import { TeamResponse } from '@/api'
+import { appService, teamService } from '@/singletons'
 
-/**
- * Hook to manage teams.
- */
-export const useTeams = (userId?: string) => {
-  const dispatch = useDispatch<AppDispatch>()
-  const { teams } = useSelector(teamSelector)
-  const teamResult: Fixtures[] = []
-  if (!userId) {
-    return
-  }
+export const useTeams = () => {
+  const userId = useMemo(() => appService.getUserData()?.id, [])
+  const [teams, setTeams] = useState<TeamResponse[]>([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | undefined>(undefined)
 
-  const getTeams = () => dispatch(getTeamsThunk({ userId }))
+  useEffect(() => {
+    if (!userId) return
+    console.log('Team: checking thus shit')
+    const teamSubscription = teamService.team$.subscribe(state => {
+      setTeams(prevTeams => (prevTeams !== state.teams ? state.teams : prevTeams))
+      setLoading(state.loading)
+      setError(state.error)
+    })
+    teamService.getTeams(userId)
+
+    return () => {
+      teamSubscription.unsubscribe()
+    }
+  }, [userId])
 
   return {
-    /**
-     * Array of all teams
-     */
     teams,
-    /**
-     * Array of the team result
-     */
-    teamResult,
-    getTeams,
+    error,
+    loading,
   }
 }

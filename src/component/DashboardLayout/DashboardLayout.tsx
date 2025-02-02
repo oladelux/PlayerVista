@@ -8,6 +8,7 @@ import { useNavigate, useLocation, useParams } from 'react-router-dom'
 import PlayerVistaLogo from '../../assets/images/icons/playervista.png'
 import { Sidebar } from '../Sidebar/SidebarMenu'
 import { TeamResponse } from '@/api'
+import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
 import { MobileNav } from '@/component/MobileNav/MobileNav.tsx'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.tsx'
 import {
@@ -17,6 +18,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu.tsx'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.tsx'
+import { useTeams } from '@/hooks/useTeams.ts'
 import { appService } from '@/singletons'
 import { getEventsByTeamThunk } from '@/store/slices/EventsSlice.ts'
 import { getPlayersByTeamIdThunk } from '@/store/slices/PlayersSlice.ts'
@@ -26,7 +28,6 @@ import { AppDispatch } from '@/store/types.ts'
 import useAuth from '@/useAuth.ts'
 import { setCurrentTeam } from '@/utils/localStorage.ts'
 import './DashboardLayout.scss'
-import { useTeam } from '@/hooks/useTeam.ts'
 
 type DashboardHeaderProps = {
   teams: TeamResponse[]
@@ -106,12 +107,16 @@ export const DashboardHeader: FC<DashboardHeaderProps> = ({ teams }) => {
 
 export const DashboardLayout: FC<PropsWithChildren> = props => {
   const { pathname } = useLocation()
-  const { teams } = useTeam()
+  const { teams, error, loading } = useTeams()
   const navigate = useNavigate()
   const isMobile = useMediaQuery('(max-width:767px)')
 
   // Check if the current route matches the team dashboard pattern
   const isTeamDashboard = /^\/team\/[a-zA-Z0-9_-]+$/i.test(pathname)
+
+  if (loading) return <LoadingPage />
+  //TODO: Create Error Page
+  if (error) return 'This is an error page'
 
   return (
     <div className='Dashboard-Layout'>

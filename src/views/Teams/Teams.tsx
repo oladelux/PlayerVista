@@ -10,10 +10,9 @@ import { Table } from '../../component/Table/Table'
 import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
 import { usePermission } from '@/hooks/usePermission.ts'
 import { usePlayer } from '@/hooks/usePlayer.ts'
-import { useTeam } from '@/hooks/useTeam.ts'
+import { useTeams } from '@/hooks/useTeams.ts'
 import { formatDate } from '@/services/helper.ts'
 import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
-
 import './Teams.scss'
 
 const columns = [
@@ -37,7 +36,7 @@ export function Teams() {
   const { canCreateTeam } = usePermission(userRole)
   const { teamId } = useParams()
 
-  const { teams, error, loading } = useTeam(teamId)
+  const { teams, error, loading } = useTeams()
   const {
     allUserPlayers: players,
     loading: playersLoading,

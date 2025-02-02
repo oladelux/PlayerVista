@@ -20,7 +20,6 @@ import './Dashboard.scss'
 export function Dashboard() {
   const { teamId } = useParams()
   const userData = appService.getUserData()
-
   const { team: currentTeam, error, loading } = useTeam(teamId)
 
   const [ logs, setLogs ] = useState<LogType[]>([])
@@ -59,6 +58,8 @@ export function Dashboard() {
     }
   }, [])
 
+  console.log('logsLoading', logsLoading)
+  console.log('loading', loading)
   if (loading || logsLoading) return <LoadingPage />
   //TODO: Create Error Page
   if (error || logsError || !userData) return 'This is an error page'

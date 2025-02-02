@@ -1,43 +1,29 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { TeamResponse } from '@/api'
-import { appService, teamService } from '@/singletons'
+import { teamService } from '@/singletons'
 
 export const useTeam = (teamId?: string) => {
-  const userData = useMemo(() => appService.getUserData(), [])
-  const userId = userData?.id
   const [team, setTeam] = useState<TeamResponse | null>(null)
-  const [teams, setTeams] = useState<TeamResponse[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | undefined>(undefined)
 
-  /*  async function updateTeam(data: TeamFormData) {
-    if (teamId) {
-      await dispatch(updateTeamThunk({ teamId, data }))
-    }
-  }*/
-
   useEffect(() => {
-    console.log('Team: checking thus shit')
+    if(!teamId) return
     const teamSubscription = teamService.team$.subscribe(state => {
-      setTeams(prevTeams => (prevTeams !== state.teams ? state.teams : prevTeams))
       setTeam(prevTeam => (prevTeam !== state.team ? state.team : prevTeam))
       setLoading(state.loading)
       setError(state.error)
     })
-    teamService.getTeams(userId)
-    if (teamId){
-      teamService.getTeam(teamId)
-    }
+    teamService.getTeam(teamId)
 
     return () => {
       teamSubscription.unsubscribe()
     }
-  }, [teamId, userId])
+  }, [teamId])
 
   return {
     team,
-    teams,
     error,
     loading,
   }

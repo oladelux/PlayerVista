@@ -9,11 +9,11 @@ import { DashboardHeader, DashboardLayout } from '@/component/DashboardLayout/Da
 import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
 import { SuccessConfirmationPopup } from '@/component/SuccessConfirmation/SuccessConfirmation.tsx'
 import { cloudName, cloudUploadPresets } from '@/config/constants.ts'
+import { useTeams } from '@/hooks/useTeams.ts'
 import { useUpdates, UseUpdates } from '@/hooks/useUpdates.ts'
 import { appService, teamService } from '@/singletons'
 
 import './CreateTeam.scss'
-import { useTeam } from '@/hooks/useTeam.ts'
 
 type DashboardCreateTeamProps = {
   logger: UseUpdates
@@ -22,7 +22,7 @@ type DashboardCreateTeamProps = {
 }
 
 export function CreateTeam() {
-  const { teams, error, loading } = useTeam()
+  const { teams, error, loading } = useTeams()
 
   const logger = useUpdates()
   const userData = appService.getUserData()
@@ -48,7 +48,7 @@ export function CreateTeam() {
 }
 
 export function DashboardCreateTeam(){
-  const { teams, error, loading } = useTeam()
+  const { teams, error, loading } = useTeams()
 
   const logger = useUpdates()
   const userData = appService.getUserData()
