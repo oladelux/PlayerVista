@@ -25,8 +25,6 @@ const columns = [
     title: 'Action',
     render: (value: { manageLink: string, viewStatsLink: string }) => (<div className='flex items-center gap-2'>
       <Link className='table-link' to={value.manageLink}><EyeIcon width={16} /></Link>
-      {/*<Link className='table-link border-l border-l-border-line px-2'
-      to={value.viewStatsLink}>View Stats</Link>*/}
     </div>),
   },
 ]

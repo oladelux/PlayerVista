@@ -11,11 +11,13 @@ export const useTeams = () => {
 
   useEffect(() => {
     const teamSubscription = teamService.team$.subscribe(state => {
-      setTeams(prevTeams => (prevTeams !== state.teams ? state.teams : prevTeams))
-      setLoading(state.loading)
+      setTeams(state.teams)
+      setLoading(state.teamsLoading)
       setError(state.error)
     })
-    teamService.getTeams(userId)
+    if (userId) {
+      teamService.getTeams(userId)
+    }
 
     return () => {
       teamSubscription.unsubscribe()

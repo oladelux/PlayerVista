@@ -13,7 +13,6 @@ import { usePlayer } from '@/hooks/usePlayer.ts'
 import { usePlayers } from '@/hooks/usePlayers.ts'
 import { calculateAge } from '@/services/helper.ts'
 import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
-
 import './PlayersView.scss'
 
 const playerColumns: Column<never>[] = [

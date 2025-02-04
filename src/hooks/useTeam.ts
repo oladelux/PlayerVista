@@ -14,7 +14,9 @@ export const useTeam = (teamId?: string) => {
       setLoading(state.loading)
       setError(state.error)
     })
-    teamService.getTeam(teamId)
+    if (teamId) {
+      teamService.getTeamById(teamId)
+    }
 
     return () => {
       teamSubscription.unsubscribe()

@@ -6,7 +6,8 @@ import { createTeam, getTeam, getTeamsByUser, TeamFormData, TeamResponse, update
 type TeamState = {
   teams: TeamResponse[]
   team: TeamResponse | null
-  loading: boolean
+  teamLoading: boolean
+  teamsLoading: boolean
   error: string | undefined
 }
 
@@ -14,7 +15,8 @@ export class TeamService {
   private teamSubject = new BehaviorSubject<TeamState>({
     teams: [],
     team: null,
-    loading: false,
+    teamLoading: false,
+    teamsLoading: false,
     error: undefined,
   })
 
@@ -29,37 +31,37 @@ export class TeamService {
   }
 
   public getTeams(userId: string | null | undefined) {
-    this.updateState({ loading: true, error: undefined })
+    this.updateState({ teamsLoading: true, error: undefined })
     if (!userId) {
-      this.updateState({ teams: [], loading: false, error: 'No user found' })
+      this.updateState({ teams: [], teamsLoading: false, error: 'No user found' })
       return
     }
     from(getTeamsByUser(userId))
       .pipe(
         map((xResponse) => {
-          this.updateState({ teams: xResponse.data, loading: false })
+          this.updateState({ teams: xResponse.data, teamsLoading: false })
         }),
         catchError((e) => {
-          this.updateState({ teams: [], loading: false, error: e.message })
+          this.updateState({ teams: [], teamsLoading: false, error: e.message })
           return []
         }),
       )
       .subscribe()
   }
 
-  public getTeam(teamId: string | null | undefined) {
-    this.updateState({ loading: true, error: undefined })
+  public getTeamById(teamId: string | null | undefined) {
+    this.updateState({ teamLoading: true, error: undefined })
     if (!teamId) {
-      this.updateState({ teams: [], loading: false, error: 'No team found' })
+      this.updateState({ team: null, teamLoading: false, error: 'No team found' })
       return
     }
     from(getTeam(teamId))
       .pipe(
         map((xResponse) => {
-          this.updateState({ team: xResponse, loading: false })
+          this.updateState({ team: xResponse, teamLoading: false })
         }),
         catchError((e) => {
-          this.updateState({ team: null, loading: false, error: e.message })
+          this.updateState({ team: null, teamLoading: false, error: e.message })
           return []
         }),
       )
@@ -67,14 +69,14 @@ export class TeamService {
   }
 
   public async patch(teamId: string, data: Partial<TeamFormData>) {
-    this.updateState({ loading: true, error: undefined })
+    this.updateState({ teamLoading: true, error: undefined })
     from(updateTeam(data, teamId))
       .pipe(
         map(() => {
-          this.updateState({ loading: false })
+          this.updateState({ teamLoading: false })
         }),
         catchError((e) => {
-          this.updateState({ loading: false, error: e.message })
+          this.updateState({ teamLoading: false, error: e.message })
           return []
         }),
       )
@@ -82,15 +84,15 @@ export class TeamService {
   }
 
   public async insert(data: TeamFormData) {
-    this.updateState({ loading: true, error: undefined })
+    this.updateState({ teamsLoading: true, error: undefined })
     from(createTeam(data))
       .pipe(
         map(() => {
-          this.updateState({ loading: false })
+          this.updateState({ teamsLoading: false })
           this.getTeams(data.userId)
         }),
         catchError((e) => {
-          this.updateState({ loading: false, error: e.message })
+          this.updateState({ teamsLoading: false, error: e.message })
           return []
         }),
       )
