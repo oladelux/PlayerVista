@@ -60,7 +60,7 @@ export function Dashboard() {
 
   console.log('logsLoading', logsLoading)
   console.log('loading', loading)
-  if (loading || logsLoading) return <LoadingPage />
+  if (loading) return <LoadingPage />
   //TODO: Create Error Page
   if (error || logsError || !userData) return 'This is an error page'
 
