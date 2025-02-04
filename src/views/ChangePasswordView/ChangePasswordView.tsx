@@ -1,11 +1,11 @@
 import { FC, useState } from 'react'
 import { Link } from 'react-router-dom'
 
-import { routes } from '../../constants/routes'
 
-import { Header } from '../../component/Header/Header'
 import { Button } from '../../component/Button/Button'
+import { Header } from '../../component/Header/Header'
 import { PasswordInputField } from '../../component/PasswordInputField/PasswordInputField'
+import { routes } from '../../constants/routes'
 
 import './ChangePasswordView.scss'
 

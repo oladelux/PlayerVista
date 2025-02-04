@@ -1,46 +1,32 @@
-import { FC, useMemo, useState } from 'react'
+import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { Player, TeamResponse } from '@/api'
-import { EventsHook } from '@/hooks/useEvents.ts'
-
-import { DashboardLayout } from '@/component/DashboardLayout/DashboardLayout.tsx'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.tsx'
-
 import ClubLogo from '../../../assets/images/club.png'
-
-import './EventSummary.scss'
+import { DashboardLayout } from '@/component/DashboardLayout/DashboardLayout.tsx'
+import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.tsx'
+import { useEvents } from '@/hooks/useEvents.ts'
+import { usePlayer } from '@/hooks/usePlayer.ts'
+import { useTeam } from '@/hooks/useTeam.ts'
+import { AttackingStats } from '@/views/SingleEventView/EventSummary/stats/AttackingStats.tsx'
+import { DefendingStats } from '@/views/SingleEventView/EventSummary/stats/DefendingStats.tsx'
 import { GeneralStats } from '@/views/SingleEventView/EventSummary/stats/GeneralStats.tsx'
 import { GoalKeeperStats } from '@/views/SingleEventView/EventSummary/stats/GoalKeeperStats.tsx'
-import { DefendingStats } from '@/views/SingleEventView/EventSummary/stats/DefendingStats.tsx'
-import { AttackingStats } from '@/views/SingleEventView/EventSummary/stats/AttackingStats.tsx'
 import { OtherStats } from '@/views/SingleEventView/EventSummary/stats/OtherStats.tsx'
 
-type EventSummaryProps = {
-  players: Player[]
-  events: EventsHook
-  teams: TeamResponse[]
-}
+import './EventSummary.scss'
 
-export const EventSummary:FC<EventSummaryProps> = ({ players, events, teams }) => {
-  //const [selectedCategory, setSelectedCategory] = useState('')
+export function EventSummary() {
   const [value, setValue] = useState('general')
   const { teamId, eventId } = useParams()
+  const { team, error, loading } = useTeam(teamId)
+  const { event, error: eventError, loading: eventLoading } = useEvents(undefined, eventId)
+  const { players, loading: playerLoading, error: playerError } = usePlayer(undefined, teamId)
 
-  //const activeCategory = selectedCategory || tabCategory[0]
-
-  const isEvent = useMemo(() => {
-    if(teamId) {
-      return events.events && events.events.find(event => event.id === eventId)
-    }
-  }, [teamId, events, eventId])
-
-  const isTeam = useMemo(() => {
-    if(teams) {
-      return teams.find(team => team.id === teamId)
-    }
-  }, [teamId, teams])
-
+  if (loading || playerLoading || eventLoading) return <LoadingPage />
+  //TODO: Create Error Page
+  console.log('error', error, playerError, eventError)
+  if (error || playerError || eventError) return 'This is an error page'
 
   return (
     <DashboardLayout>
@@ -48,10 +34,10 @@ export const EventSummary:FC<EventSummaryProps> = ({ players, events, teams }) =
         <div className='Event-summary__header'>
           <div className='Event-summary__header-home'>
             <div className='Event-summary__header-home--media'>
-              <img src={isTeam?.logo} width={64} alt='club-logo' />
+              <img src={team?.logo} width={64} alt='club-logo' />
             </div>
             <div className='Event-summary__header-home--name'>
-              {isTeam?.teamName}
+              {team?.teamName}
             </div>
           </div>
           <div className='Event-summary__header-score'>
@@ -59,7 +45,7 @@ export const EventSummary:FC<EventSummaryProps> = ({ players, events, teams }) =
           </div>
           <div className='Event-summary__header-away'>
             <div className='Event-summary__header-away--name'>
-              {isEvent?.opponent}
+              {event?.opponent}
             </div>
             <div className='Event-summary__header-away--media'>
               <img src={ClubLogo} alt='club-logo'/>
@@ -67,7 +53,7 @@ export const EventSummary:FC<EventSummaryProps> = ({ players, events, teams }) =
           </div>
         </div>
         <div className='Event-summary__content'>
-          <div className='bg-white p-4 mb-8'>
+          <div className='mb-8 bg-white p-4'>
             <Select value={value} onValueChange={setValue}>
               <SelectTrigger className='w-[180px]'>
                 <SelectValue defaultValue={value} />

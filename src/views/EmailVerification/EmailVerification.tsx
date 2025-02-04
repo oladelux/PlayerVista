@@ -2,10 +2,10 @@ import { FC, useEffect } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
 import { AuthenticatedUserData, TeamResponse } from '../../api'
+import { DashboardHeader } from '../../component/DashboardLayout/DashboardLayout'
 import { useCountdown } from '../../hooks/useCountdown.ts'
 import { UserHook } from '../../hooks/useUser.ts'
 
-import { DashboardHeader } from '../../component/DashboardLayout/DashboardLayout'
 
 import './EmailVerification.scss'
 

@@ -1,28 +1,26 @@
-import React, { FC, useState } from 'react'
 import classnames from 'classnames'
-import { Link, useLocation } from 'react-router-dom'
+import React, { FC, useState } from 'react'
 import { FaAngleRight, FaAngleDown } from 'react-icons/fa'
-
-import { AppController } from '@/hooks/useAppController.ts'
-
-import DashboardIcon from '../../assets/images/icons/dashboard.svg'
-import DashboardActiveIcon from '../../assets/images/icons/dashboard-active.svg'
-import TeamsIcon from '../../assets/images/icons/teams.svg'
-import TeamsActiveIcon from '../../assets/images/icons/teams-active.svg'
-import UserManagementIcon from '../../assets/images/icons/user-management.svg'
-import UserManagementActiveIcon from '../../assets/images/icons/user-management-active.svg'
-import EventIcon from '../../assets/images/icons/event.svg'
-import EventActiveIcon from '../../assets/images/icons/event-active.svg'
-import SettingsIcon from '../../assets/images/icons/settingsIcon.svg'
-import LogoutIcon from '../../assets/images/icons/logoutIcon.svg'
-import PlayerIcon from '../../assets/images/icons/player.svg'
-import PlayerActiveIcon from '../../assets/images/icons/player-active.svg'
-import StatisticsIcon from '../../assets/images/icons/statistics-icon.svg'
-import StatisticsActiveIcon from '../../assets/images/icons/statistics-active-icon.svg'
-
-import './SidebarMenu.scss'
 import { useSelector } from 'react-redux'
+import { Link, useLocation, useParams } from 'react-router-dom'
+
+import DashboardActiveIcon from '../../assets/images/icons/dashboard-active.svg'
+import DashboardIcon from '../../assets/images/icons/dashboard.svg'
+import EventActiveIcon from '../../assets/images/icons/event-active.svg'
+import EventIcon from '../../assets/images/icons/event.svg'
+import LogoutIcon from '../../assets/images/icons/logoutIcon.svg'
+import PlayerActiveIcon from '../../assets/images/icons/player-active.svg'
+import PlayerIcon from '../../assets/images/icons/player.svg'
+import SettingsIcon from '../../assets/images/icons/settingsIcon.svg'
+import StatisticsActiveIcon from '../../assets/images/icons/statistics-active-icon.svg'
+import StatisticsIcon from '../../assets/images/icons/statistics-icon.svg'
+import TeamsActiveIcon from '../../assets/images/icons/teams-active.svg'
+import TeamsIcon from '../../assets/images/icons/teams.svg'
+import UserManagementActiveIcon from '../../assets/images/icons/user-management-active.svg'
+import UserManagementIcon from '../../assets/images/icons/user-management.svg'
+import './SidebarMenu.scss'
 import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
+import useAuth from '@/useAuth.ts'
 
 type SidebarMenuProps = {
   menu: SideBarTabsType;
@@ -32,7 +30,7 @@ type SidebarMenuProps = {
 
 type TabType =
   | 'DASHBOARD'
-  | 'TEAM'
+  | 'TEAMS'
   | 'PLAYERS'
   | 'STAFF'
   | 'CALENDER'
@@ -41,7 +39,7 @@ type TabType =
   | 'REPORTERS';
 const sidebarMenu = [
   'DASHBOARD',
-  'TEAM',
+  'TEAMS',
   'PLAYERS',
   'STAFF',
   'CALENDER',
@@ -137,9 +135,10 @@ type SidebarFooterMenuProps = {
 };
 
 const SidebarFooterMenu: FC<SidebarFooterMenuProps> = (props) => {
+  const { teamId } = useParams()
   return (
     <div className='Sidebar-footer-menu'>
-      <Link to='/settings' className='Sidebar-footer-menu__nav'>
+      <Link to={`/${teamId}/settings`} className='Sidebar-footer-menu__nav'>
         <img
           className='Sidebar-footer-menu__nav-image'
           alt='settings-icon'
@@ -159,13 +158,11 @@ const SidebarFooterMenu: FC<SidebarFooterMenuProps> = (props) => {
   )
 }
 
-type SidebarProps = {
-  controller: AppController;
-};
-
-export const Sidebar: FC<SidebarProps> = (props) => {
+export const Sidebar: FC = () => {
   const { pathname } = useLocation()
-  const { activeTeamId, userRole } = useSelector(settingsSelector)
+  const { teamId } = useParams()
+  const { userRole } = useSelector(settingsSelector)
+  const { signOut } = useAuth()
 
   const sideBarTabs: SideBarTabsType[] = [
     {
@@ -173,35 +170,35 @@ export const Sidebar: FC<SidebarProps> = (props) => {
       tabType: 'DASHBOARD',
       image: DashboardIcon,
       activeImage: DashboardActiveIcon,
-      link: `/team/${activeTeamId}`,
+      link: `/${teamId}`,
     },
     {
-      tabName: 'Team',
-      tabType: 'TEAM',
+      tabName: 'Teams',
+      tabType: 'TEAMS',
       image: TeamsIcon,
       activeImage: TeamsActiveIcon,
-      link: `/team/${activeTeamId}/team`,
+      link: `/${teamId}/teams`,
     },
     {
       tabName: 'Players',
       tabType: 'PLAYERS',
       image: PlayerIcon,
       activeImage: PlayerActiveIcon,
-      link: `/team/${activeTeamId}/players`,
+      link: `/${teamId}/players`,
     },
     {
       tabName: 'Calender',
       tabType: 'CALENDER',
       image: EventIcon,
       activeImage: EventActiveIcon,
-      link: `/team/${activeTeamId}/events`,
+      link: `/${teamId}/events`,
     },
     {
       tabName: 'Statistics',
       tabType: 'STATISTICS',
       image: StatisticsIcon,
       activeImage: StatisticsActiveIcon,
-      link: `/team/${activeTeamId}/statistics`,
+      link: `/${teamId}/statistics`,
     },
     /*{
       tabName: 'Message',
@@ -225,7 +222,7 @@ export const Sidebar: FC<SidebarProps> = (props) => {
       tabType: 'STAFF',
       image: UserManagementIcon,
       activeImage: UserManagementActiveIcon,
-      link: `/team/${activeTeamId}/staffs`,
+      link: `/${teamId}/staffs`,
     })
   }
 
@@ -233,7 +230,7 @@ export const Sidebar: FC<SidebarProps> = (props) => {
 
   const getBasePath = (path: string) => {
     const segments = path.split('/')
-    return segments.length > 3 ? `/${segments[1]}/${segments[2]}/${segments[3]}` : path
+    return segments.length > 2 ? `/${segments[1]}/${segments[2]}` : path
   }
 
   const basePath = getBasePath(pathname)
@@ -262,7 +259,7 @@ export const Sidebar: FC<SidebarProps> = (props) => {
         ))}
       </div>
       <div className='Sidebar__nav-footer-nav'>
-        <SidebarFooterMenu onClick={props.controller.authentication.logout} />
+        <SidebarFooterMenu onClick={signOut} />
       </div>
     </div>
   )

@@ -1,6 +1,7 @@
-import { PermissionEnum } from '@/utils/allPermissions.ts'
 import { useSelector } from 'react-redux'
+
 import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
+import { PermissionEnum } from '@/utils/allPermissions.ts'
 
 export const usePermission = (role: string) => {
   const { roles } = useSelector(settingsSelector)

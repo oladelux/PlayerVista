@@ -1,21 +1,23 @@
-import React, { FC, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
-import { useSelector } from 'react-redux'
 import { Field } from 'formik'
 import generator from 'generate-password-ts'
+import React, { FC, useState } from 'react'
+import { useSelector } from 'react-redux'
+import { useNavigate, useParams } from 'react-router-dom'
 
-import { useAppDispatch } from '@/store/types.ts'
-import { AuthenticatedUserData, StaffData } from '@/api'
-import { createStaffThunk, staffSelector } from '@/store/slices/StaffSlice.ts'
-import { UseUpdates } from '@/hooks/useUpdates.ts'
-
-import { DashboardLayout } from '@/component/DashboardLayout/DashboardLayout.tsx'
 import { FormikStep, FormikStepper } from '../../../TeamView/CreateTeam/Step'
+import { AuthenticatedUserData, StaffData } from '@/api'
+import { DashboardLayout } from '@/component/DashboardLayout/DashboardLayout.tsx'
 import { SuccessConfirmationPopup } from '@/component/SuccessConfirmation/SuccessConfirmation.tsx'
+import { useUpdates, UseUpdates } from '@/hooks/useUpdates.ts'
+import { createStaffThunk, staffSelector } from '@/store/slices/StaffSlice.ts'
+import { useAppDispatch } from '@/store/types.ts'
 
 import './AddStaff.scss'
 import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
+
 import { capitalize } from '@mui/material'
+
+import { appService } from '@/singletons'
 
 const password = generator.generate({
   length: 10,
@@ -30,7 +32,11 @@ type AddStaffProps = {
   user: AuthenticatedUserData
 }
 
-export const AddStaff: FC<AddStaffProps> = ({ logger, user }) => {
+export function AddStaff() {
+  const logger = useUpdates()
+  const user = appService.getUserData()
+  if (!user) return null
+
   return (
     <DashboardLayout>
       <div className='Add-staff'>

@@ -1,14 +1,25 @@
+import { zodResolver } from '@hookform/resolvers/zod'
+import { RotateCcw } from 'lucide-react'
+import { DateRange } from 'react-day-picker'
+import { useForm } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
-import { usePlayer } from '@/hooks/usePlayer.ts'
+import { z } from 'zod'
+
 import { DashboardLayout } from '@/component/DashboardLayout/DashboardLayout.tsx'
-import { useEffect } from 'react'
-import { useAppDispatch } from '@/store/types.ts'
-import { getPerformancesForPlayerThunk, playerPerformanceSelector } from '@/store/slices/PlayerPerformanceSlice.ts'
-import { useSelector } from 'react-redux'
-import ProfileTeamImage from '@/component/ProfileTeamImage/ProfileTeamImage.tsx'
-import { calculateAge } from '@/services/helper.ts'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs.tsx'
+import DownloadPdfButton from '@/component/DownloadPdfButton/DownloadPdfButton.tsx'
+import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
 import PlayerDataTab from '@/component/PlayerDataTab/PlayerDataTab.tsx'
+import ProfileTeamImage from '@/component/ProfileTeamImage/ProfileTeamImage.tsx'
+import DatePickerField from '@/components/form/DatePickerField.tsx'
+import SelectFormField from '@/components/form/SelectFormField.tsx'
+import { Form } from '@/components/ui/form.tsx'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs.tsx'
+import { PdfType } from '@/config/PdfType.ts'
+import { useEvents } from '@/hooks/useEvents.ts'
+import { usePerformance } from '@/hooks/usePerformance.ts'
+import { usePlayer } from '@/hooks/usePlayer.ts'
+import { useTeam } from '@/hooks/useTeam.ts'
+import { calculateAge } from '@/services/helper.ts'
 import {
   aggregatePlayerActions,
   DefensiveMetrics,
@@ -17,18 +28,6 @@ import {
   OffensiveMetrics,
   PossessionMetrics,
 } from '@/utils/phaseMetrics.ts'
-import { Form } from '@/components/ui/form.tsx'
-import { z } from 'zod'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import SelectFormField from '@/components/form/SelectFormField.tsx'
-import DatePickerField from '@/components/form/DatePickerField.tsx'
-import { DateRange } from 'react-day-picker'
-import { useTeam } from '@/hooks/useTeam.ts'
-import { RotateCcw } from 'lucide-react'
-import { useEvents } from '@/hooks/useEvents.ts'
-import DownloadPdfButton from '@/component/DownloadPdfButton/DownloadPdfButton.tsx'
-import { PdfType } from '@/config/PdfType.ts'
 import {
   getDefensiveChartData,
   getDefensiveData,
@@ -64,11 +63,10 @@ type playerStatsSchemaOut = z.output<typeof playerStatsSchema>
 
 export default function PlayerStats() {
   const { playerId, teamId } = useParams()
-  const { player } = usePlayer(playerId)
+  const { player } = usePlayer(playerId, teamId)
   const { team } = useTeam(teamId)
-  const { events } = useEvents()
-  const dispatch = useAppDispatch()
-  const { performanceByPlayerId } = useSelector(playerPerformanceSelector)
+  const { events } = useEvents(teamId, undefined)
+  const { performanceByPlayer, loading, error } = usePerformance(playerId, undefined)
 
   const defaultValues: playerStatsSchemaIn = {
     year: '',
@@ -83,20 +81,15 @@ export default function PlayerStats() {
     defaultValues,
   })
 
-  useEffect(() => {
-    if(playerId) {
-      dispatch(getPerformancesForPlayerThunk({ playerId }))
-    }
-  }, [dispatch, playerId])
-
   if(!player || team === null) {
     return null
   }
+
   const dateRange = form.watch('dateRange') as DateRange
   const year = form.watch('year')
   const hasFilters = !!year || !!(dateRange?.from || dateRange?.to)
 
-  const filteredData = performanceByPlayerId.filter((performance) => {
+  const filteredData = performanceByPlayer.filter((performance) => {
     const event = events.find((event) => event.id === performance.eventId)
     if (!event) return false // Exclude if no matching event
 
@@ -152,15 +145,21 @@ export default function PlayerStats() {
   const disciplinaryChartData = getDisciplinaryChartData(sortedPlayerDataForPDF)
   const goalkeeperChartData = getGoalkeeperChartData(sortedPlayerDataForPDF)
 
+  if (loading) return <LoadingPage />
+  //TODO: Create Error Page
+  if (error) {
+    return 'This is an error page'
+  }
+
   return (
     <DashboardLayout>
-      <div className='py-2 px-2.5 mb-5 md:py-10 md:px-12 bg-white rounded-md'>
-        <div className='flex justify-between items-center'>
+      <div className='mb-5 rounded-md bg-white px-2.5 py-2 md:px-12 md:py-10'>
+        <div className='flex items-center justify-between'>
           <Form {...form}>
             <form>
-              <div className='grid grid-cols-4 md:grid-cols-2 sm:grid-cols-1 gap-2'>
+              <div className='grid grid-cols-4 gap-2 sm:grid-cols-1 md:grid-cols-2'>
                 <div className='col-span-1' >
-                  <div className='text-sub-text text-xs'>Filter by Year</div>
+                  <div className='text-xs text-sub-text'>Filter by Year</div>
                   <SelectFormField
                     control={form.control}
                     name='year'
@@ -169,14 +168,14 @@ export default function PlayerStats() {
                   />
                 </div>
                 <div className='col-span-1' >
-                  <div className='text-sub-text text-xs'>Filter by Date Range</div>
+                  <div className='text-xs text-sub-text'>Filter by Date Range</div>
                   <DatePickerField control={form.control} name='dateRange' />
                 </div>
               </div>
             </form>
           </Form>
           <div className='text-center'>
-            {hasFilters && (<><div className='text-sub-text text-xs'>Reset Filter</div>
+            {hasFilters && (<><div className='text-xs text-sub-text'>Reset Filter</div>
               <RotateCcw className='w-24 cursor-pointer' onClick={() => form.reset()}/>
             </>)}
           </div>
@@ -204,79 +203,79 @@ export default function PlayerStats() {
           />
         </div>
       </div>
-      <div className='py-2 px-2.5 mb-5 md:py-10 md:px-12 bg-white rounded-md'>
-        <div className='text-sub-text mb-5'>Player Stats</div>
-        <div className='flex justify-between items-center pb-5 border-b border-border-line'>
+      <div className='mb-5 rounded-md bg-white px-2.5 py-2 md:px-12 md:py-10'>
+        <div className='mb-5 text-sub-text'>Player Stats</div>
+        <div className='flex items-center justify-between border-b border-border-line pb-5'>
           <ProfileTeamImage playerId={playerId} teamId={teamId}/>
         </div>
-        <div className='grid grid-cols-3 gap-10 mt-5'>
+        <div className='mt-5 grid grid-cols-3 gap-10'>
           <div className='flex items-center justify-between'>
-            <div className='text-sub-text text-xs'>AGE</div>
+            <div className='text-xs text-sub-text'>AGE</div>
             <div className='text-xs'>{calculateAge(player.birthDate)}</div>
           </div>
           <div className='flex items-center justify-between'>
-            <div className='text-sub-text text-xs'>POSITION</div>
+            <div className='text-xs text-sub-text'>POSITION</div>
             <div className='text-xs'>{player.position}</div>
           </div>
           <div className='flex items-center justify-between'>
-            <div className='text-sub-text text-xs'>JERSEY NUMBER</div>
+            <div className='text-xs text-sub-text'>JERSEY NUMBER</div>
             <div className='text-xs'>{player.uniformNumber}</div>
           </div>
           <div className='flex items-center justify-between'>
-            <div className='text-sub-text text-xs'>TOTAL MINUTES PLAYED</div>
+            <div className='text-xs text-sub-text'>TOTAL MINUTES PLAYED</div>
             <div className='text-xs'>{totalMinutesPlayed}</div>
           </div>
           <div className='flex items-center justify-between'>
-            <div className='text-sub-text text-xs'>TOTAL MATCHES PLAYED</div>
+            <div className='text-xs text-sub-text'>TOTAL MATCHES PLAYED</div>
             <div className='text-xs'>{numberOfMatchesPlayed}</div>
           </div>
         </div>
       </div>
-      <div className='py-2 px-2.5 mb-5 md:py-10 md:px-12 bg-white rounded-md'>
+      <div className='mb-5 rounded-md bg-white px-2.5 py-2 md:px-12 md:py-10'>
         <div className='my-5'>
           <Tabs defaultValue='offensive'>
-            <TabsList className='bg-transparent contents md:grid md:grid-cols-5 gap-3 p-0 mb-5'>
+            <TabsList className='mb-5 contents gap-3 bg-transparent p-0 md:grid md:grid-cols-5'>
               <TabsTrigger
                 value='offensive'
-                className='data-[state=active]:bg-light-purple data-[state=active]:text-dark-purple data-[state=active]:rounded-md data-[state=active]:border-b-2 data-[state=active]:border-dark-purple text-text-grey-3 py-2.5 px-3.5 border-b-2 border-transparent'>Offensive</TabsTrigger>
+                className='border-b-2 border-transparent px-3.5 py-2.5 text-text-grey-3 data-[state=active]:rounded-md data-[state=active]:border-b-2 data-[state=active]:border-dark-purple data-[state=active]:bg-light-purple data-[state=active]:text-dark-purple'>Offensive</TabsTrigger>
               <TabsTrigger
                 value='defensive'
-                className='data-[state=active]:bg-light-purple data-[state=active]:text-dark-purple data-[state=active]:rounded-md data-[state=active]:border-b-2 data-[state=active]:border-dark-purple text-text-grey-3 py-2.5 px-3.5 border-b-2 border-transparent'
+                className='border-b-2 border-transparent px-3.5 py-2.5 text-text-grey-3 data-[state=active]:rounded-md data-[state=active]:border-b-2 data-[state=active]:border-dark-purple data-[state=active]:bg-light-purple data-[state=active]:text-dark-purple'
               >
                   Defensive
               </TabsTrigger>
               <TabsTrigger
                 value='possession'
-                className='data-[state=active]:bg-light-purple data-[state=active]:text-dark-purple data-[state=active]:rounded-md data-[state=active]:border-b-2 data-[state=active]:border-dark-purple text-text-grey-3 py-2.5 px-3.5 border-b-2 border-transparent'
+                className='border-b-2 border-transparent px-3.5 py-2.5 text-text-grey-3 data-[state=active]:rounded-md data-[state=active]:border-b-2 data-[state=active]:border-dark-purple data-[state=active]:bg-light-purple data-[state=active]:text-dark-purple'
               >
                   Possession
               </TabsTrigger>
               <TabsTrigger
                 value='disciplinary'
-                className='data-[state=active]:bg-light-purple data-[state=active]:text-dark-purple data-[state=active]:rounded-md data-[state=active]:border-b-2 data-[state=active]:border-dark-purple text-text-grey-3 py-2.5 px-3.5 border-b-2 border-transparent'
+                className='border-b-2 border-transparent px-3.5 py-2.5 text-text-grey-3 data-[state=active]:rounded-md data-[state=active]:border-b-2 data-[state=active]:border-dark-purple data-[state=active]:bg-light-purple data-[state=active]:text-dark-purple'
               >
                   Disciplinary
               </TabsTrigger>
               <TabsTrigger
                 value='goalkeeping'
-                className='data-[state=active]:bg-light-purple data-[state=active]:text-dark-purple data-[state=active]:rounded-md data-[state=active]:border-b-2 data-[state=active]:border-dark-purple text-text-grey-3 py-2.5 px-3.5 border-b-2 border-transparent'
+                className='border-b-2 border-transparent px-3.5 py-2.5 text-text-grey-3 data-[state=active]:rounded-md data-[state=active]:border-b-2 data-[state=active]:border-dark-purple data-[state=active]:bg-light-purple data-[state=active]:text-dark-purple'
               >
                   Goalkeeping
               </TabsTrigger>
             </TabsList>
-            <TabsContent value='offensive' className='border border-border-line p-6 rounded-lg'>
+            <TabsContent value='offensive' className='rounded-lg border border-border-line p-6'>
               <PlayerDataTab metrics={OffensiveMetrics} actions={aggregatePlayerData}/>
             </TabsContent>
-            <TabsContent value='defensive' className='border border-border-line p-6 rounded-lg'>
+            <TabsContent value='defensive' className='rounded-lg border border-border-line p-6'>
               <PlayerDataTab metrics={DefensiveMetrics} actions={aggregatePlayerData}/>
             </TabsContent>
-            <TabsContent value='possession' className='border border-border-line p-6 rounded-lg'>
+            <TabsContent value='possession' className='rounded-lg border border-border-line p-6'>
               <PlayerDataTab metrics={PossessionMetrics} actions={aggregatePlayerData}/>
             </TabsContent>
-            <TabsContent value='disciplinary' className='border border-border-line p-6 rounded-lg'>
+            <TabsContent value='disciplinary' className='rounded-lg border border-border-line p-6'>
               <PlayerDataTab metrics={DisciplineMetric} actions={aggregatePlayerData}/>
             </TabsContent>
-            <TabsContent value='goalkeeping' className='border border-border-line p-6 rounded-lg'>
+            <TabsContent value='goalkeeping' className='rounded-lg border border-border-line p-6'>
               <PlayerDataTab metrics={GoalkeepingMetrics} actions={aggregatePlayerData}/>
             </TabsContent>
           </Tabs>

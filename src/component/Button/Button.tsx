@@ -1,5 +1,5 @@
-import React, { FC } from 'react'
 import cl from 'classnames'
+import React, { FC } from 'react'
 
 import './Button.scss'
 

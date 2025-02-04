@@ -1,19 +1,22 @@
 import { FC, useEffect, useState } from 'react'
+
 import { PlayerPerformance, TeamResponse } from '@/api'
 
 import './StatsCard.scss'
+import { Progress } from '@/components/ui/progress.tsx'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.tsx'
 import { usePlayers } from '@/hooks/usePlayers.ts'
 import { calculateAge } from '@/services/helper.ts'
+
 import { Link } from 'react-router-dom'
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/24/solid'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.tsx'
-import { Progress } from '@/components/ui/progress.tsx'
+
 import { getPerformancesForPlayerThunk } from '@/store/slices/PlayerPerformanceSlice.ts'
 import { useAppDispatch } from '@/store/types.ts'
 
 
 type StatsCardProps = {
-  team: TeamResponse | undefined
+  team: TeamResponse | null
 }
 
 export const StatsCard: FC<StatsCardProps> = props => {
@@ -108,7 +111,7 @@ export const StatsCard: FC<StatsCardProps> = props => {
       <div className='Stats-card__content'>
         <div className='Stats-card__content-trends'>
           <div className='Stats-card__content-trends--title mb-8 font-semibold'>Player Comparison</div>
-          <div className='px-4 flex justify-between'>
+          <div className='flex justify-between px-4'>
             <Select
               onValueChange={handleFirstPlayerChange}
               defaultValue={currentFirstPlayer}
@@ -145,9 +148,9 @@ export const StatsCard: FC<StatsCardProps> = props => {
             </Select>
           </div>
           <div className='my-8'>
-            <div className='px-4 grid items-center grid-cols-3 mb-2'>
+            <div className='mb-2 grid grid-cols-3 items-center px-4'>
               <div className='grid grid-cols-6 items-center gap-2'>
-                <div className='bg-dark-blue2 col-span-1 text-white p-1 text-xs rounded-full text-center'>
+                <div className='col-span-1 rounded-full bg-dark-blue2 p-1 text-center text-xs text-white'>
                   {firstPlayerStats.matchesPlayed}
                 </div>
                 <Progress
@@ -156,21 +159,21 @@ export const StatsCard: FC<StatsCardProps> = props => {
                   className='col-span-5'
                 />
               </div>
-              <div className='text-sm text-center'>Matches Played</div>
+              <div className='text-center text-sm'>Matches Played</div>
               <div className='grid grid-cols-6 items-center gap-2'>
                 <Progress
                   value={calculatePercentage(secondPlayerStats.matchesPlayed,
                     firstPlayerStats.matchesPlayed + secondPlayerStats.matchesPlayed)}
                   className='col-span-5'
                 />
-                <div className='bg-dark-blue2 col-span-1 text-white p-1 text-xs rounded-full text-center'>
+                <div className='col-span-1 rounded-full bg-dark-blue2 p-1 text-center text-xs text-white'>
                   {secondPlayerStats.matchesPlayed}
                 </div>
               </div>
             </div>
-            <div className='px-4 grid items-center grid-cols-3 mb-2'>
+            <div className='mb-2 grid grid-cols-3 items-center px-4'>
               <div className='grid grid-cols-6 items-center gap-2'>
-                <div className='bg-dark-blue2 col-span-1 text-white p-1 text-xs rounded-full text-center'>
+                <div className='col-span-1 rounded-full bg-dark-blue2 p-1 text-center text-xs text-white'>
                   {firstPlayerStats.playerGoal}
                 </div>
                 <Progress
@@ -179,21 +182,21 @@ export const StatsCard: FC<StatsCardProps> = props => {
                   className='col-span-5'
                 />
               </div>
-              <div className='text-sm text-center'>Goals</div>
+              <div className='text-center text-sm'>Goals</div>
               <div className='grid grid-cols-6 items-center gap-2'>
                 <Progress
                   value={calculatePercentage(secondPlayerStats.playerGoal,
                     firstPlayerStats.playerGoal + secondPlayerStats.playerGoal)}
                   className='col-span-5'
                 />
-                <div className='bg-dark-blue2 col-span-1 text-white p-1 text-xs rounded-full text-center'>
+                <div className='col-span-1 rounded-full bg-dark-blue2 p-1 text-center text-xs text-white'>
                   {secondPlayerStats.playerGoal}
                 </div>
               </div>
             </div>
-            <div className='px-4 grid items-center grid-cols-3 mb-2'>
+            <div className='mb-2 grid grid-cols-3 items-center px-4'>
               <div className='grid grid-cols-6 items-center gap-2'>
-                <div className='bg-dark-blue2 col-span-1 text-white p-1 text-xs rounded-full text-center'>
+                <div className='col-span-1 rounded-full bg-dark-blue2 p-1 text-center text-xs text-white'>
                   {firstPlayerStats.playerAssists}
                 </div>
                 <Progress
@@ -202,21 +205,21 @@ export const StatsCard: FC<StatsCardProps> = props => {
                   className='col-span-5'
                 />
               </div>
-              <div className='text-sm text-center'>Assists</div>
+              <div className='text-center text-sm'>Assists</div>
               <div className='grid grid-cols-6 items-center gap-2'>
                 <Progress
                   value={calculatePercentage(secondPlayerStats.playerAssists,
                     firstPlayerStats.playerAssists + secondPlayerStats.playerAssists)}
                   className='col-span-5'
                 />
-                <div className='bg-dark-blue2 col-span-1 text-white p-1 text-xs rounded-full text-center'>
+                <div className='col-span-1 rounded-full bg-dark-blue2 p-1 text-center text-xs text-white'>
                   {secondPlayerStats.playerAssists}
                 </div>
               </div>
             </div>
-            <div className='px-4 grid items-center grid-cols-3 mb-2'>
+            <div className='mb-2 grid grid-cols-3 items-center px-4'>
               <div className='grid grid-cols-6 items-center gap-2'>
-                <div className='bg-dark-blue2 col-span-1 text-white p-1 text-xs rounded-full text-center'>
+                <div className='col-span-1 rounded-full bg-dark-blue2 p-1 text-center text-xs text-white'>
                   {firstPlayerStats.passAccuracy}
                 </div>
                 <Progress
@@ -225,22 +228,22 @@ export const StatsCard: FC<StatsCardProps> = props => {
                   className='col-span-5'
                 />
               </div>
-              <div className='text-sm text-center'>Pass Accuracy(%)</div>
+              <div className='text-center text-sm'>Pass Accuracy(%)</div>
               <div className='grid grid-cols-6 items-center gap-2'>
                 <Progress
                   value={calculatePercentage(secondPlayerStats.passAccuracy,
                     firstPlayerStats.passAccuracy + secondPlayerStats.passAccuracy)}
                   className='col-span-5'
                 />
-                <div className='bg-dark-blue2 col-span-1 text-white p-1 text-xs rounded-full text-center'>
+                <div className='col-span-1 rounded-full bg-dark-blue2 p-1 text-center text-xs text-white'>
                   {secondPlayerStats.passAccuracy}
                 </div>
               </div>
             </div>
-            <div className='px-4 grid items-center grid-cols-3 mb-2'>
+            <div className='mb-2 grid grid-cols-3 items-center px-4'>
               {currentFirstPlayer &&
                 <Link
-                  to={`/team/${props.team?.id}/player/${currentFirstPlayer}/statistics`}
+                  to={`/${props.team?.id}/player/${currentFirstPlayer}/statistics`}
                   className='text-sm hover:underline'
                 >
                   View full stats
@@ -248,7 +251,7 @@ export const StatsCard: FC<StatsCardProps> = props => {
               <div></div>
               {currentSecondPlayer &&
                 <Link
-                  to={`/team/${props.team?.id}/player/${currentSecondPlayer}/statistics`}
+                  to={`/${props.team?.id}/player/${currentSecondPlayer}/statistics`}
                   className='text-sm hover:underline'
                 >
                   View full stats
@@ -260,19 +263,19 @@ export const StatsCard: FC<StatsCardProps> = props => {
           <div className='Stats-card__content-overview--title mb-8 font-semibold'>Quick Links</div>
           <div className='flex flex-col gap-3 px-5'>
             <Link to='team/create-team'
-              className='text-sm text-dark-purple flex gap-2 items-center w-fit border-b border-dark-purple'
+              className='flex w-fit items-center gap-2 border-b border-dark-purple text-sm text-dark-purple'
             >
-              Add new team <ArrowTopRightOnSquareIcon className='fill-dark-purple h-4'/>
+              Add new team <ArrowTopRightOnSquareIcon className='h-4 fill-dark-purple'/>
             </Link>
             <Link to='staffs/add-staff'
-              className='text-sm text-dark-purple flex gap-2 items-center w-fit border-b border-dark-purple'
+              className='flex w-fit items-center gap-2 border-b border-dark-purple text-sm text-dark-purple'
             >
-              Add new staff <ArrowTopRightOnSquareIcon className='fill-dark-purple h-4'/>
+              Add new staff <ArrowTopRightOnSquareIcon className='h-4 fill-dark-purple'/>
             </Link>
             <Link to='players/add-player'
-              className='text-sm text-dark-purple flex gap-2 items-center w-fit border-b border-dark-purple'
+              className='flex w-fit items-center gap-2 border-b border-dark-purple text-sm text-dark-purple'
             >
-              Add new player <ArrowTopRightOnSquareIcon className='fill-dark-purple h-4'/>
+              Add new player <ArrowTopRightOnSquareIcon className='h-4 fill-dark-purple'/>
             </Link>
           </div>
         </div>

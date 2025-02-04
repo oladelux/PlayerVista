@@ -1,25 +1,24 @@
+import { zodResolver } from '@hookform/resolvers/zod'
 import React, { FC, useEffect, useMemo, useState } from 'react'
 import ReactDOM from 'react-dom'
+import { Control, useForm } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 
-import { Form, FormControl, FormField, FormItem } from '@/components/ui/form.tsx'
-import { Control, useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { eventSchema, EventSchemaIn, EventSchemaOut } from '@/component/EventFormModal/eventFormSchema.ts'
-import InputFormField from '@/components/form/InputFormField.tsx'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group.tsx'
-import { Label } from '@/components/ui/label.tsx'
-import { combinedDate } from '@/services/helper.ts'
-import { useAppDispatch } from '@/store/types.ts'
-import { createEventThunk } from '@/store/slices/EventsSlice.ts'
-import { UseUpdates } from '@/hooks/useUpdates.ts'
-import { AuthenticatedUserData } from '@/api'
-
 import { Popup } from '../Popup/Popup.tsx'
+import { eventSchema, EventSchemaIn, EventSchemaOut } from '@/component/EventFormModal/eventFormSchema.ts'
+import LoadingButton from '@/component/LoadingButton/LoadingButton.tsx'
+import InputFormField from '@/components/form/InputFormField.tsx'
+import { Form, FormControl, FormField, FormItem } from '@/components/ui/form.tsx'
+import { Label } from '@/components/ui/label.tsx'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group.tsx'
+import { UseUpdates } from '@/hooks/useUpdates.ts'
+import { combinedDate } from '@/services/helper.ts'
+import { createEventThunk } from '@/store/slices/EventsSlice.ts'
+import { useAppDispatch } from '@/store/types.ts'
 
 import './EventFormModal.scss'
 import { useToast } from '@/hooks/use-toast.ts'
-import LoadingButton from '@/component/LoadingButton/LoadingButton.tsx'
+import useAuth from '@/useAuth.ts'
 
 
 type EventFormModalProps = {
@@ -29,13 +28,13 @@ type EventFormModalProps = {
   onClose: () => void
   startDate: Date
   logger: UseUpdates
-  user: AuthenticatedUserData
 }
 
-const EventFormModal: FC<EventFormModalProps> = ({ onClose, startDate, logger, user }) => {
+const EventFormModal: FC<EventFormModalProps> = ({ onClose, startDate, logger }) => {
   const dispatch = useAppDispatch()
   const { toast } = useToast()
   const { teamId } = useParams()
+  const { localSession } = useAuth()
   const [loading, setLoading] = useState(false)
 
   const defaultValues = useMemo(() => {
@@ -60,7 +59,7 @@ const EventFormModal: FC<EventFormModalProps> = ({ onClose, startDate, logger, u
   }, [defaultValues, form])
 
   async function onSubmit(values: EventSchemaOut) {
-    if(!teamId) return
+    if(!teamId || !localSession) return
     setLoading(true)
     const data = {
       type: 'match',
@@ -71,13 +70,13 @@ const EventFormModal: FC<EventFormModalProps> = ({ onClose, startDate, logger, u
       opponent: values.opponent,
       info: values.info,
       teamId,
-      userId: user.id,
+      userId: localSession.userId,
     }
     await dispatch(createEventThunk({ data }))
       .unwrap()
       .then(() => {
-        logger.setUpdate({ message: 'added a new event', userId: user.id, groupId: user.groupId })
-        logger.sendUpdates(user.groupId)
+        logger.setUpdate({ message: 'added a new event', userId: localSession.userId, groupId: localSession.groupId })
+        logger.sendUpdates(localSession.groupId)
         toast({
           variant: 'success',
           description: 'Match created successfully',
@@ -95,7 +94,7 @@ const EventFormModal: FC<EventFormModalProps> = ({ onClose, startDate, logger, u
 
   return (
     <Popup onClose={onClose} className='Event-form'>
-      <div className='p-10 bg-at-white w-[600px]'>
+      <div className='w-[600px] bg-at-white p-10'>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <div>
@@ -124,7 +123,7 @@ const EventFormModal: FC<EventFormModalProps> = ({ onClose, startDate, logger, u
                 )}
               />
             </div>
-            <div className='grid grid-cols-2 md:grid-cols-2 sm:grid-cols-1 gap-5 mb-5'>
+            <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
               <InputFormField
                 control={form.control}
                 label='Date'
@@ -140,7 +139,7 @@ const EventFormModal: FC<EventFormModalProps> = ({ onClose, startDate, logger, u
                 type='time'
               />
             </div>
-            <div className='grid grid-cols-2 md:grid-cols-2 sm:grid-cols-1 gap-5 mb-5'>
+            <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
               <InputFormField
                 control={form.control}
                 label='End Time'
@@ -156,7 +155,7 @@ const EventFormModal: FC<EventFormModalProps> = ({ onClose, startDate, logger, u
                 type='text'
               />
             </div>
-            <div className='grid grid-cols-2 md:grid-cols-2 sm:grid-cols-1 gap-5 mb-5'>
+            <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
               <InputFormField
                 control={form.control}
                 label='Opponent Name'
@@ -195,6 +194,5 @@ export const EventFormModalPortal: FC<EventFormModalProps> = props => {
     <EventFormModal
       onClose={props.onClose}
       startDate={props.startDate}
-      logger={props.logger}
-      user={props.user} />, container)
+      logger={props.logger} />, container)
 }

@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
+
 import { AsyncThunkLoading, RootState } from '../types'
 import { AuthenticatedUserData, getAuthenticatedUser } from '@/api'
 

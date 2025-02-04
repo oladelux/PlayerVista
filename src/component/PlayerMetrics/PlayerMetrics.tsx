@@ -1,7 +1,6 @@
 import { FC } from 'react'
 
 import { TeamResult } from '../../api'
-
 import SterlingImage from '../../assets/images/sterling.png'
 
 import './PlayerMetrics.scss'

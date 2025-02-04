@@ -1,4 +1,5 @@
 import { getCookie } from '../services/cookies'
+import { PlayerPositionType } from '@/views/PlayersView/form/PlayerPosition.ts'
 
 const apiURI = import.meta.env.VITE_API_URI
 const cloudinaryAPI = import.meta.env.VITE_CLOUDINARY_API
@@ -25,7 +26,7 @@ export class ApiError extends Error {
  */
 export class ClientError extends Error {
   constructor (url: string, status: number, public responseBody: Record<string, never>) {
-    super(`Erroneous request to endpoint ${url}, status ${status}, code ${responseBody.code}`)
+    super(`Erroneous request to endpoint ${url}, status ${status}, code ${responseBody}`)
   }
 }
 
@@ -177,7 +178,7 @@ export type Player = {
   teamCaptain: boolean
   email: string
   phoneNumber: string
-  uniformNumber: string
+  uniformNumber: number
   imageSrc: string
   street: string
   city: string
@@ -306,21 +307,21 @@ export type PlayerFormData = {
   teamCaptain: boolean
   email: string
   phoneNumber: string
-  uniformNumber: string
+  uniformNumber: number
   imageSrc: string
-  street: string
-  city: string
-  postCode: string
-  country: string
-  birthDate: Date
-  position: string
-  contactPersonFirstName: string
-  contactPersonLastName: string
-  contactPersonPhoneNumber: string
-  contactPersonStreet: string
-  contactPersonCity: string
-  contactPersonPostCode: string
-  contactPersonCountry: string
+  street?: string
+  city?: string
+  postCode?: string
+  country?: string
+  birthDate: string
+  position: PlayerPositionType
+  contactPersonFirstName?: string
+  contactPersonLastName?: string
+  contactPersonPhoneNumber?: string
+  contactPersonStreet?: string
+  contactPersonCity?: string
+  contactPersonPostCode?: string
+  contactPersonCountry?: string
 }
 
 export type StaffData = {
@@ -445,6 +446,10 @@ export async function confirmEmail(data: { hash: string }): Promise<Response> {
   return await apiRequest('/auth/email/confirm', 'POST', data)
 }
 
+export async function forgotPassword(data: { email: string }): Promise<Response> {
+  return await apiRequest('/auth/forgot/password', 'POST', data)
+}
+
 export function logout() {
   return apiRequest('/auth/logout', 'POST')
 }
@@ -530,7 +535,7 @@ export async function getTeam(id: string): Promise<TeamResponse> {
   return await res.json()
 }
 
-export async function updateTeam(data: TeamFormData, teamId: string): Promise<Response> {
+export async function updateTeam(data: Partial<TeamFormData>, teamId: string): Promise<Response> {
   const res = await apiRequest(`/teams/${teamId}`, 'PATCH', data)
   return await res.json()
 }
@@ -555,7 +560,8 @@ export async function getPlayerById(id: string): Promise<Player> {
   return await res.json()
 }
 
-export async function updatePlayer(data: PlayerFormData, playerId: string): Promise<Response> {
+export async function updatePlayer(
+  data: Partial<PlayerFormData>, playerId: string): Promise<Response> {
   const res = await apiRequest(`/players/${playerId}`, 'PATCH', data)
   return await res.json()
 }
@@ -807,7 +813,7 @@ export interface Subscription {
   trialStart: Date | null
   trialEnd: Date | null
 }
-export async function getSubscription(userId: string): Promise<Subscription> {
-  const res = await apiRequest(`/subscription/user/${userId}`, 'GET')
+export async function getSubscription(): Promise<Subscription> {
+  const res = await apiRequest('/subscription/user/me', 'GET')
   return await res.json()
 }

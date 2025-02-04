@@ -1,4 +1,4 @@
-import React, {FC} from "react";
+import React, { FC } from 'react'
 
 import './MainContent.css'
 
@@ -7,12 +7,12 @@ type MainContentProps = {
   selected: boolean
 }
 
-export const MainContent: FC<MainContentProps> = ({children, selected}) => {
+export const MainContent: FC<MainContentProps> = ({ children, selected }) => {
 
   if(selected){
     return (
       <div className='main-content px-4'>
-        <div className="py-2 px-4">
+        <div className='px-4 py-2'>
           {children}
         </div>
       </div>

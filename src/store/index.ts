@@ -1,11 +1,12 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit'
-import { playersReducer } from './slices/PlayersSlice'
-import { settingsReducer } from './slices/SettingsSlice'
-import { teamReducer } from './slices/TeamSlice'
+
 import { eventsReducer } from './slices/EventsSlice.ts'
-import { staffReducer } from './slices/StaffSlice.ts'
-import { reporterReducer } from './slices/ReporterSlice.ts'
 import { playerPerformanceReducer } from './slices/PlayerPerformanceSlice.ts'
+import { playersReducer } from './slices/PlayersSlice'
+import { reporterReducer } from './slices/ReporterSlice.ts'
+import { settingsReducer } from './slices/SettingsSlice'
+import { staffReducer } from './slices/StaffSlice.ts'
+import { teamReducer } from './slices/TeamSlice'
 import { userReducer } from '@/store/slices/UserSlice.ts'
 
 export const rootReducer = combineReducers({
