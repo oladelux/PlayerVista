@@ -5,6 +5,7 @@ import { appService, teamService } from '@/singletons'
 
 export const useTeams = () => {
   const userId = useMemo(() => appService.getUserData()?.id, [])
+  console.log('userId', userId)
   const [teams, setTeams] = useState<TeamResponse[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | undefined>(undefined)
