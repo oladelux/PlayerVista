@@ -3,16 +3,14 @@ import { Link } from 'react-router-dom'
 import cl from 'classnames'
 import { FaRegCheckCircle } from 'react-icons/fa'
 
-import { AppController } from '@/hooks/useAppController.ts'
-import { routes } from '@/constants/routes.ts'
-import { getRandomQuote } from '@/constants/randomQuotes.ts'
-import { isPasswordValid } from '@/services/validation.ts'
+import { AppController } from '../../hooks/useAppController'
+import { routes } from '../../constants/routes'
+import { getRandomQuote } from '../../constants/randomQuotes'
+import { isPasswordValid } from '../../services/validation'
 
 import { InputField } from '../../component/InputField/InputField'
 import { Button } from '../../component/Button/Button'
 import { PasswordInputField } from '../../component/PasswordInputField/PasswordInputField'
-import LoadingButton from '@/component/LoadingButton/LoadingButton.tsx'
-import { useToast } from '@/hooks/use-toast.ts'
 
 import './SignUp.scss'
 
@@ -24,8 +22,7 @@ type SignUpProps = {
 
 export const SignUp: FC<SignUpProps> = props => {
   const { authentication } = props.controller
-  const [loading, setLoading] = useState(false)
-  const { toast } = useToast()
+
   const [registrationData, setRegistrationData] = useState({
     email: '',
     firstName: '',
@@ -49,20 +46,11 @@ export const SignUp: FC<SignUpProps> = props => {
 
   const onRegister = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    setLoading(true)
     const data = {
       ...registrationData,
       role: 'admin',
     }
     authentication.register(data)
-      .catch(() => {
-        setLoading(false)
-        toast({
-          variant: 'error',
-          description: 'An error occurred',
-        })
-      })
-      .finally(() => setLoading(false))
   }
 
   return(
@@ -131,12 +119,7 @@ export const SignUp: FC<SignUpProps> = props => {
               />One lowercase letter
             </div>
           </div>
-          <LoadingButton
-            isLoading={loading}
-            type='submit'
-            className='bg-dark-purple text-white hover:bg-dark-purple hover:text-white w-full'
-          >Sign up
-          </LoadingButton>
+          <Button type='submit' className='Sign-up__form-body--btn'>Sign up</Button>
         </form>
         <div className='Sign-up__form-sign-up'>Already have an account?
           <Link to={routes.login} className='Sign-up__form-sign-up--bold'>Sign in</Link></div>

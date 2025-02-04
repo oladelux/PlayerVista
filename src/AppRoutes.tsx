@@ -64,7 +64,7 @@ export const AppRoutes: FC = () => {
           path={routes.signUp}
           element={<SignUp controller={controller} />}
         />
-        <Route path={routes.forgotPassword} element={<ForgotPassword controller={controller} />} />
+        <Route path={routes.forgotPassword} element={<ForgotPassword />} />
         <Route
           path={routes.changePassword}
           element={<ChangePasswordView />}
@@ -191,16 +191,15 @@ export const AppRoutes: FC = () => {
       </Route>
       <Route path={routes.logout} element={<MyAccount />} />
       <Route
+        path={routes.login}
+        element={<Login controller={controller} />}
+      />
+      <Route
         path={routes.emailVerification}
         element={
           <EmailVerification teams={teams} user={user.data} userHook={user} />
         }
       />
-      <Route
-        path={routes.login}
-        element={<Login controller={controller} />}
-      />
-      <Route path={routes.forgotPassword} element={<ForgotPassword controller={controller} />} />
     </Routes>
   )
 }

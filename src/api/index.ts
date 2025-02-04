@@ -25,7 +25,7 @@ export class ApiError extends Error {
  */
 export class ClientError extends Error {
   constructor (url: string, status: number, public responseBody: Record<string, never>) {
-    super(`Erroneous request to endpoint ${url}, status ${status}, code ${responseBody}`)
+    super(`Erroneous request to endpoint ${url}, status ${status}, code ${responseBody.code}`)
   }
 }
 
@@ -443,10 +443,6 @@ export async function loginAuthentication(data: AuthenticationCredentials):
 
 export async function confirmEmail(data: { hash: string }): Promise<Response> {
   return await apiRequest('/auth/email/confirm', 'POST', data)
-}
-
-export async function forgotPassword(data: { email: string }): Promise<Response> {
-  return await apiRequest('/auth/forgot/password', 'POST', data)
 }
 
 export function logout() {

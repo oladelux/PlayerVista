@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 
 import * as api from '../api'
-import { ApiError, AuthenticationCredentials, SignUpFormData, SubscriptionStatus, ClientError } from '@/api'
+import { ApiError, AuthenticationCredentials, SignUpFormData, SubscriptionStatus } from '@/api'
 import { routes } from '../constants/routes'
 import { UserHook } from './useUser'
 import { addCookie, removeCookie } from '../services/cookies'
@@ -91,35 +91,11 @@ export function useAuthentication (
           dispatch(getRolesByGroupIdThunk({ groupId: userData.groupId })),
         ])
       })
-      .catch((e) => {
-        if (e instanceof ClientError) {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-expect-error
-          if(e.responseBody.errors.password === 'incorrectPassword') {
-            toast({
-              variant: 'error',
-              title: 'Error logging in',
-              description: 'Incorrect password',
-            })
-          }
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-expect-error
-          if(e.responseBody.errors.email === 'notFound') {
-            toast({
-              variant: 'error',
-              title: 'Error logging in',
-              description: 'Email address not found',
-            })
-          }
-          console.error('Incorrect credentials while logging in', e.responseBody)
-        }
-        if (e instanceof ApiError) {
-          toast({
-            variant: 'error',
-            description: 'Login failed',
-          })
-          console.error({ message: 'Unexpected error', reason: e })
-        }
+      .catch(() => {
+        toast({
+          variant: 'error',
+          description: 'An unexpected error occurred. Please try again later.',
+        })
       })
       .finally(() => setLoggingIn(false))
   }
@@ -165,42 +141,6 @@ export function useAuthentication (
       })
   }
 
-  async function resetPassword(data: { email: string }) {
-    setIsSubmitting(true)
-    try {
-      const res = await api.forgotPassword(data)
-      if (res.status === 204) {
-        toast({
-          variant: 'success',
-          description: 'Password reset link sent to your email.',
-        })
-      }
-    } catch (e) {
-      if (e instanceof ClientError) {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-expect-error
-        if(e.responseBody.errors.email === 'emailNotExists') {
-          toast({
-            variant: 'error',
-            title: 'Error resetting password',
-            description: 'Email does not exist',
-          })
-          console.error('Unhandled error resetting password', e.responseBody)
-        }
-      }
-      if (e instanceof ApiError) {
-        toast({
-          variant: 'error',
-          description: 'Reset password failed',
-        })
-        console.error({ message: 'Reset password failed', reason: e })
-      }
-    }
-    finally {
-      setIsSubmitting(false)
-    }
-  }
-
   return {
     isSubmitting,
     register,
@@ -209,6 +149,5 @@ export function useAuthentication (
     logout,
     sendEmailVerification,
     emailVerificationSent,
-    resetPassword,
   }
 }
