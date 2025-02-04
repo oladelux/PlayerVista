@@ -9,12 +9,10 @@ export const useTeam = (teamId?: string) => {
   const [error, setError] = useState<string | undefined>(undefined)
 
   useEffect(() => {
-    if(!teamId) return
     const teamSubscription = teamService.team$.subscribe(state => {
       setTeam(state.team)
       setLoading(state.loading)
       setError(state.error)
-      console.log('team loaging', state.loading)
     })
     teamService.getTeam(teamId)
 
