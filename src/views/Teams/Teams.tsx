@@ -66,7 +66,7 @@ export function Teams() {
     },
   }] : []
 
-  if (loading || playersLoading) return <LoadingPage message='Loading team page' />
+  if (playersLoading) return <LoadingPage message='Loading team page' />
   //TODO: Create Error Page
   if (error || playersError) return 'This is an error page'
 

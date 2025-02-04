@@ -11,7 +11,6 @@ export const useTeams = () => {
 
   useEffect(() => {
     if (!userId) return
-    console.log('Team: checking thus shit')
     const teamSubscription = teamService.team$.subscribe(state => {
       setTeams(prevTeams => (prevTeams !== state.teams ? state.teams : prevTeams))
       setLoading(state.loading)
