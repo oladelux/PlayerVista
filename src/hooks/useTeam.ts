@@ -11,7 +11,7 @@ export const useTeam = (teamId?: string) => {
   useEffect(() => {
     const teamSubscription = teamService.team$.subscribe(state => {
       setTeam(state.team)
-      setLoading(state.loading)
+      setLoading(state.teamLoading)
       setError(state.error)
     })
     if (teamId) {
