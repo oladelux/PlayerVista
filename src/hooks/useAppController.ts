@@ -25,7 +25,7 @@ let didInit = false
 
 export function useAppController () {
   const dispatch = useDispatch<AppDispatch>()
-
+  const { teams } = useSelector(teamSelector)
   const { team: singleTeam } = useSelector(teamSelector)
   const { allPlayers } = useSelector(playersSelector)
   const { logs } = useSelector(settingsSelector)
