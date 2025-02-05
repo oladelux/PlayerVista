@@ -10,11 +10,11 @@ import { usePaymentSubscription } from '@/hooks/usePaymentSubscription.ts'
 export function Layout() {
   const { loading, isActive } = usePaymentSubscription()
   const { pathname } = useLocation()
-
-  if (loading) return <LoadingPage />
-  if (!isActive) return <Navigate to={routes.selectPlan} replace />
   const excludePaths = ['/']
   const shouldNotRenderDashboardLayout = excludePaths.includes(pathname)
+
+  if (loading) return <LoadingPage message='check seb' />
+  if (!isActive) return <Navigate to={routes.selectPlan} replace />
 
   if(shouldNotRenderDashboardLayout) {
     return (

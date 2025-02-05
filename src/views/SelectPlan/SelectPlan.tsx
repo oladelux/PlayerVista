@@ -1,16 +1,13 @@
 import { useState } from 'react'
 
-import { selectSubscription, SubscriptionPlan, TeamResponse, SubscriptionType } from '@/api'
+import { selectSubscription, SubscriptionPlan, SubscriptionType } from '@/api'
 import { DashboardHeader } from '@/component/DashboardLayout/DashboardLayout.tsx'
 import { Button } from '@/components/ui/button.tsx'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs.tsx'
+import { useTeams } from '@/hooks/useTeams.ts'
 
-
-interface SelectPlanProps {
-  teams: TeamResponse[]
-}
-
-export default function SelectPlan({ teams }: SelectPlanProps) {
+export default function SelectPlan() {
+  const { teams } = useTeams()
   return (
     <>
       <DashboardHeader teams={teams}/>

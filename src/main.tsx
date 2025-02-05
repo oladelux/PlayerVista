@@ -21,6 +21,7 @@ import { AddPlayer } from '@/views/PlayersView/AddPlayer/AddPlayer.tsx'
 import { EditPlayer } from '@/views/PlayersView/EditPlayer/EditPlayer.tsx'
 import PlayerStats from '@/views/PlayersView/PlayerStats/PlayerStats.tsx'
 import { PlayersView } from '@/views/PlayersView/PlayersView.tsx'
+import SelectPlan from '@/views/SelectPlan/SelectPlan.tsx'
 import { SettingsView } from '@/views/SettingsView/SettingsView.tsx'
 import { SignUp } from '@/views/SignUp/SignUp.tsx'
 import { EventSummary } from '@/views/SingleEventView/EventSummary/EventSummary.tsx'
@@ -34,7 +35,9 @@ import { TeamView } from '@/views/TeamView/TeamView.tsx'
 import { AddStaff } from '@/views/UserManagementView/Staffs/AddStaff/AddStaff.tsx'
 import { EditStaff } from '@/views/UserManagementView/Staffs/EditStaff/EditStaff.tsx'
 import { Staffs } from '@/views/UserManagementView/Staffs/Staffs.tsx'
+
 import './App.scss'
+import { StrictMode } from 'react'
 
 const router = createBrowserRouter([
   {
@@ -48,6 +51,11 @@ const router = createBrowserRouter([
   {
     path: routes.signUp,
     element: <SignUp />,
+  },
+
+  {
+    path: routes.selectPlan,
+    element: <SelectPlan />,
   },
   {
     path: routes.forgotPassword,
@@ -97,12 +105,14 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
 
-  <Provider store={setupStore}>
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <AuthProvider>
-        <RouterProvider router={router} />
-        <Toaster />
-      </AuthProvider>
-    </LocalizationProvider>
-  </Provider>,
+  <StrictMode>
+    <Provider store={setupStore}>
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <AuthProvider>
+          <RouterProvider router={router} />
+          <Toaster />
+        </AuthProvider>
+      </LocalizationProvider>
+    </Provider>
+  </StrictMode>,
 )
