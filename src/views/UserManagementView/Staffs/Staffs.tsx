@@ -1,20 +1,16 @@
 import classnames from 'classnames'
 import { FaPlus } from 'react-icons/fa'
 import { FiSearch } from 'react-icons/fi'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { Link, useParams } from 'react-router-dom'
 
 import { Column, Table } from '@/component/Table/Table.tsx'
 import { useToast } from '@/hooks/use-toast.ts'
 import { usePermission } from '@/hooks/usePermission.ts'
 import { usePlayers } from '@/hooks/usePlayers.ts'
-
-
 import './Staffs.scss'
-
 import { useStaff } from '@/hooks/useStaff.ts'
 import { useUpdates } from '@/hooks/useUpdates.ts'
-import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
 
 import { EyeIcon } from 'lucide-react'
 
@@ -52,8 +48,7 @@ export function Staffs() {
   const { toast } = useToast()
   const logger = useUpdates()
   const dispatch = useDispatch<AppDispatch>()
-  const { userRole } = useSelector(settingsSelector)
-  const { canCreateStaff } = usePermission(userRole)
+  const { canCreateStaff } = usePermission()
   const { searchPlayerValue, handleSearchInput } = usePlayers()
   const { staffs } = useStaff()
   const { localSession } = useAuth()

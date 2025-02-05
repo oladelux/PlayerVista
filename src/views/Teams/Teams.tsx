@@ -2,7 +2,6 @@ import { EyeIcon } from 'lucide-react'
 import { useState } from 'react'
 import { FaPlus } from 'react-icons/fa'
 import { FiSearch } from 'react-icons/fi'
-import { useSelector } from 'react-redux'
 import { Link, useOutletContext, useParams } from 'react-router-dom'
 
 import { Table } from '../../component/Table/Table'
@@ -11,7 +10,6 @@ import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
 import { usePermission } from '@/hooks/usePermission.ts'
 import { usePlayer } from '@/hooks/usePlayer.ts'
 import { formatDate } from '@/services/helper.ts'
-import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
 import './Teams.scss'
 
 const columns = [
@@ -29,8 +27,7 @@ const columns = [
 ]
 
 export function Teams() {
-  const { userRole } = useSelector(settingsSelector)
-  const { canCreateTeam } = usePermission(userRole)
+  const { canCreateTeam } = usePermission()
   const { teamId } = useParams()
   const { teams, teamsError: error, teamsLoading: loading } =
     useOutletContext<DashboardLayoutOutletContext>()

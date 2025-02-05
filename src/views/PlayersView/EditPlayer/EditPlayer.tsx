@@ -1,7 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { FC, useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
 
 import { PlayerFormData } from '@/api'
@@ -16,7 +15,6 @@ import { useToast } from '@/hooks/use-toast.ts'
 import { usePermission } from '@/hooks/usePermission.ts'
 import { usePlayer } from '@/hooks/usePlayer.ts'
 import { appService, playerService } from '@/singletons'
-import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
 import './EditPlayer.scss'
 import { getPlayerDefaultValues } from '@/views/PlayersView/EditPlayer/form/playerDefaultValues.ts'
 import { PlayerPositionType } from '@/views/PlayersView/form/PlayerPosition.ts'
@@ -24,9 +22,8 @@ import { playerSchema, PlayerSchemaIn, PlayerSchemaOut } from '@/views/PlayersVi
 
 
 export const EditPlayer: FC = () => {
-  const { userRole } = useSelector(settingsSelector)
   const { toast } = useToast()
-  const { canManagePlayer } = usePermission(userRole)
+  const { canManagePlayer } = usePermission()
   const { playerId, teamId } = useParams()
   const navigate = useNavigate()
   const { player, loading: loadingPlayer, error } = usePlayer(playerId, teamId)

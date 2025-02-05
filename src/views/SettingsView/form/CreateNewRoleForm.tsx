@@ -2,7 +2,6 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { capitalize } from '@mui/material'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { useDispatch } from 'react-redux'
 import { z } from 'zod'
 
 import { AuthenticatedUserData, RoleFormData } from '@/api'
@@ -12,8 +11,7 @@ import InputFormField from '@/components/form/InputFormField.tsx'
 import { Form } from '@/components/ui/form.tsx'
 import { useToast } from '@/hooks/use-toast.ts'
 import { UseUpdates } from '@/hooks/useUpdates.ts'
-import { createRoleThunk } from '@/store/slices/SettingsSlice.ts'
-import { AppDispatch } from '@/store/types.ts'
+import { roleService } from '@/singletons'
 import { AllPermissions } from '@/utils/allPermissions.ts'
 
 const createNewRoleSchema = z.object({
@@ -31,7 +29,6 @@ type CreateNewRoleFormProps = {
 }
 
 export default function CreateNewRoleForm({ user, logger, setDialogOpen }: CreateNewRoleFormProps) {
-  const dispatch = useDispatch<AppDispatch>()
   const { toast } = useToast()
   const [loading, setLoading] = useState(false)
   const defaultValues: createNewRoleSchemaIn = {
@@ -53,10 +50,7 @@ export default function CreateNewRoleForm({ user, logger, setDialogOpen }: Creat
         permissions: values.permissions || [],
         createdByUserId: user.id,
       }
-      dispatch(createRoleThunk({
-        data,
-      }))
-        .unwrap()
+      roleService.insert(data)
         .then(() => {
           setLoading(false)
           logger.setUpdate({ message: 'added a new role', userId: user.id, groupId: user.groupId })

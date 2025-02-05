@@ -1,10 +1,10 @@
-import { useSelector } from 'react-redux'
+import { useOutletContext } from 'react-router-dom'
 
+import { DashboardLayoutOutletContext } from '@/component/DashboardLayout/DashboardLayout.tsx'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs.tsx'
 import { usePermission } from '@/hooks/usePermission.ts'
 import { useUpdates } from '@/hooks/useUpdates.ts'
 import { appService } from '@/singletons'
-import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
 import ChangePasswordForm from '@/views/SettingsView/ChangePasswordForm.tsx'
 import CreateNewRoleDialog from '@/views/SettingsView/dialog/CreateNewRoleDialog.tsx'
 import ProfileForm from '@/views/SettingsView/ProfileForm.tsx'
@@ -13,9 +13,8 @@ import RolesView from '@/views/SettingsView/RolesView.tsx'
 export function SettingsView() {
   const userData = appService.getUserData()
   const logger = useUpdates()
-  const { roles } = useSelector(settingsSelector)
-  const { userRole } = useSelector(settingsSelector)
-  const { canCreateRole, canManageRole } = usePermission(userRole)
+  const { roles } = useOutletContext<DashboardLayoutOutletContext>()
+  const { canCreateRole, canManageRole } = usePermission()
 
   if(!userData) {
     return null
@@ -35,7 +34,7 @@ export function SettingsView() {
               </TabsTrigger>}
         </TabsList>
         <TabsContent value='profile'>
-          <ProfileForm user={userData} canManageRole={canManageRole} />
+          <ProfileForm user={userData} canManageRole={canManageRole} roles={roles} />
           <ChangePasswordForm user={userData} />
         </TabsContent>
         <TabsContent value='roles'>
