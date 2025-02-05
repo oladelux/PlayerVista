@@ -1,10 +1,11 @@
-import { useSelector } from 'react-redux'
-
-import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
+import { useRole } from '@/hooks/useRoles.ts'
+import useAuth from '@/useAuth.ts'
 import { PermissionEnum } from '@/utils/allPermissions.ts'
 
-export const usePermission = (role: string) => {
-  const { roles } = useSelector(settingsSelector)
+export const usePermission = () => {
+  const { localSession } = useAuth()
+  const role = localSession?.role
+  const { roles } = useRole(localSession?.groupId)
   const userRole = roles.find((r) => r.name === role)
 
   if(!userRole)

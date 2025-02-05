@@ -2,7 +2,6 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import classnames from 'classnames'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { useDispatch } from 'react-redux'
 import { z } from 'zod'
 
 import { Roles } from '@/api'
@@ -10,8 +9,7 @@ import LoadingButton from '@/component/LoadingButton/LoadingButton.tsx'
 import CheckboxFormField from '@/components/form/CheckboxFormField.tsx'
 import { Form } from '@/components/ui/form.tsx'
 import { useToast } from '@/hooks/use-toast.ts'
-import { updateRolePermissionsThunk } from '@/store/slices/SettingsSlice.ts'
-import { AppDispatch } from '@/store/types.ts'
+import { roleService } from '@/singletons'
 import { AllPermissions } from '@/utils/allPermissions.ts'
 
 const capitalize = (text: string) => {
@@ -35,7 +33,6 @@ type rolesSchemaOut = z.output<typeof rolesSchema>
 
 export default function RolesView({ roles }: RolesViewProps) {
   const [loading, setLoading] = useState(false)
-  const dispatch = useDispatch<AppDispatch>()
   const { toast } = useToast()
   const [activeRole, setActiveRole] = useState<string>('admin')
   const defaultValues: rolesSchemaIn = {
@@ -55,10 +52,11 @@ export default function RolesView({ roles }: RolesViewProps) {
   async function onSubmit(){
     setLoading(true)
     try {
-      dispatch(updateRolePermissionsThunk({
-        roleId: roles[activeRoleIndex].id,
+      roleService.patch(
+        roles[activeRoleIndex].id,
         updatedPermissions,
-      })).unwrap().then(() => {
+        roles[activeRoleIndex].groupId,
+      ).then(() => {
         setLoading(false)
         toast({
           variant: 'success',

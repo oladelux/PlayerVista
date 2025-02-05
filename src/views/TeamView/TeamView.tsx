@@ -9,13 +9,10 @@ import { routes } from '@/constants/routes.ts'
 import { usePermission } from '@/hooks/usePermission.ts'
 import { useTeams } from '@/hooks/useTeams.ts'
 import { playersSelector } from '@/store/slices/PlayersSlice.ts'
-import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
 import './TeamView.scss'
 
 const NoTeamView: FC = () => {
-
-  const { userRole } = useSelector(settingsSelector)
-  const { canCreateTeam } = usePermission(userRole)
+  const { canCreateTeam } = usePermission()
   return (
     <div className='No-team-view'>
       <div className='No-team-view__title'>You have no team created</div>

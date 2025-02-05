@@ -6,7 +6,7 @@ import { useNavigate, useParams, Outlet } from 'react-router-dom'
 
 import PlayerVistaLogo from '../../assets/images/icons/playervista.png'
 import { Sidebar } from '../Sidebar/SidebarMenu'
-import { TeamResponse } from '@/api'
+import { Roles, TeamResponse } from '@/api'
 import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
 import { MobileNav } from '@/component/MobileNav/MobileNav.tsx'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.tsx'
@@ -27,6 +27,7 @@ import { AppDispatch } from '@/store/types.ts'
 import useAuth from '@/useAuth.ts'
 import { setCurrentTeam } from '@/utils/localStorage.ts'
 import './DashboardLayout.scss'
+import { useRole } from '@/hooks/useRoles.ts'
 
 type DashboardHeaderProps = {
   teams: TeamResponse[]
@@ -34,6 +35,8 @@ type DashboardHeaderProps = {
 
 export type DashboardLayoutOutletContext = {
   teams: TeamResponse[]
+  roles: Roles[]
+  userRole: string
   teamsLoading: boolean
   teamsError: string | undefined
 }
@@ -111,7 +114,9 @@ export const DashboardHeader: FC<DashboardHeaderProps> = ({ teams }) => {
 }
 
 export function DashboardLayout() {
+  const { localSession } = useAuth()
   const { teams, error, loading } = useTeams()
+  const { roles } = useRole(localSession?.groupId)
   const isMobile = useMediaQuery('(max-width:767px)')
 
   if (loading) return <LoadingPage />
@@ -131,6 +136,8 @@ export function DashboardLayout() {
             <Outlet context={
               {
                 teams: teams,
+                roles: roles,
+                userRole: localSession?.role || '',
                 teamsLoading: loading,
                 teamsError: error,
               } satisfies DashboardLayoutOutletContext

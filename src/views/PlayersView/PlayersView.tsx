@@ -2,7 +2,6 @@ import { EyeIcon } from 'lucide-react'
 import React, { useMemo } from 'react'
 import { FaPlus } from 'react-icons/fa'
 import { FiSearch } from 'react-icons/fi'
-import { useSelector } from 'react-redux'
 import { Link, useParams } from 'react-router-dom'
 
 import { Column, Table } from '../../component/Table/Table'
@@ -11,7 +10,6 @@ import { usePermission } from '@/hooks/usePermission.ts'
 import { usePlayer } from '@/hooks/usePlayer.ts'
 import { usePlayers } from '@/hooks/usePlayers.ts'
 import { calculateAge } from '@/services/helper.ts'
-import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
 import './PlayersView.scss'
 
 const playerColumns: Column<never>[] = [
@@ -41,8 +39,7 @@ const predefinedOrder = [
 export function PlayersView(){
   const { teamId } = useParams()
   const { searchPlayerValue, handleSearchInput } = usePlayers()
-  const { userRole } = useSelector(settingsSelector)
-  const { canCreatePlayer } = usePermission(userRole)
+  const { canCreatePlayer } = usePermission()
   const { players, loading, error } = usePlayer(undefined, teamId)
 
   const filteredPlayers = useMemo(() => {

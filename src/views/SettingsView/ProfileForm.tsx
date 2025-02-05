@@ -2,21 +2,20 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { capitalize } from '@mui/material'
 import { useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { useSelector } from 'react-redux'
 import { z } from 'zod'
 
-import { AuthenticatedUserData } from '@/api'
+import { AuthenticatedUserData, Roles } from '@/api'
 import LoadingButton from '@/component/LoadingButton/LoadingButton.tsx'
 import InputFormField from '@/components/form/InputFormField.tsx'
 import SelectFormField from '@/components/form/SelectFormField.tsx'
 import { Form } from '@/components/ui/form.tsx'
 import { useToast } from '@/hooks/use-toast.ts'
 import { useUser } from '@/hooks/useUser.ts'
-import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
 
 type ProfileFormProps = {
   user: AuthenticatedUserData
   canManageRole: boolean
+  roles: Roles[]
 }
 
 const profileSchema = z.object({
@@ -29,9 +28,8 @@ const profileSchema = z.object({
 type ProfileSchemaIn = Partial<z.input<typeof profileSchema>>
 type ProfileSchemaOut = z.output<typeof profileSchema>
 
-export default function ProfileForm({ user, canManageRole }: ProfileFormProps) {
+export default function ProfileForm({ user, canManageRole, roles }: ProfileFormProps) {
   const [loading, setLoading] = useState(false)
-  const { roles } = useSelector(settingsSelector)
   const { toast } = useToast()
   const userHook = useUser()
   const defaultValues = useMemo(() => {

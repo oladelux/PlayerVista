@@ -11,10 +11,7 @@ import { CalenderEvents } from '@/constants/events.ts'
 import { usePermission } from '@/hooks/usePermission.ts'
 import { UseUpdates } from '@/hooks/useUpdates.ts'
 import { convertToCalenderDate } from '@/services/helper.ts'
-
 import './EventCalender.scss'
-
-import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
 
 type NewEvent = {
   start: Date
@@ -31,8 +28,7 @@ type EventCalenderProps = {
 export const EventCalender:FC<EventCalenderProps> = props => {
   const navigate = useNavigate()
   const { teamId } = useParams()
-  const { userRole } = useSelector(settingsSelector)
-  const { canCreateEvent } = usePermission(userRole)
+  const { canCreateEvent } = usePermission()
   const [isEventFormModal, setIsEventFormModal] = useState(false)
   const [isSelectedEventModal, setIsSelectedEventModal] = useState(false)
   const [myEvents, setEvents] = useState<CalenderEvents[]>([])
