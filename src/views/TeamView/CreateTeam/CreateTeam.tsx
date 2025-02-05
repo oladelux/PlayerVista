@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom'
 
 import { FormikStep, FormikStepper } from './Step'
 import { AuthenticatedUserData, TeamFormData, TeamResponse, uploadImageToCloudinary } from '@/api'
-import { DashboardHeader, DashboardLayout } from '@/component/DashboardLayout/DashboardLayout.tsx'
+import { DashboardHeader } from '@/component/DashboardLayout/DashboardLayout.tsx'
 import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
 import { SuccessConfirmationPopup } from '@/component/SuccessConfirmation/SuccessConfirmation.tsx'
 import { cloudName, cloudUploadPresets } from '@/config/constants.ts'
@@ -58,17 +58,15 @@ export function DashboardCreateTeam(){
   if (error || !userData) return 'This is an error page'
 
   return (
-    <DashboardLayout>
-      <div className='Create-team'>
-        <div className='Create-team__content px-12 py-10'>
-          <div className='Create-team__content-header'>
-            <div className='Create-team__content-header-title'>Hello Admin,</div>
-            <div className='Create-team__content-header-sub-title'>Let’s create a team for you in three easy steps</div>
-          </div>
-          <CreateTeamMultiStep logger={logger} user={userData} teams={teams} />
+    <div className='Create-team'>
+      <div className='Create-team__content px-12 py-10'>
+        <div className='Create-team__content-header'>
+          <div className='Create-team__content-header-title'>Hello Admin,</div>
+          <div className='Create-team__content-header-sub-title'>Let’s create a team for you in three easy steps</div>
         </div>
+        <CreateTeamMultiStep logger={logger} user={userData} teams={teams} />
       </div>
-    </DashboardLayout>
+    </div>
   )
 }
 

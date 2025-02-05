@@ -5,7 +5,6 @@ import { useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
 
 import { PlayerFormData } from '@/api'
-import { DashboardLayout } from '@/component/DashboardLayout/DashboardLayout.tsx'
 import LoadingButton from '@/component/LoadingButton/LoadingButton.tsx'
 import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
 import ProfileTeamImage from '@/component/ProfileTeamImage/ProfileTeamImage.tsx'
@@ -90,171 +89,169 @@ export const EditPlayer: FC = () => {
   }
 
   return (
-    <DashboardLayout>
-      <div className='mb-5 rounded-md bg-white px-2.5 py-2 md:px-12 md:py-10'>
-        <div className=''>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
-              <div className='Single-player-view__header border-b border-border-line'>
-                <ProfileTeamImage playerId={playerId} teamId={teamId}/>
+    <div className='mb-5 rounded-md bg-white px-2.5 py-2 md:px-12 md:py-10'>
+      <div className=''>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <div className='Single-player-view__header border-b border-border-line'>
+              <ProfileTeamImage playerId={playerId} teamId={teamId}/>
+            </div>
+            <div className='Single-player-view__sections-bio'>
+              <div className='Single-player-view__sections-bio-title'>Bio-data</div>
+              <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
+                <InputFormField
+                  control={form.control}
+                  label='First Name'
+                  name='firstName'
+                  placeholder='First Name'
+                  type='text'
+                  readOnly={!canManagePlayer}
+                />
+                <InputFormField
+                  control={form.control}
+                  label='Last Name'
+                  name='lastName'
+                  placeholder='Last Name'
+                  type='text'
+                  readOnly={!canManagePlayer}
+                />
+                <InputFormField
+                  control={form.control}
+                  label='Email Address'
+                  name='email'
+                  placeholder='Email Address'
+                  type='email'
+                  readOnly={!canManagePlayer}
+                />
+                <InputFormField
+                  control={form.control}
+                  label='Date of Birth'
+                  name='birthDate'
+                  placeholder='D.O.B'
+                  type='date'
+                  readOnly={!canManagePlayer}
+                />
+                <InputFormField
+                  control={form.control}
+                  label='Phone Number'
+                  name='phoneNumber'
+                  placeholder='Phone Number'
+                  readOnly={!canManagePlayer}
+                />
+                <InputFormField
+                  control={form.control}
+                  label='Street'
+                  name='street'
+                  placeholder='Street'
+                  readOnly={!canManagePlayer}
+                />
+                <InputFormField
+                  control={form.control}
+                  label='Postcode'
+                  name='postCode'
+                  placeholder='Postcode'
+                  readOnly={!canManagePlayer}
+                />
+                <InputFormField
+                  control={form.control}
+                  label='Country'
+                  name='country'
+                  placeholder='Country'
+                  readOnly={!canManagePlayer}
+                />
               </div>
-              <div className='Single-player-view__sections-bio'>
-                <div className='Single-player-view__sections-bio-title'>Bio-data</div>
-                <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
-                  <InputFormField
+            </div>
+            <div className='Single-player-view__sections-bio'>
+              <div className='Single-player-view__sections-bio-title'>Contact Person</div>
+              <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
+                <InputFormField
+                  control={form.control}
+                  label='First Name'
+                  name='contactPersonFirstName'
+                  placeholder='First Name'
+                  type='text'
+                  readOnly={!canManagePlayer}
+                />
+                <InputFormField
+                  control={form.control}
+                  label='Last Name'
+                  name='contactPersonLastName'
+                  placeholder='Last Name'
+                  type='text'
+                  readOnly={!canManagePlayer}
+                />
+                <InputFormField
+                  control={form.control}
+                  label='Phone Number'
+                  name='contactPersonPhoneNumber'
+                  placeholder='Phone Number'
+                  type='text'
+                  readOnly={!canManagePlayer}
+                />
+                <InputFormField
+                  control={form.control}
+                  label='Street'
+                  name='contactPersonStreet'
+                  placeholder='Street'
+                  type='text'
+                  readOnly={!canManagePlayer}
+                />
+                <InputFormField
+                  control={form.control}
+                  label='Postcode'
+                  name='contactPersonPostCode'
+                  placeholder='Postcode'
+                  type='text'
+                  readOnly={!canManagePlayer}
+                />
+                <InputFormField
+                  control={form.control}
+                  label='Country'
+                  name='contactPersonCountry'
+                  placeholder='Country'
+                  type='text'
+                  readOnly={!canManagePlayer}
+                />
+              </div>
+            </div>
+            <div className='Single-player-view__sections-bio'>
+              <div className='Single-player-view__sections-bio-title'>Player Data</div>
+              <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
+                <div>
+                  <FormLabel htmlFor='position'>Position</FormLabel>
+                  <SelectFormField
                     control={form.control}
-                    label='First Name'
-                    name='firstName'
-                    placeholder='First Name'
-                    type='text'
-                    readOnly={!canManagePlayer}
-                  />
-                  <InputFormField
-                    control={form.control}
-                    label='Last Name'
-                    name='lastName'
-                    placeholder='Last Name'
-                    type='text'
-                    readOnly={!canManagePlayer}
-                  />
-                  <InputFormField
-                    control={form.control}
-                    label='Email Address'
-                    name='email'
-                    placeholder='Email Address'
-                    type='email'
-                    readOnly={!canManagePlayer}
-                  />
-                  <InputFormField
-                    control={form.control}
-                    label='Date of Birth'
-                    name='birthDate'
-                    placeholder='D.O.B'
-                    type='date'
-                    readOnly={!canManagePlayer}
-                  />
-                  <InputFormField
-                    control={form.control}
-                    label='Phone Number'
-                    name='phoneNumber'
-                    placeholder='Phone Number'
-                    readOnly={!canManagePlayer}
-                  />
-                  <InputFormField
-                    control={form.control}
-                    label='Street'
-                    name='street'
-                    placeholder='Street'
-                    readOnly={!canManagePlayer}
-                  />
-                  <InputFormField
-                    control={form.control}
-                    label='Postcode'
-                    name='postCode'
-                    placeholder='Postcode'
-                    readOnly={!canManagePlayer}
-                  />
-                  <InputFormField
-                    control={form.control}
-                    label='Country'
-                    name='country'
-                    placeholder='Country'
-                    readOnly={!canManagePlayer}
+                    name='position'
+                    options={positionOptions}
+                    inputClassName='w-48 h-10 mt-2'
                   />
                 </div>
-              </div>
-              <div className='Single-player-view__sections-bio'>
-                <div className='Single-player-view__sections-bio-title'>Contact Person</div>
-                <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
-                  <InputFormField
-                    control={form.control}
-                    label='First Name'
-                    name='contactPersonFirstName'
-                    placeholder='First Name'
-                    type='text'
-                    readOnly={!canManagePlayer}
-                  />
-                  <InputFormField
-                    control={form.control}
-                    label='Last Name'
-                    name='contactPersonLastName'
-                    placeholder='Last Name'
-                    type='text'
-                    readOnly={!canManagePlayer}
-                  />
-                  <InputFormField
-                    control={form.control}
-                    label='Phone Number'
-                    name='contactPersonPhoneNumber'
-                    placeholder='Phone Number'
-                    type='text'
-                    readOnly={!canManagePlayer}
-                  />
-                  <InputFormField
-                    control={form.control}
-                    label='Street'
-                    name='contactPersonStreet'
-                    placeholder='Street'
-                    type='text'
-                    readOnly={!canManagePlayer}
-                  />
-                  <InputFormField
-                    control={form.control}
-                    label='Postcode'
-                    name='contactPersonPostCode'
-                    placeholder='Postcode'
-                    type='text'
-                    readOnly={!canManagePlayer}
-                  />
-                  <InputFormField
-                    control={form.control}
-                    label='Country'
-                    name='contactPersonCountry'
-                    placeholder='Country'
-                    type='text'
-                    readOnly={!canManagePlayer}
-                  />
-                </div>
-              </div>
-              <div className='Single-player-view__sections-bio'>
-                <div className='Single-player-view__sections-bio-title'>Player Data</div>
-                <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
-                  <div>
-                    <FormLabel htmlFor='position'>Position</FormLabel>
-                    <SelectFormField
-                      control={form.control}
-                      name='position'
-                      options={positionOptions}
-                      inputClassName='w-48 h-10 mt-2'
-                    />
-                  </div>
-                  <InputFormField
-                    control={form.control}
-                    label='Jersey No.'
-                    name='uniformNumber'
-                    placeholder='Jersey No.'
-                    type='number'
-                    readOnly={!canManagePlayer}
-                  />
-                  <SingleCheckboxFormField
-                    control={form.control}
-                    name='teamCaptain'
-                  >
+                <InputFormField
+                  control={form.control}
+                  label='Jersey No.'
+                  name='uniformNumber'
+                  placeholder='Jersey No.'
+                  type='number'
+                  readOnly={!canManagePlayer}
+                />
+                <SingleCheckboxFormField
+                  control={form.control}
+                  name='teamCaptain'
+                >
                     Team Captain
-                  </SingleCheckboxFormField>
-                </div>
+                </SingleCheckboxFormField>
               </div>
-              <LoadingButton
-                isLoading={loading}
-                type='submit'
-                className='t-10 mb-3 bg-dark-purple text-white'
-              >
+            </div>
+            <LoadingButton
+              isLoading={loading}
+              type='submit'
+              className='t-10 mb-3 bg-dark-purple text-white'
+            >
                 Save
-              </LoadingButton>
-            </form>
-          </Form>
-        </div>
+            </LoadingButton>
+          </form>
+        </Form>
       </div>
-    </DashboardLayout>
+    </div>
   )
 }

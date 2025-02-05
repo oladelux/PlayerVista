@@ -43,7 +43,7 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     column-gap: 30px;
-    margin: 45px 0;
+    margin-bottom: 45px;
 
     @include mixins.mobile {
       grid-template-columns: 1fr;

@@ -5,7 +5,6 @@ import { useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
 
 import { AuthenticatedUserData, ReporterData } from '../../../api'
-import { DashboardLayout } from '../../../component/DashboardLayout/DashboardLayout'
 import { Spinner } from '../../../component/Spinner/Spinner.tsx'
 import { SuccessConfirmationPopup } from '../../../component/SuccessConfirmation/SuccessConfirmation.tsx'
 import { UseUpdates } from '../../../hooks/useUpdates.ts'
@@ -30,15 +29,13 @@ type AddReporterProps = {
 
 export const AddReporter: FC<AddReporterProps> = ({ logger, user }) => {
   return (
-    <DashboardLayout>
-      <div className='Add-reporter'>
-        <div className='Add-reporter__header'>
-          <div className='Add-reporter__header-title'>Hello Admin,</div>
-          <div className='Add-reporter__header-sub-title'>Let’s add a new reporter</div>
-        </div>
-        <AddReporterMultiStep user={user} logger={logger} />
+    <div className='Add-reporter'>
+      <div className='Add-reporter__header'>
+        <div className='Add-reporter__header-title'>Hello Admin,</div>
+        <div className='Add-reporter__header-sub-title'>Let’s add a new reporter</div>
       </div>
-    </DashboardLayout>
+      <AddReporterMultiStep user={user} logger={logger} />
+    </div>
   )
 }
 

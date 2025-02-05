@@ -1,10 +1,9 @@
 import classnames from 'classnames'
-import { useEffect, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 
 import ClubLogo from '../../../assets/images/club.png'
-import { DashboardLayout } from '@/component/DashboardLayout/DashboardLayout.tsx'
 import DownloadPdfButton from '@/component/DownloadPdfButton/DownloadPdfButton.tsx'
 import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
 import PlayerDataTab from '@/component/PlayerDataTab/PlayerDataTab.tsx'
@@ -59,7 +58,7 @@ export function PlayerEventStats() {
   if (error || eventError || !player) return 'This is an error page'
 
   return (
-    <DashboardLayout>
+    <Fragment>
       <div className='mb-5 rounded-md bg-white px-2.5 py-2 md:px-12 md:py-10'>
         <div className='mb-5 text-sub-text'>Player Stats</div>
         <div className='flex items-center justify-between border-b border-border-line pb-5'>
@@ -204,6 +203,6 @@ export function PlayerEventStats() {
           </Tabs>
         </div>
       </div>
-    </DashboardLayout>
+    </Fragment>
   )
 }
