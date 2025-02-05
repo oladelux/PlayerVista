@@ -3,7 +3,6 @@ import { Link, useParams } from 'react-router-dom'
 
 import AwayIcon from '../../assets/images/icons/away.svg'
 import HomeIcon from '../../assets/images/icons/home.svg'
-import { DashboardLayout } from '../../component/DashboardLayout/DashboardLayout'
 import { Event } from '@/api'
 import {
   Select,
@@ -44,32 +43,30 @@ export function StatisticsView() {
   })
 
   return (
-    <DashboardLayout>
-      <div className='Statistics-view'>
-        <Select
-          onValueChange={handleYearChange}
-          defaultValue={currentSelectedYear.toString()}
-        >
-          <SelectTrigger className='w-[180px]'>
-            <SelectValue placeholder='Year' />
-          </SelectTrigger>
-          <SelectContent>
-            {years.map((year) => (
-              <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <div className='mt-5 flex flex-col gap-5'>
-          {sortedEvents.length > 0 ? (
-            sortedEvents.map((event) =>
-              teamId && (<EventCard key={event.id} event={event} teamId={teamId}/>),
-            )
-          ) : (
-            <p>No events found for this year.</p>
-          )}
-        </div>
+    <div className='Statistics-view'>
+      <Select
+        onValueChange={handleYearChange}
+        defaultValue={currentSelectedYear.toString()}
+      >
+        <SelectTrigger className='w-[180px]'>
+          <SelectValue placeholder='Year' />
+        </SelectTrigger>
+        <SelectContent>
+          {years.map((year) => (
+            <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      <div className='mt-5 flex flex-col gap-5'>
+        {sortedEvents.length > 0 ? (
+          sortedEvents.map((event) =>
+            teamId && (<EventCard key={event.id} event={event} teamId={teamId}/>),
+          )
+        ) : (
+          <p>No events found for this year.</p>
+        )}
       </div>
-    </DashboardLayout>
+    </div>
   )
 }
 

@@ -96,14 +96,13 @@ const router = createBrowserRouter([
 ])
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <Provider store={setupStore}>
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <AuthProvider>
-          <RouterProvider router={router} />
-          <Toaster />
-        </AuthProvider>
-      </LocalizationProvider>
-    </Provider>
-  </React.StrictMode>,
+
+  <Provider store={setupStore}>
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <AuthProvider>
+        <RouterProvider router={router} />
+        <Toaster />
+      </AuthProvider>
+    </LocalizationProvider>
+  </Provider>,
 )

@@ -2,7 +2,6 @@ import { FC, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
 import ClubLogo from '../../assets/images/club.png'
-import { DashboardLayout } from '../../component/DashboardLayout/DashboardLayout.tsx'
 import { TeamResponse, Event } from '@/api'
 import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
 import { useEvents } from '@/hooks/useEvents.ts'
@@ -14,10 +13,7 @@ import {
   formatSingleEventTime,
 } from '@/utils/date.ts'
 
-
-
 import './SingleEventView.scss'
-
 const now = new Date()
 
 export function SingleEventView() {
@@ -63,27 +59,25 @@ export function SingleEventView() {
   if (error || !userData) return 'This is an error page'
 
   return (
-    <DashboardLayout>
-      <div className='Single-event'>
-        <div className='Single-event__header'>
-          <div className='Single-event__header-title'>Event Updates</div>
-        </div>
-        {isEvent && team && isTraining && isEvent.type === 'training' && (
-          <SingleTraining
-            isEvent={isEvent}
-            isTeam={team}
-            isTraining={isTraining}
-          />
-        )}
-        {isEvent && team && isMatches && isEvent.type === 'match' && (
-          <SingleMatch
-            isEvent={isEvent}
-            isTeam={team}
-            isMatches={isMatches}
-          />
-        )}
+    <div className='Single-event'>
+      <div className='Single-event__header'>
+        <div className='Single-event__header-title'>Event Updates</div>
       </div>
-    </DashboardLayout>
+      {isEvent && team && isTraining && isEvent.type === 'training' && (
+        <SingleTraining
+          isEvent={isEvent}
+          isTeam={team}
+          isTraining={isTraining}
+        />
+      )}
+      {isEvent && team && isMatches && isEvent.type === 'match' && (
+        <SingleMatch
+          isEvent={isEvent}
+          isTeam={team}
+          isMatches={isMatches}
+        />
+      )}
+    </div>
   )
 }
 

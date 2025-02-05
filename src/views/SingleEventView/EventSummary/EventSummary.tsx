@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import ClubLogo from '../../../assets/images/club.png'
-import { DashboardLayout } from '@/component/DashboardLayout/DashboardLayout.tsx'
 import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.tsx'
 import { useEvents } from '@/hooks/useEvents.ts'
@@ -29,51 +28,49 @@ export function EventSummary() {
   if (error || playerError || eventError) return 'This is an error page'
 
   return (
-    <DashboardLayout>
-      <div className='Event-summary'>
-        <div className='Event-summary__header'>
-          <div className='Event-summary__header-home'>
-            <div className='Event-summary__header-home--media'>
-              <img src={team?.logo} width={64} alt='club-logo' />
-            </div>
-            <div className='Event-summary__header-home--name'>
-              {team?.teamName}
-            </div>
+    <div className='Event-summary'>
+      <div className='Event-summary__header'>
+        <div className='Event-summary__header-home'>
+          <div className='Event-summary__header-home--media'>
+            <img src={team?.logo} width={64} alt='club-logo' />
           </div>
-          <div className='Event-summary__header-score'>
-            vs
-          </div>
-          <div className='Event-summary__header-away'>
-            <div className='Event-summary__header-away--name'>
-              {event?.opponent}
-            </div>
-            <div className='Event-summary__header-away--media'>
-              <img src={ClubLogo} alt='club-logo'/>
-            </div>
+          <div className='Event-summary__header-home--name'>
+            {team?.teamName}
           </div>
         </div>
-        <div className='Event-summary__content'>
-          <div className='mb-8 bg-white p-4'>
-            <Select value={value} onValueChange={setValue}>
-              <SelectTrigger className='w-[180px]'>
-                <SelectValue defaultValue={value} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value='general'>General Info</SelectItem>
-                <SelectItem value='goalkeeping'>Goalkeeping</SelectItem>
-                <SelectItem value='defending'>Defending</SelectItem>
-                <SelectItem value='attacking'>Attacking</SelectItem>
-                <SelectItem value='otherstats'>Other Stats</SelectItem>
-              </SelectContent>
-            </Select>
-            {value === 'general' && <GeneralStats players={players} />}
-            {value === 'goalkeeping' && <GoalKeeperStats players={players} />}
-            {value === 'defending' && <DefendingStats players={players} />}
-            {value === 'attacking' && <AttackingStats players={players} />}
-            {value === 'otherstats' && <OtherStats players={players} />}
+        <div className='Event-summary__header-score'>
+            vs
+        </div>
+        <div className='Event-summary__header-away'>
+          <div className='Event-summary__header-away--name'>
+            {event?.opponent}
+          </div>
+          <div className='Event-summary__header-away--media'>
+            <img src={ClubLogo} alt='club-logo'/>
           </div>
         </div>
       </div>
-    </DashboardLayout>
+      <div className='Event-summary__content'>
+        <div className='mb-8 bg-white p-4'>
+          <Select value={value} onValueChange={setValue}>
+            <SelectTrigger className='w-[180px]'>
+              <SelectValue defaultValue={value} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value='general'>General Info</SelectItem>
+              <SelectItem value='goalkeeping'>Goalkeeping</SelectItem>
+              <SelectItem value='defending'>Defending</SelectItem>
+              <SelectItem value='attacking'>Attacking</SelectItem>
+              <SelectItem value='otherstats'>Other Stats</SelectItem>
+            </SelectContent>
+          </Select>
+          {value === 'general' && <GeneralStats players={players} />}
+          {value === 'goalkeeping' && <GoalKeeperStats players={players} />}
+          {value === 'defending' && <DefendingStats players={players} />}
+          {value === 'attacking' && <AttackingStats players={players} />}
+          {value === 'otherstats' && <OtherStats players={players} />}
+        </div>
+      </div>
+    </div>
   )
 }

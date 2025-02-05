@@ -1,9 +1,8 @@
 import { useMediaQuery } from '@mui/material'
 import * as React from 'react'
-import { FC, PropsWithChildren } from 'react'
-import { FiArrowLeft } from 'react-icons/fi'
+import { FC } from 'react'
 import { useDispatch } from 'react-redux'
-import { useNavigate, useLocation, useParams } from 'react-router-dom'
+import { useNavigate, useParams, Outlet } from 'react-router-dom'
 
 import PlayerVistaLogo from '../../assets/images/icons/playervista.png'
 import { Sidebar } from '../Sidebar/SidebarMenu'
@@ -31,6 +30,12 @@ import './DashboardLayout.scss'
 
 type DashboardHeaderProps = {
   teams: TeamResponse[]
+}
+
+export type DashboardLayoutOutletContext = {
+  teams: TeamResponse[]
+  teamsLoading: boolean
+  teamsError: string | undefined
 }
 
 export const DashboardHeader: FC<DashboardHeaderProps> = ({ teams }) => {
@@ -105,14 +110,9 @@ export const DashboardHeader: FC<DashboardHeaderProps> = ({ teams }) => {
   )
 }
 
-export const DashboardLayout: FC<PropsWithChildren> = props => {
-  const { pathname } = useLocation()
+export function DashboardLayout() {
   const { teams, error, loading } = useTeams()
-  const navigate = useNavigate()
   const isMobile = useMediaQuery('(max-width:767px)')
-
-  // Check if the current route matches the team dashboard pattern
-  const isTeamDashboard = /^\/team\/[a-zA-Z0-9_-]+$/i.test(pathname)
 
   if (loading) return <LoadingPage />
   //TODO: Create Error Page
@@ -128,13 +128,13 @@ export const DashboardLayout: FC<PropsWithChildren> = props => {
           </div>}
           {isMobile && <MobileNav/>}
           <div className='Dashboard-Layout__wrapper-content--current-body'>
-            {!isTeamDashboard &&
-              <div className='Dashboard-Layout__wrapper-content--current-body-back' onClick={() => navigate(-1)}>
-                <FiArrowLeft />
-                <span className='Dashboard-Layout__wrapper-content--current-body-back--text'>Back</span>
-              </div>
-            }
-            {props.children}
+            <Outlet context={
+              {
+                teams: teams,
+                teamsLoading: loading,
+                teamsError: error,
+              } satisfies DashboardLayoutOutletContext
+            } />
           </div>
         </div>
       </div>

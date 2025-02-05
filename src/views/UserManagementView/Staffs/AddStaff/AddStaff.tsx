@@ -6,18 +6,17 @@ import { useNavigate, useParams } from 'react-router-dom'
 
 import { FormikStep, FormikStepper } from '../../../TeamView/CreateTeam/Step'
 import { AuthenticatedUserData, StaffData } from '@/api'
-import { DashboardLayout } from '@/component/DashboardLayout/DashboardLayout.tsx'
 import { SuccessConfirmationPopup } from '@/component/SuccessConfirmation/SuccessConfirmation.tsx'
 import { useUpdates, UseUpdates } from '@/hooks/useUpdates.ts'
+import { appService } from '@/singletons'
+import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
 import { createStaffThunk, staffSelector } from '@/store/slices/StaffSlice.ts'
 import { useAppDispatch } from '@/store/types.ts'
 
 import './AddStaff.scss'
-import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
 
 import { capitalize } from '@mui/material'
 
-import { appService } from '@/singletons'
 
 const password = generator.generate({
   length: 10,
@@ -38,15 +37,13 @@ export function AddStaff() {
   if (!user) return null
 
   return (
-    <DashboardLayout>
-      <div className='Add-staff'>
-        <div className='Add-staff__header'>
-          <div className='Add-staff__header-title'>Hello Admin,</div>
-          <div className='Add-staff__header-sub-title'>Let’s add a new staff</div>
-        </div>
-        <AddStaffMultiStep user={user} logger={logger} />
+    <div className='Add-staff'>
+      <div className='Add-staff__header'>
+        <div className='Add-staff__header-title'>Hello Admin,</div>
+        <div className='Add-staff__header-sub-title'>Let’s add a new staff</div>
       </div>
-    </DashboardLayout>
+      <AddStaffMultiStep user={user} logger={logger} />
+    </div>
   )
 }
 

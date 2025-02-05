@@ -1,11 +1,10 @@
 import classnames from 'classnames'
-import { FC, useState } from 'react'
+import { FC, Fragment, useState } from 'react'
 import { FaPlus } from 'react-icons/fa'
 import { FiSearch } from 'react-icons/fi'
 import { Link, useParams } from 'react-router-dom'
 
 import { AssignModal } from '../../component/AssignModal/AssignModal.tsx'
-import { DashboardLayout } from '../../component/DashboardLayout/DashboardLayout.tsx'
 import { Column, Table } from '../../component/Table/Table.tsx'
 import { AuthenticatedUserData, Reporter, TeamResponse } from '@/api'
 import { useEvents } from '@/hooks/useEvents.ts'
@@ -78,7 +77,7 @@ export const ReportersView:FC<ReportersViewProps> = ({ user, reporters, teams })
   }
 
   return (
-    <DashboardLayout>
+    <Fragment>
       <div className='Reporters-view'>
         <div className='Reporters-view__title'>Reporters</div>
         <div className='Reporters-view__header'>
@@ -103,6 +102,6 @@ export const ReportersView:FC<ReportersViewProps> = ({ user, reporters, teams })
       {isActiveAssignPopup && <AssignModal onClose={closeAssignPopup}
         activeReporter={activeReporter} scheduledMatches={scheduledMatches}
         currentTeam={currentTeam} />}
-    </DashboardLayout>
+    </Fragment>
   )
 }

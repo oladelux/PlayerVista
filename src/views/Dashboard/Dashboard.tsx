@@ -1,12 +1,11 @@
 import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined'
 import SendIcon from '@mui/icons-material/Send'
 import { Snackbar } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
 import PointIcon from '../../assets/images/icons/point.png'
 import { Card } from '../../component/Card/Card'
-import { DashboardLayout } from '../../component/DashboardLayout/DashboardLayout'
 import { StatsCard } from '../../component/StatsCard/StatsCard'
 import { UpcomingMatch } from '../../component/UpcomingMatch/UpcomingMatch'
 import { Update } from '../../component/Update/Update'
@@ -58,12 +57,12 @@ export function Dashboard() {
     }
   }, [])
 
-  if (loading || logsLoading) return <LoadingPage message='Loading Dashboard' />
+  if (loading || logsLoading) return <LoadingPage />
   //TODO: Create Error Page
   if (error || logsError || !userData) return 'This is an error page'
 
   return (
-    <DashboardLayout>
+    <Fragment>
       <div className='Dashboard'>
         {!userData.isEmailVerified &&
           <div className='Dashboard__notification'>
@@ -107,6 +106,6 @@ export function Dashboard() {
         message='Email sent'
         className='Dashboard__snackbar'
       />
-    </DashboardLayout>
+    </Fragment>
   )
 }

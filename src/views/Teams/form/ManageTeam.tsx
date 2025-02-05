@@ -5,12 +5,10 @@ import { useForm } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 
 import { TeamFormData, uploadImageToCloudinary } from '@/api'
-import { DashboardLayout } from '@/component/DashboardLayout/DashboardLayout.tsx'
 import LoadingButton from '@/component/LoadingButton/LoadingButton.tsx'
 import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
 import InputFormField from '@/components/form/InputFormField.tsx'
 import SelectFormField from '@/components/form/SelectFormField.tsx'
-import { Button } from '@/components/ui/button.tsx'
 import { Form, FormLabel } from '@/components/ui/form.tsx'
 import { cloudName, cloudUploadPresets } from '@/config/constants.ts'
 import { useToast } from '@/hooks/use-toast.ts'
@@ -134,226 +132,224 @@ export function ManageTeam() {
   if (error) return 'This is an error page'
 
   return (
-    <DashboardLayout>
-      <div className='mb-5 rounded-md bg-white px-2.5 py-2 md:px-12 md:py-10'>
-        <div className=''>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
-              <div className='Multi-step__team-image mb-5'>
-                <input
-                  id='teamImage'
-                  name='teamImage'
-                  className='Multi-step__team-image--input'
-                  type='file'
-                  accept='image/*'
-                  onChange={handleImageChange}
-                  disabled={isUploading}
-                />
-                <label htmlFor='teamImage' className='Multi-step__team-image--label'>
-                  <div className='Multi-step__team-image--label-preview'>
-                    {selectedImage ?
-                      <img alt='preview' className='Multi-step__team-image--label-preview-img' src={selectedImage}/>
-                      : <CenterFocusWeakIcon className='Multi-step__team-image--label-preview-icon'/>
-                    }
-                  </div>
-                </label>
-                <div className='Multi-step__team-image--title'>
+    <div className='mb-5 rounded-md bg-white px-2.5 py-2 md:px-12 md:py-10'>
+      <div className=''>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <div className='Multi-step__team-image mb-5'>
+              <input
+                id='teamImage'
+                name='teamImage'
+                className='Multi-step__team-image--input'
+                type='file'
+                accept='image/*'
+                onChange={handleImageChange}
+                disabled={isUploading}
+              />
+              <label htmlFor='teamImage' className='Multi-step__team-image--label'>
+                <div className='Multi-step__team-image--label-preview'>
+                  {selectedImage ?
+                    <img alt='preview' className='Multi-step__team-image--label-preview-img' src={selectedImage}/>
+                    : <CenterFocusWeakIcon className='Multi-step__team-image--label-preview-icon'/>
+                  }
+                </div>
+              </label>
+              <div className='Multi-step__team-image--title'>
                   Choose your team logo
-                </div>
               </div>
+            </div>
+            <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
+              <InputFormField
+                control={form.control}
+                label='Team Name'
+                name='teamName'
+                placeholder='Team Name'
+                type='text'
+              />
+              <InputFormField
+                control={form.control}
+                label='Year of Establishment'
+                name='establishmentYear'
+                placeholder='Year of Establishment'
+                type='text'
+              />
+            </div>
+            <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
+              <div>
+                <FormLabel htmlFor='teamGender'>Team Gender</FormLabel>
+                <SelectFormField
+                  control={form.control}
+                  name='teamGender'
+                  options={teamGender}
+                  inputClassName='w-48 h-10 mt-2'
+                />
+              </div>
+              <div>
+                <FormLabel htmlFor='teamGender'>Age Group</FormLabel>
+                <SelectFormField
+                  control={form.control}
+                  name='ageGroup'
+                  options={teamAgeGroup}
+                  inputClassName='w-48 h-10 mt-2'
+                />
+              </div>
+            </div>
+            <div className='my-10 border-b'></div>
+            <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
               <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
                 <InputFormField
                   control={form.control}
-                  label='Team Name'
-                  name='teamName'
-                  placeholder='Team Name'
+                  label='Head Coach'
+                  name='headCoach'
+                  placeholder='Head Coach'
                   type='text'
                 />
                 <InputFormField
                   control={form.control}
-                  label='Year of Establishment'
-                  name='establishmentYear'
-                  placeholder='Year of Establishment'
+                  label='Head Coach Contact'
+                  name='headCoachContact'
+                  placeholder='Head Coach Contact'
                   type='text'
                 />
               </div>
               <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
-                <div>
-                  <FormLabel htmlFor='teamGender'>Team Gender</FormLabel>
-                  <SelectFormField
-                    control={form.control}
-                    name='teamGender'
-                    options={teamGender}
-                    inputClassName='w-48 h-10 mt-2'
-                  />
-                </div>
-                <div>
-                  <FormLabel htmlFor='teamGender'>Age Group</FormLabel>
-                  <SelectFormField
-                    control={form.control}
-                    name='ageGroup'
-                    options={teamAgeGroup}
-                    inputClassName='w-48 h-10 mt-2'
-                  />
-                </div>
-              </div>
-              <div className='my-10 border-b'></div>
-              <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
-                <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
-                  <InputFormField
-                    control={form.control}
-                    label='Head Coach'
-                    name='headCoach'
-                    placeholder='Head Coach'
-                    type='text'
-                  />
-                  <InputFormField
-                    control={form.control}
-                    label='Head Coach Contact'
-                    name='headCoachContact'
-                    placeholder='Head Coach Contact'
-                    type='text'
-                  />
-                </div>
-                <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
-                  <InputFormField
-                    control={form.control}
-                    label='Assistant Coach'
-                    name='assistantCoach'
-                    placeholder='Assistant Coach'
-                    type='text'
-                  />
-                  <InputFormField
-                    control={form.control}
-                    label='Assistant Coach Contact'
-                    name='assistantCoachContact'
-                    placeholder='Assistant Coach Contact'
-                    type='text'
-                  />
-                </div>
-              </div>
-              <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
-                <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
-                  <InputFormField
-                    control={form.control}
-                    label='Medical Personnel'
-                    name='medicalPersonnel'
-                    placeholder='Medical Personnel'
-                    type='text'
-                  />
-                  <InputFormField
-                    control={form.control}
-                    label='Medical Personnel Contact'
-                    name='medicalPersonnelContact'
-                    placeholder='Medical Personnel Contact'
-                    type='text'
-                  />
-                </div>
-                <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
-                  <InputFormField
-                    control={form.control}
-                    label='Kit Manager'
-                    name='kitManager'
-                    placeholder='Kit Manager'
-                    type='text'
-                  />
-                  <InputFormField
-                    control={form.control}
-                    label='Kit Manager Contact'
-                    name='kitManagerContact'
-                    placeholder='Kit Manager Contact'
-                    type='text'
-                  />
-                </div>
-              </div>
-              <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
-                <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
-                  <InputFormField
-                    control={form.control}
-                    label='Media Manager'
-                    name='mediaManager'
-                    placeholder='Media Manager'
-                    type='text'
-                  />
-                  <InputFormField
-                    control={form.control}
-                    label='Media Manager Contact'
-                    name='mediaManagerContact'
-                    placeholder='Media Manager Contact'
-                    type='text'
-                  />
-                </div>
-                <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
-                  <InputFormField
-                    control={form.control}
-                    label='Logistics Coordinator'
-                    name='logisticsCoordinator'
-                    placeholder='Logistics Coordinator'
-                    type='text'
-                  />
-                  <InputFormField
-                    control={form.control}
-                    label='Logistics Coordinator Contact'
-                    name='logisticsCoordinatorContact'
-                    placeholder='Logistics Coordinator Contact'
-                    type='text'
-                  />
-                </div>
-              </div>
-              <div className='my-10 border-b'></div>
-              <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
-                <div className='col-span-1'>
-                  <InputFormField
-                    control={form.control}
-                    label='Name of Stadium'
-                    name='stadiumName'
-                    placeholder='Name of Stadium'
-                    type='text'
-                  />
-                </div>
-              </div>
-              <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-4'>
                 <InputFormField
                   control={form.control}
-                  label='Street'
-                  name='stadiumLocationStreet'
-                  placeholder='Street'
+                  label='Assistant Coach'
+                  name='assistantCoach'
+                  placeholder='Assistant Coach'
                   type='text'
                 />
                 <InputFormField
                   control={form.control}
-                  label='Postcode'
-                  name='stadiumLocationPostalCode'
-                  placeholder='Postcode'
-                  type='text'
-                />
-                <InputFormField
-                  control={form.control}
-                  label='City'
-                  name='stadiumLocationCity'
-                  placeholder='City'
-                  type='text'
-                />
-                <InputFormField
-                  control={form.control}
-                  label='Country'
-                  name='stadiumLocationCountry'
-                  placeholder='Country'
+                  label='Assistant Coach Contact'
+                  name='assistantCoachContact'
+                  placeholder='Assistant Coach Contact'
                   type='text'
                 />
               </div>
-              <LoadingButton
-                isLoading={formLoading}
-                type='submit'
-                className='t-10 mb-3 bg-dark-purple text-white'
-              >
+            </div>
+            <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
+              <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
+                <InputFormField
+                  control={form.control}
+                  label='Medical Personnel'
+                  name='medicalPersonnel'
+                  placeholder='Medical Personnel'
+                  type='text'
+                />
+                <InputFormField
+                  control={form.control}
+                  label='Medical Personnel Contact'
+                  name='medicalPersonnelContact'
+                  placeholder='Medical Personnel Contact'
+                  type='text'
+                />
+              </div>
+              <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
+                <InputFormField
+                  control={form.control}
+                  label='Kit Manager'
+                  name='kitManager'
+                  placeholder='Kit Manager'
+                  type='text'
+                />
+                <InputFormField
+                  control={form.control}
+                  label='Kit Manager Contact'
+                  name='kitManagerContact'
+                  placeholder='Kit Manager Contact'
+                  type='text'
+                />
+              </div>
+            </div>
+            <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
+              <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
+                <InputFormField
+                  control={form.control}
+                  label='Media Manager'
+                  name='mediaManager'
+                  placeholder='Media Manager'
+                  type='text'
+                />
+                <InputFormField
+                  control={form.control}
+                  label='Media Manager Contact'
+                  name='mediaManagerContact'
+                  placeholder='Media Manager Contact'
+                  type='text'
+                />
+              </div>
+              <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
+                <InputFormField
+                  control={form.control}
+                  label='Logistics Coordinator'
+                  name='logisticsCoordinator'
+                  placeholder='Logistics Coordinator'
+                  type='text'
+                />
+                <InputFormField
+                  control={form.control}
+                  label='Logistics Coordinator Contact'
+                  name='logisticsCoordinatorContact'
+                  placeholder='Logistics Coordinator Contact'
+                  type='text'
+                />
+              </div>
+            </div>
+            <div className='my-10 border-b'></div>
+            <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
+              <div className='col-span-1'>
+                <InputFormField
+                  control={form.control}
+                  label='Name of Stadium'
+                  name='stadiumName'
+                  placeholder='Name of Stadium'
+                  type='text'
+                />
+              </div>
+            </div>
+            <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-4'>
+              <InputFormField
+                control={form.control}
+                label='Street'
+                name='stadiumLocationStreet'
+                placeholder='Street'
+                type='text'
+              />
+              <InputFormField
+                control={form.control}
+                label='Postcode'
+                name='stadiumLocationPostalCode'
+                placeholder='Postcode'
+                type='text'
+              />
+              <InputFormField
+                control={form.control}
+                label='City'
+                name='stadiumLocationCity'
+                placeholder='City'
+                type='text'
+              />
+              <InputFormField
+                control={form.control}
+                label='Country'
+                name='stadiumLocationCountry'
+                placeholder='Country'
+                type='text'
+              />
+            </div>
+            <LoadingButton
+              isLoading={formLoading}
+              type='submit'
+              className='t-10 mb-3 bg-dark-purple text-white'
+            >
                 Save
-              </LoadingButton>
-            </form>
-          </Form>
-        </div>
+            </LoadingButton>
+          </form>
+        </Form>
       </div>
-    </DashboardLayout>
+    </div>
   )
 
 }

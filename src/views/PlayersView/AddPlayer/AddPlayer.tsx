@@ -5,7 +5,6 @@ import { useNavigate, useParams } from 'react-router-dom'
 
 import { FormikStep, FormikStepper } from '../../TeamView/CreateTeam/Step'
 import { AuthenticatedUserData, PlayerFormData, uploadImageToCloudinary } from '@/api'
-import { DashboardLayout } from '@/component/DashboardLayout/DashboardLayout.tsx'
 import { CustomFormikDatePicker } from '@/component/FormikWrapper/CustomFormikDatePicker.tsx'
 import { SelectPlayerPositionWithFormik } from '@/component/SelectPlayerPosition/SelectPlayerPosition.tsx'
 import { cloudName, cloudUploadPresets } from '@/config/constants.ts'
@@ -21,15 +20,13 @@ export function AddPlayer() {
   if (!user) return null
 
   return (
-    <DashboardLayout>
-      <div className='Add-player'>
-        <div className='Add-player__header'>
-          <div className='Add-player__header-title'>Hello Admin,</div>
-          <div className='Add-player__header-sub-title'>Let’s add a new player</div>
-        </div>
-        <AddPlayerMultiStep logger={logger} user={user} />
+    <div className='Add-player'>
+      <div className='Add-player__header'>
+        <div className='Add-player__header-title'>Hello Admin,</div>
+        <div className='Add-player__header-sub-title'>Let’s add a new player</div>
       </div>
-    </DashboardLayout>
+      <AddPlayerMultiStep logger={logger} user={user} />
+    </div>
   )
 }
 

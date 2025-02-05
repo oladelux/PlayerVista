@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 
 import { getSubscription, SubscriptionStatus } from '@/api'
 
-let didInit = false
 export const usePaymentSubscription = () => {
   const [loading, setLoading] = useState(true)
   const [isActive, setIsActive] = useState(false)
@@ -19,10 +18,7 @@ export const usePaymentSubscription = () => {
   }
 
   useEffect(() => {
-    if (!didInit) {
-      didInit = true
-      checkSubscription()
-    }
+    checkSubscription()
   })
 
   return {

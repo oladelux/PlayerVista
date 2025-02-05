@@ -5,7 +5,6 @@ import { FiSearch } from 'react-icons/fi'
 import { useSelector } from 'react-redux'
 import { Link, useParams } from 'react-router-dom'
 
-import { DashboardLayout } from '../../component/DashboardLayout/DashboardLayout'
 import { Column, Table } from '../../component/Table/Table'
 import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
 import { usePermission } from '@/hooks/usePermission.ts'
@@ -82,30 +81,28 @@ export function PlayersView(){
   }
 
   return (
-    <DashboardLayout>
-      <div className='Players-view'>
-        <div className='Players-view__title'>Players</div>
-        <div className='Players-view__header'>
-          <div className='Players-view__header-form'>
-            <FiSearch className='Players-view__header-form--search-icon'/>
-            <input
-              className='Players-view__header-form--input'
-              type='text'
-              name='search'
-              placeholder='Search'
-              value={searchPlayerValue}
-              onChange={handleSearchInput}
-            />
-          </div>
-          {canCreatePlayer && <Link to={'add-player'} className='Players-view__header-link'>
-            <FaPlus/>
-            <span className='Players-view__header-link--text'>Add Player</span>
-          </Link>}
+    <div className='Players-view'>
+      <div className='Players-view__title'>Players</div>
+      <div className='Players-view__header'>
+        <div className='Players-view__header-form'>
+          <FiSearch className='Players-view__header-form--search-icon'/>
+          <input
+            className='Players-view__header-form--input'
+            type='text'
+            name='search'
+            placeholder='Search'
+            value={searchPlayerValue}
+            onChange={handleSearchInput}
+          />
         </div>
-        <div className='Players-view__content'>
-          <Table columns={playerColumns} data={sortedTeamPlayers} />
-        </div>
+        {canCreatePlayer && <Link to={'add-player'} className='Players-view__header-link'>
+          <FaPlus/>
+          <span className='Players-view__header-link--text'>Add Player</span>
+        </Link>}
       </div>
-    </DashboardLayout>
+      <div className='Players-view__content'>
+        <Table columns={playerColumns} data={sortedTeamPlayers} />
+      </div>
+    </div>
   )
 }

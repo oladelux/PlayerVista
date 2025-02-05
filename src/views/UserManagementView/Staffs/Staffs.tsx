@@ -4,7 +4,6 @@ import { FiSearch } from 'react-icons/fi'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, useParams } from 'react-router-dom'
 
-import { DashboardLayout } from '@/component/DashboardLayout/DashboardLayout.tsx'
 import { Column, Table } from '@/component/Table/Table.tsx'
 import { useToast } from '@/hooks/use-toast.ts'
 import { usePermission } from '@/hooks/usePermission.ts'
@@ -98,30 +97,28 @@ export function Staffs() {
   }))
 
   return (
-    <DashboardLayout>
-      <div className='Staffs'>
-        <div className='Staffs__title'>Staffs</div>
-        <div className='Staffs__header'>
-          <div className='Staffs__header-form'>
-            <FiSearch className='Staffs__header-form--search-icon'/>
-            <input
-              className='Staffs__header-form--input'
-              type='text'
-              name='search'
-              placeholder='Search'
-              value={searchPlayerValue}
-              onChange={handleSearchInput}
-            />
-          </div>
-          {canCreateStaff && <Link to='add-staff' className='Staffs__header-link'>
-            <FaPlus/>
-            <span className='Staffs__header-link--text'>Add New Staff</span>
-          </Link>}
+    <div className='Staffs'>
+      <div className='Staffs__title'>Staffs</div>
+      <div className='Staffs__header'>
+        <div className='Staffs__header-form'>
+          <FiSearch className='Staffs__header-form--search-icon'/>
+          <input
+            className='Staffs__header-form--input'
+            type='text'
+            name='search'
+            placeholder='Search'
+            value={searchPlayerValue}
+            onChange={handleSearchInput}
+          />
         </div>
-        <div className='Staffs__content'>
-          <Table columns={staffColumns} data={allStaffs} />
-        </div>
+        {canCreateStaff && <Link to='add-staff' className='Staffs__header-link'>
+          <FaPlus/>
+          <span className='Staffs__header-link--text'>Add New Staff</span>
+        </Link>}
       </div>
-    </DashboardLayout>
+      <div className='Staffs__content'>
+        <Table columns={staffColumns} data={allStaffs} />
+      </div>
+    </div>
   )
 }

@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 
 import { StaffData } from '@/api'
-import { DashboardLayout } from '@/component/DashboardLayout/DashboardLayout.tsx'
 import LoadingButton from '@/component/LoadingButton/LoadingButton.tsx'
 import InputFormField from '@/components/form/InputFormField.tsx'
 import SelectFormField from '@/components/form/SelectFormField.tsx'
@@ -75,61 +74,59 @@ export function EditStaff() {
   }, [dispatch, staffId])
 
   return (
-    <DashboardLayout>
-      <div className='mb-5 rounded-md bg-white px-2.5 py-2 md:px-12 md:py-10'>
-        <div className=''>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
-              <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
-                <InputFormField
+    <div className='mb-5 rounded-md bg-white px-2.5 py-2 md:px-12 md:py-10'>
+      <div className=''>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
+              <InputFormField
+                control={form.control}
+                label='First Name'
+                name='firstName'
+                placeholder='First Name'
+                type='text'
+              />
+              <InputFormField
+                control={form.control}
+                label='Last Name'
+                name='lastName'
+                placeholder='Last Name'
+                type='text'
+              />
+            </div>
+            <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
+              <div>
+                <FormLabel htmlFor='role'>Role</FormLabel>
+                <SelectFormField
                   control={form.control}
-                  label='First Name'
-                  name='firstName'
-                  placeholder='First Name'
-                  type='text'
-                />
-                <InputFormField
-                  control={form.control}
-                  label='Last Name'
-                  name='lastName'
-                  placeholder='Last Name'
-                  type='text'
+                  name='role'
+                  options={Roles}
+                  inputClassName='w-48 h-10 mt-2'
                 />
               </div>
-              <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
-                <div>
-                  <FormLabel htmlFor='role'>Role</FormLabel>
-                  <SelectFormField
-                    control={form.control}
-                    name='role'
-                    options={Roles}
-                    inputClassName='w-48 h-10 mt-2'
-                  />
-                </div>
-                <div>
-                  <InputFormField
-                    control={form.control}
-                    label='Email'
-                    name='email'
-                    placeholder='Email'
-                    type='email'
-                  />
-                </div>
+              <div>
+                <InputFormField
+                  control={form.control}
+                  label='Email'
+                  name='email'
+                  placeholder='Email'
+                  type='email'
+                />
               </div>
-              <div className='my-5'>
-                <LoadingButton
-                  isLoading={loading}
-                  type='submit'
-                  className='bg-dark-purple text-white'
-                >
+            </div>
+            <div className='my-5'>
+              <LoadingButton
+                isLoading={loading}
+                type='submit'
+                className='bg-dark-purple text-white'
+              >
                   Update
-                </LoadingButton>
-              </div>
-            </form>
-          </Form>
-        </div>
+              </LoadingButton>
+            </div>
+          </form>
+        </Form>
       </div>
-    </DashboardLayout>
+    </div>
   )
 
 }

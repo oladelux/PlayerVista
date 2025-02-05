@@ -1,11 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { RotateCcw } from 'lucide-react'
+import { Fragment } from 'react'
 import { DateRange } from 'react-day-picker'
 import { useForm } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 import { z } from 'zod'
 
-import { DashboardLayout } from '@/component/DashboardLayout/DashboardLayout.tsx'
 import DownloadPdfButton from '@/component/DownloadPdfButton/DownloadPdfButton.tsx'
 import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
 import PlayerDataTab from '@/component/PlayerDataTab/PlayerDataTab.tsx'
@@ -152,7 +152,7 @@ export default function PlayerStats() {
   }
 
   return (
-    <DashboardLayout>
+    <Fragment>
       <div className='mb-5 rounded-md bg-white px-2.5 py-2 md:px-12 md:py-10'>
         <div className='flex items-center justify-between'>
           <Form {...form}>
@@ -281,6 +281,6 @@ export default function PlayerStats() {
           </Tabs>
         </div>
       </div>
-    </DashboardLayout>
+    </Fragment>
   )
 }
