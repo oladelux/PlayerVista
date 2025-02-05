@@ -1,7 +1,7 @@
 import cl from 'classnames'
 import { ChangeEvent, FormEvent, useState } from 'react'
 import { FaRegCheckCircle } from 'react-icons/fa'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 import { InputField } from '../../component/InputField/InputField'
 import { PasswordInputField } from '../../component/PasswordInputField/PasswordInputField'
@@ -18,6 +18,7 @@ const randomQuote = getRandomQuote()
 
 export function SignUp() {
   const { signUp } = useAuth()
+  const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const { toast } = useToast()
   const [registrationData, setRegistrationData] = useState({
@@ -48,7 +49,7 @@ export function SignUp() {
       ...registrationData,
       role: 'admin',
     }
-    signUp(data)
+    signUp(data).then(() => navigate(routes.selectPlan))
       .catch(() => {
         setLoading(false)
         toast({
