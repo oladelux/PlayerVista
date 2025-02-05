@@ -1,5 +1,7 @@
+import { useOutletContext } from 'react-router-dom'
+
+import { DashboardLayoutOutletContext } from '@/component/DashboardLayout/DashboardLayout.tsx'
 import { usePlayer } from '@/hooks/usePlayer.ts'
-import { useTeam } from '@/hooks/useTeam.ts'
 
 type ProfileTeamImageProps = {
   playerId: string | undefined
@@ -7,7 +9,8 @@ type ProfileTeamImageProps = {
 }
 
 export default function ProfileTeamImage({ playerId, teamId }: ProfileTeamImageProps) {
-  const { team } = useTeam(teamId)
+  const { teams } = useOutletContext<DashboardLayoutOutletContext>()
+  const team = teams.find(team => team.id === teamId)
   const { player } = usePlayer(playerId)
 
   if(!team || !player) {

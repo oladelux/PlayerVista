@@ -1,9 +1,10 @@
 import classnames from 'classnames'
 import { Fragment, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { useParams } from 'react-router-dom'
+import { useOutletContext, useParams } from 'react-router-dom'
 
 import ClubLogo from '../../../assets/images/club.png'
+import { DashboardLayoutOutletContext } from '@/component/DashboardLayout/DashboardLayout.tsx'
 import DownloadPdfButton from '@/component/DownloadPdfButton/DownloadPdfButton.tsx'
 import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
 import PlayerDataTab from '@/component/PlayerDataTab/PlayerDataTab.tsx'
@@ -12,7 +13,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs.t
 import { PdfType } from '@/config/PdfType.ts'
 import { useEvents } from '@/hooks/useEvents.ts'
 import { usePlayer } from '@/hooks/usePlayer.ts'
-import { useTeam } from '@/hooks/useTeam.ts'
 import { calculateAge, formatDate } from '@/services/helper.ts'
 import {
   clearPlayerPerformanceData,
@@ -38,7 +38,9 @@ export function PlayerEventStats() {
   const dispatch = useAppDispatch()
   const { playerPerformance } = useSelector(playerPerformanceSelector)
   const { player } = usePlayer(playerId)
-  const { team, error, loading } = useTeam(teamId)
+  const { teams, teamsError: error, teamsLoading: loading } =
+    useOutletContext<DashboardLayoutOutletContext>()
+  const team = teams.find(team => team.id === teamId)
   const { event, loading: eventLoading, error: eventError } = useEvents(undefined, eventId)
 
   useEffect(() => {

@@ -1,12 +1,12 @@
 import { useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useOutletContext, useParams } from 'react-router-dom'
 
 import ClubLogo from '../../../assets/images/club.png'
+import { DashboardLayoutOutletContext } from '@/component/DashboardLayout/DashboardLayout.tsx'
 import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.tsx'
 import { useEvents } from '@/hooks/useEvents.ts'
 import { usePlayer } from '@/hooks/usePlayer.ts'
-import { useTeam } from '@/hooks/useTeam.ts'
 import { AttackingStats } from '@/views/SingleEventView/EventSummary/stats/AttackingStats.tsx'
 import { DefendingStats } from '@/views/SingleEventView/EventSummary/stats/DefendingStats.tsx'
 import { GeneralStats } from '@/views/SingleEventView/EventSummary/stats/GeneralStats.tsx'
@@ -18,13 +18,14 @@ import './EventSummary.scss'
 export function EventSummary() {
   const [value, setValue] = useState('general')
   const { teamId, eventId } = useParams()
-  const { team, error, loading } = useTeam(teamId)
+  const { teams, teamsError: error, teamsLoading: loading } =
+    useOutletContext<DashboardLayoutOutletContext>()
+  const team = teams.find(team => team.id === teamId)
   const { event, error: eventError, loading: eventLoading } = useEvents(undefined, eventId)
   const { players, loading: playerLoading, error: playerError } = usePlayer(undefined, teamId)
 
   if (loading || playerLoading || eventLoading) return <LoadingPage />
   //TODO: Create Error Page
-  console.log('error', error, playerError, eventError)
   if (error || playerError || eventError) return 'This is an error page'
 
   return (

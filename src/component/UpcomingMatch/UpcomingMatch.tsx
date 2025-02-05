@@ -27,7 +27,7 @@ const NoUpcomingMatch = () => {
 }
 
 type UpcomingMatchProps = {
-  team: TeamResponse | null
+  team: TeamResponse | undefined
 }
 
 export const UpcomingMatch:FC<UpcomingMatchProps> = props => {

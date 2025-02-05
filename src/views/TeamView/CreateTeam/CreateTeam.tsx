@@ -1,15 +1,14 @@
 import CenterFocusWeakIcon from '@mui/icons-material/CenterFocusWeak'
 import { Field } from 'formik'
 import { ChangeEvent, FC, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useOutletContext } from 'react-router-dom'
 
 import { FormikStep, FormikStepper } from './Step'
 import { AuthenticatedUserData, TeamFormData, TeamResponse, uploadImageToCloudinary } from '@/api'
-import { DashboardHeader } from '@/component/DashboardLayout/DashboardLayout.tsx'
+import { DashboardHeader, DashboardLayoutOutletContext } from '@/component/DashboardLayout/DashboardLayout.tsx'
 import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
 import { SuccessConfirmationPopup } from '@/component/SuccessConfirmation/SuccessConfirmation.tsx'
 import { cloudName, cloudUploadPresets } from '@/config/constants.ts'
-import { useTeams } from '@/hooks/useTeams.ts'
 import { useUpdates, UseUpdates } from '@/hooks/useUpdates.ts'
 import { appService, teamService } from '@/singletons'
 
@@ -22,7 +21,8 @@ type DashboardCreateTeamProps = {
 }
 
 export function CreateTeam() {
-  const { teams, error, loading } = useTeams()
+  const { teams, teamsError: error, teamsLoading: loading } =
+    useOutletContext<DashboardLayoutOutletContext>()
 
   const logger = useUpdates()
   const userData = appService.getUserData()
@@ -48,7 +48,8 @@ export function CreateTeam() {
 }
 
 export function DashboardCreateTeam(){
-  const { teams, error, loading } = useTeams()
+  const { teams, teamsError: error, teamsLoading: loading } =
+    useOutletContext<DashboardLayoutOutletContext>()
 
   const logger = useUpdates()
   const userData = appService.getUserData()

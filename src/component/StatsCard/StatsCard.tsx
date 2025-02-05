@@ -16,7 +16,7 @@ import { useAppDispatch } from '@/store/types.ts'
 
 
 type StatsCardProps = {
-  team: TeamResponse | null
+  team: TeamResponse | undefined
 }
 
 export const StatsCard: FC<StatsCardProps> = props => {

@@ -3,9 +3,10 @@ import { RotateCcw } from 'lucide-react'
 import { Fragment } from 'react'
 import { DateRange } from 'react-day-picker'
 import { useForm } from 'react-hook-form'
-import { useParams } from 'react-router-dom'
+import { useOutletContext, useParams } from 'react-router-dom'
 import { z } from 'zod'
 
+import { DashboardLayoutOutletContext } from '@/component/DashboardLayout/DashboardLayout.tsx'
 import DownloadPdfButton from '@/component/DownloadPdfButton/DownloadPdfButton.tsx'
 import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
 import PlayerDataTab from '@/component/PlayerDataTab/PlayerDataTab.tsx'
@@ -18,7 +19,6 @@ import { PdfType } from '@/config/PdfType.ts'
 import { useEvents } from '@/hooks/useEvents.ts'
 import { usePerformance } from '@/hooks/usePerformance.ts'
 import { usePlayer } from '@/hooks/usePlayer.ts'
-import { useTeam } from '@/hooks/useTeam.ts'
 import { calculateAge } from '@/services/helper.ts'
 import {
   aggregatePlayerActions,
@@ -64,7 +64,8 @@ type playerStatsSchemaOut = z.output<typeof playerStatsSchema>
 export default function PlayerStats() {
   const { playerId, teamId } = useParams()
   const { player } = usePlayer(playerId, teamId)
-  const { team } = useTeam(teamId)
+  const { teams } = useOutletContext<DashboardLayoutOutletContext>()
+  const team = teams.find(team => team.id === teamId)
   const { events } = useEvents(teamId, undefined)
   const { performanceByPlayer, loading, error } = usePerformance(playerId, undefined)
 

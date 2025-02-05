@@ -2,9 +2,10 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import CenterFocusWeakIcon from '@mui/icons-material/CenterFocusWeak'
 import { ChangeEvent, useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { useParams } from 'react-router-dom'
+import { useOutletContext, useParams } from 'react-router-dom'
 
 import { TeamFormData, uploadImageToCloudinary } from '@/api'
+import { DashboardLayoutOutletContext } from '@/component/DashboardLayout/DashboardLayout.tsx'
 import LoadingButton from '@/component/LoadingButton/LoadingButton.tsx'
 import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
 import InputFormField from '@/components/form/InputFormField.tsx'
@@ -12,7 +13,6 @@ import SelectFormField from '@/components/form/SelectFormField.tsx'
 import { Form, FormLabel } from '@/components/ui/form.tsx'
 import { cloudName, cloudUploadPresets } from '@/config/constants.ts'
 import { useToast } from '@/hooks/use-toast.ts'
-import { useTeam } from '@/hooks/useTeam.ts'
 import { teamService } from '@/singletons'
 import { getTeamDefaultValues } from '@/views/Teams/form/teamDefaultValues.ts'
 import { teamSchema, TeamSchemaIn, TeamSchemaOut } from '@/views/Teams/form/teamSchema.ts'
@@ -40,7 +40,9 @@ export function ManageTeam() {
   const [file, setFile] = useState<string>('')
   const [isUploading, setIsUploading] = useState(false)
   const [formLoading, setFormLoading] = useState(false)
-  const { team, error, loading } = useTeam(selectedTeamId)
+  const { teams, teamsError: error, teamsLoading: loading } =
+    useOutletContext<DashboardLayoutOutletContext>()
+  const team = teams.find(team => team.id === selectedTeamId)
 
   const [selectedImage, setSelectedImage] = useState<string>(team?.logo || '')
 

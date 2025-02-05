@@ -1,6 +1,6 @@
 import { TeamResponse } from '@/api'
 
-export function getTeamDefaultValues(team: TeamResponse | null) {
+export function getTeamDefaultValues(team: TeamResponse | undefined) {
   return {
     teamName: team?.teamName,
     establishmentYear: team ? new Date(team.creationYear).getFullYear().toString() : '',

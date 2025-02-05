@@ -1,11 +1,11 @@
 import { FC, useMemo } from 'react'
-import { useParams } from 'react-router-dom'
+import { useOutletContext, useParams } from 'react-router-dom'
 
 import ClubLogo from '../../assets/images/club.png'
 import { TeamResponse, Event } from '@/api'
+import { DashboardLayoutOutletContext } from '@/component/DashboardLayout/DashboardLayout.tsx'
 import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
 import { useEvents } from '@/hooks/useEvents.ts'
-import { useTeam } from '@/hooks/useTeam.ts'
 import { formatDate } from '@/services/helper.ts'
 import { appService } from '@/singletons'
 import {
@@ -19,7 +19,9 @@ const now = new Date()
 export function SingleEventView() {
   const { events } = useEvents()
   const { teamId, eventId } = useParams()
-  const { team, error, loading } = useTeam(teamId)
+  const { teams, teamsError: error, teamsLoading: loading } =
+    useOutletContext<DashboardLayoutOutletContext>()
+  const team = teams.find(team => team.id === teamId)
   const userData = appService.getUserData()
 
   const isEvent = useMemo(() => {
