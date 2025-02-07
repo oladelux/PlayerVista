@@ -21,26 +21,22 @@ type DashboardCreateTeamProps = {
 }
 
 export function CreateTeam() {
-  const { teams, teamsError: error, teamsLoading: loading } =
-    useOutletContext<DashboardLayoutOutletContext>()
-
   const logger = useUpdates()
   const userData = appService.getUserData()
 
-  if (loading) return <LoadingPage />
   //TODO: Create Error Page
-  if (error || !userData) return 'This is an error page'
+  if ( !userData) return 'This is an error page'
 
   return (
     <>
-      <DashboardHeader teams={teams} />
+      <DashboardHeader teams={[]} />
       <div className='Create-team'>
         <div className='Create-team__content p-3 md:p-11'>
           <div className='Create-team__content-header'>
             <div className='Create-team__content-header-title'>Hello Admin,</div>
             <div className='Create-team__content-header-sub-title'>Let’s create a team for you in three easy steps</div>
           </div>
-          <CreateTeamMultiStep logger={logger} user={userData} teams={teams}/>
+          <CreateTeamMultiStep logger={logger} user={userData} teams={[]}/>
         </div>
       </div>
     </>
