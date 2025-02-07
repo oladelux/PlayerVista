@@ -13,7 +13,7 @@ export function Layout() {
   const excludePaths = ['/']
   const shouldNotRenderDashboardLayout = excludePaths.includes(pathname)
 
-  if (loading) return <LoadingPage message='check seb' />
+  if (loading) return <LoadingPage />
   if (!isActive) return <Navigate to={routes.selectPlan} replace />
 
   if(shouldNotRenderDashboardLayout) {
