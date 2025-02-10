@@ -53,7 +53,7 @@ export const Home = () => {
       <HomeHeader />
       <div className='Home__hero'>
         <div className='Home__hero-title'>
-          Manage Your Team, Master the Game
+          Manage Your Player, Master the Game
         </div>
         <div className='Home__hero-text'>
           Effortlessly <span className='border-b-2 border-dark-purple font-bold'>manage</span> your players, <span className='border-b-2 border-dark-purple font-bold'>track</span> real-time stats,
