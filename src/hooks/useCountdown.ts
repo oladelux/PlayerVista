@@ -24,7 +24,7 @@ export const useCountdown = (
           .then(async () => {
             await refreshUserData()
             setEmailVerified(true)
-            navigate(routes.team)
+            navigate(routes.teams)
           })
           .catch((error) => {
             console.error('Error verifying email:', error)
