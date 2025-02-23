@@ -14,8 +14,9 @@ import { addCookie, removeCookie } from '@/services/cookies.ts'
 import { toLocalSession } from '@/services/localSession.ts'
 import { appService } from '@/singletons'
 import { AuthContext } from '@/useAuth.ts'
+import { getLocalSession } from '@/utils/localSession.ts'
 import { LocalSessionType } from '@/utils/LocalSessionType.ts'
-import { clearLocalStorage, getLocalSession } from '@/utils/localStorage.ts'
+import { clearLocalStorage } from '@/utils/localStorage.ts'
 
 export interface AuthProviderProps {
   children: React.ReactNode;
@@ -35,7 +36,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }, [])
 
-  const refreshUserData = useCallback(async () => {
+  const refreshUserData = useCallback(async ( session: LocalSessionType) => {
     try {
       const user = await getAuthenticatedUser()
       appService.setUserData(user)
@@ -44,7 +45,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         parentUserId: user.parentUserId,
         groupId: user.groupId,
         role: user.role,
-        currentTeamId: undefined,
+        currentTeamId: session.currentTeamId || undefined,
       }
       await updateSession(sessionData)
       return user
@@ -116,7 +117,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const data = await getLocalSession()
       if (data) {
         try {
-          await refreshUserData()
+          await refreshUserData(data)
         } catch {
           console.error('Error refreshing user data on app load')
         }

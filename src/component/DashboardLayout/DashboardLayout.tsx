@@ -1,6 +1,6 @@
 import { useMediaQuery } from '@mui/material'
 import * as React from 'react'
-import { FC } from 'react'
+import { FC, useCallback } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate, useParams, Outlet } from 'react-router-dom'
 
@@ -28,6 +28,8 @@ import useAuth from '@/useAuth.ts'
 import { setCurrentTeam } from '@/utils/localStorage.ts'
 import './DashboardLayout.scss'
 import { useRole } from '@/hooks/useRoles.ts'
+import { toLocalSession } from '@/utils/localSession.ts'
+import { SessionInstance } from '@/utils/SessionInstance.ts'
 
 type DashboardHeaderProps = {
   teams: TeamResponse[]
@@ -46,18 +48,21 @@ export const DashboardHeader: FC<DashboardHeaderProps> = ({ teams }) => {
   const navigate = useNavigate()
   const userData = appService.getUserData()
   const { signOut } = useAuth()
-  const { teamId } = useParams()
+  const teamId = SessionInstance.getTeamId()
   const activeTeamName = teams ? teams.find((team) => team.id === teamId)?.teamName : ''
 
-  const handleTeamChange = (id: string) => {
-    navigate(`/${id}`)
+  const handleTeamChange = useCallback( async (id: string) => {
+    //navigate(`/${id}`)
+    toLocalSession({ currentTeamId: id })
+      .then(() => { window.location.reload() })
+      .catch(e => console.error('Error setting current team id:', e))
     appService.setActiveTeam(id)
     setCurrentTeam(id)
     dispatch(setActiveTeamId({ teamId: id }))
     dispatch(getPlayersByTeamIdThunk({ teamId: id }))
     dispatch(getEventsByTeamThunk({ teamId: id }))
     userData && dispatch(getStaffsThunk({ groupId: userData.groupId }))
-  }
+  }, [dispatch, userData])
 
   function getUserInitials(): string {
     if (!userData) return ''

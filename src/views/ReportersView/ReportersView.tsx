@@ -11,6 +11,7 @@ import { useEvents } from '@/hooks/useEvents.ts'
 
 
 import './ReportersView.scss'
+import { SessionInstance } from '@/utils/SessionInstance.ts'
 
 type ReportersViewProps = {
   user: AuthenticatedUserData
@@ -19,7 +20,7 @@ type ReportersViewProps = {
 }
 
 export const ReportersView:FC<ReportersViewProps> = ({ user, reporters, teams }) => {
-  const { teamId } = useParams()
+  const teamId = SessionInstance.getTeamId()
   const { scheduledMatches } = useEvents()
   const [isActiveAssignPopup, setIsActiveAssignPopup] = useState(false)
   const [activeReporter, setActiveReporter] = useState<string>('')

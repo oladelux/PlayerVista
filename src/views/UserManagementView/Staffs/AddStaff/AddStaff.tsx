@@ -2,7 +2,7 @@ import { Field } from 'formik'
 import generator from 'generate-password-ts'
 import React, { FC, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import { FormikStep, FormikStepper } from '../../../TeamView/CreateTeam/Step'
 import { AuthenticatedUserData, StaffData } from '@/api'
@@ -16,6 +16,8 @@ import { useAppDispatch } from '@/store/types.ts'
 import './AddStaff.scss'
 
 import { capitalize } from '@mui/material'
+
+import { SessionInstance } from '@/utils/SessionInstance.ts'
 
 
 const password = generator.generate({
@@ -50,7 +52,7 @@ export function AddStaff() {
 const AddStaffMultiStep: FC<AddStaffProps> = ({ user, logger }) => {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
-  const { teamId } = useParams()
+  const teamId = SessionInstance.getTeamId()
   const { loadingCreatingStaff } = useSelector(staffSelector)
   const { roles } = useSelector(settingsSelector)
   const [isActiveConfirmationPopup, setIsActiveConfirmationPopup] = useState(false)
@@ -60,7 +62,7 @@ const AddStaffMultiStep: FC<AddStaffProps> = ({ user, logger }) => {
   const openConfirmationPopup = () => setIsActiveConfirmationPopup(true)
   const closeConfirmationPopup = async () => {
     setIsActiveConfirmationPopup(false)
-    navigate(`/team/${teamId}/staffs`)
+    navigate('/staffs')
   }
 
   return (

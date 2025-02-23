@@ -10,7 +10,7 @@ import { usePaymentSubscription } from '@/hooks/usePaymentSubscription.ts'
 export function Layout() {
   const { loading, isActive } = usePaymentSubscription()
   const { pathname } = useLocation()
-  const excludePaths = ['/', '/add-team']
+  const excludePaths = ['/', '/create-team']
   const shouldNotRenderDashboardLayout = excludePaths.includes(pathname)
 
   if (loading) return <LoadingPage />

@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 import AwayIcon from '../../assets/images/icons/away.svg'
 import HomeIcon from '../../assets/images/icons/home.svg'
@@ -15,11 +15,12 @@ import {
 import './StatisticsView.scss'
 import { useEvents } from '@/hooks/useEvents.ts'
 import { formatSingleEventDate } from '@/utils/date'
+import { SessionInstance } from '@/utils/SessionInstance.ts'
 
 const currentYearValue = new Date().getFullYear()
 
 export function StatisticsView() {
-  const { teamId } = useParams()
+  const teamId = SessionInstance.getTeamId()
   const event = useEvents(teamId, undefined)
   const teamEvent = event.getTeamEvent
   const [selectedEvent, setSelectedEvent] = useState<Event[]>([])
@@ -60,7 +61,7 @@ export function StatisticsView() {
       <div className='mt-5 flex flex-col gap-5'>
         {sortedEvents.length > 0 ? (
           sortedEvents.map((event) =>
-            teamId && (<EventCard key={event.id} event={event} teamId={teamId}/>),
+            teamId && (<EventCard key={event.id} event={event} />),
           )
         ) : (
           <p>No events found for this year.</p>
@@ -72,10 +73,9 @@ export function StatisticsView() {
 
 interface EventCardProps {
   event: Event;
-  teamId: string;
 }
 
-const EventCard: FC<EventCardProps> = ({ event, teamId }) => {
+const EventCard: FC<EventCardProps> = ({ event }) => {
   return (
     <div className='Event-card flex h-20 items-center justify-between rounded-lg border px-2 md:px-5'>
       <div className='w-1/5 text-sm'>
@@ -91,7 +91,7 @@ const EventCard: FC<EventCardProps> = ({ event, teamId }) => {
       </div>
       <Link
         className='border-b border-[#37003c] text-sm'
-        to={`/${teamId}/statistics/${event.id}`}
+        to={`/statistics/${event.id}`}
       >
         View Stats
       </Link>

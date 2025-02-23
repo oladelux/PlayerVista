@@ -14,8 +14,8 @@ import { Form, FormLabel } from '@/components/ui/form.tsx'
 import { cloudName, cloudUploadPresets } from '@/config/constants.ts'
 import { useToast } from '@/hooks/use-toast.ts'
 import { teamService } from '@/singletons'
-import { getTeamDefaultValues } from '@/views/Teams/form/teamDefaultValues.ts'
-import { teamSchema, TeamSchemaIn, TeamSchemaOut } from '@/views/Teams/form/teamSchema.ts'
+import { getTeamDefaultValues } from '@/views/ManageTeams/form/teamDefaultValues.ts'
+import { teamSchema, TeamSchemaIn, TeamSchemaOut } from '@/views/ManageTeams/form/teamSchema.ts'
 
 const teamGender = [
   { label: 'male', value: 'Male' },

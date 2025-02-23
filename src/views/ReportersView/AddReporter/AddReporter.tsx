@@ -13,6 +13,7 @@ import { useAppDispatch } from '../../../store/types'
 import { FormikStep, FormikStepper } from '../../TeamView/CreateTeam/Step'
 
 import './AddReporter.scss'
+import { SessionInstance } from '@/utils/SessionInstance.ts'
 
 const password = generator.generate({
   length: 10,
@@ -42,7 +43,7 @@ export const AddReporter: FC<AddReporterProps> = ({ logger, user }) => {
 const AddReporterMultiStep: FC<AddReporterProps> = ({ user, logger }) => {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
-  const { teamId } = useParams()
+  const teamId = SessionInstance.getTeamId()
   const { loadingCreatingReporter } = useSelector(reporterSelector)
   const [isActiveConfirmationPopup, setIsActiveConfirmationPopup] = useState(false)
 

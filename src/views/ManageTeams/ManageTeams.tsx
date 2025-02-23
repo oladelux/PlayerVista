@@ -10,7 +10,8 @@ import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
 import { usePermission } from '@/hooks/usePermission.ts'
 import { usePlayer } from '@/hooks/usePlayer.ts'
 import { formatDate } from '@/services/helper.ts'
-import './Teams.scss'
+import './ManageTeams.scss'
+import { SessionInstance } from '@/utils/SessionInstance.ts'
 
 const columns = [
   { key: 'name', title: 'Name' },
@@ -26,9 +27,9 @@ const columns = [
   },
 ]
 
-export function Teams() {
+export function ManageTeams() {
   const { canCreateTeam } = usePermission()
-  const { teamId } = useParams()
+  const teamId = SessionInstance.getTeamId()
   const { teams, teamsError: error, teamsLoading: loading } =
     useOutletContext<DashboardLayoutOutletContext>()
   const {
@@ -46,7 +47,7 @@ export function Teams() {
     dateCreated: formatDate(new Date(team.creationYear)),
     homeStadium: team.stadiumName,
     action: {
-      manageLink: `${team.id}/manage-team`,
+      manageLink: `/${team.id}/manage-team`,
       viewStatsLink: 'view-stats',
     },
   })) : team ? [{
@@ -79,7 +80,7 @@ export function Teams() {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        {canCreateTeam && <Link to={`/${teamId}/add-team`} className='Manage-teams__header-link'>
+        {canCreateTeam && <Link to={'/add-team'} className='Manage-teams__header-link'>
           <FaPlus/>
           <span className='Manage-teams__header-link--text'>Add Team</span>
         </Link>}

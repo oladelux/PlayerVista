@@ -11,13 +11,14 @@ import { UpcomingMatch } from '../../component/UpcomingMatch/UpcomingMatch'
 import { Update } from '../../component/Update/Update'
 import { ApiError, LogType } from '@/api'
 import * as api from '@/api'
+import { DashboardLayoutOutletContext } from '@/component/DashboardLayout/DashboardLayout.tsx'
 import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
 import { appService, logService } from '@/singletons'
 import './Dashboard.scss'
-import { DashboardLayoutOutletContext } from '@/component/DashboardLayout/DashboardLayout.tsx'
+import { SessionInstance } from '@/utils/SessionInstance.ts'
 
 export function Dashboard() {
-  const { teamId } = useParams()
+  const teamId = SessionInstance.getTeamId()
   const userData = appService.getUserData()
   const { teams, teamsError: error, teamsLoading: loading } =
     useOutletContext<DashboardLayoutOutletContext>()

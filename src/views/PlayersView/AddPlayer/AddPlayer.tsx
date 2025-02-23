@@ -13,6 +13,7 @@ import { useUpdates, UseUpdates } from '@/hooks/useUpdates.ts'
 import { getTodayDate } from '@/services/helper.ts'
 import './AddPlayer.scss'
 import { appService, playerService } from '@/singletons'
+import { SessionInstance } from '@/utils/SessionInstance.ts'
 
 export function AddPlayer() {
   const logger = useUpdates()
@@ -37,7 +38,7 @@ type AddPlayerMultiStepProps = {
 
 const AddPlayerMultiStep:FC<AddPlayerMultiStepProps> = ({ logger, user }) => {
   const navigate = useNavigate()
-  const { teamId } = useParams()
+  const teamId = SessionInstance.getTeamId()
   const { toast } = useToast()
   const [selectedImage, setSelectedImage] = useState<string>('')
   const [imageUrl, setImageUrl] = useState<string>('')
@@ -110,7 +111,7 @@ const AddPlayerMultiStep:FC<AddPlayerMultiStepProps> = ({ logger, user }) => {
                 })
                 logger.setUpdate({ message: 'added a new player', userId: user.id, groupId: user.groupId })
                 logger.sendUpdates(user.groupId)
-                navigate(`/${teamId}/players`, { replace: true })
+                navigate('/players', { replace: true })
               })
         }}
       >

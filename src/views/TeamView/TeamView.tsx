@@ -10,6 +10,7 @@ import { usePermission } from '@/hooks/usePermission.ts'
 import { useTeams } from '@/hooks/useTeams.ts'
 import { playersSelector } from '@/store/slices/PlayersSlice.ts'
 import './TeamView.scss'
+import { toLocalSession } from '@/utils/localSession.ts'
 
 const NoTeamView: FC = () => {
   const { canCreateTeam } = usePermission()
@@ -60,8 +61,12 @@ interface TeamViewCardProps {
 }
 const TeamViewCard: FC<TeamViewCardProps> = ({ team, players }) => {
   const navigate = useNavigate()
+  function handleTeamClick() {
+    toLocalSession({ currentTeamId: team.id }).catch(e => console.error('Error setting current team id:', e))
+    navigate('/dashboard')
+  }
   return (
-    <div className='Team-view__team-card' onClick={() => navigate(`/${team.id}`)}>
+    <div className='Team-view__team-card' onClick={handleTeamClick}>
       <div className='Team-view__team-card--media'>
         <img className='Team-view__team-card--media-image' src={team.logo} alt='team-logo'/>
       </div>

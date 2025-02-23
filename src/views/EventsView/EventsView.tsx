@@ -5,10 +5,11 @@ import { useEvents } from '@/hooks/useEvents.ts'
 import { useUpdates } from '@/hooks/useUpdates.ts'
 
 import './EventsView.scss'
+import { SessionInstance } from '@/utils/SessionInstance.ts'
 
 
 export function EventsView() {
-  const { teamId } = useParams()
+  const teamId = SessionInstance.getTeamId()
   const { events } = useEvents(teamId, undefined)
   const logger = useUpdates()
   const pastMatches = events.filter(match => new Date(match.endDate) < new Date())

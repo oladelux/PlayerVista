@@ -7,6 +7,7 @@ import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.tsx'
 import { useEvents } from '@/hooks/useEvents.ts'
 import { usePlayer } from '@/hooks/usePlayer.ts'
+import { SessionInstance } from '@/utils/SessionInstance.ts'
 import { AttackingStats } from '@/views/SingleEventView/EventSummary/stats/AttackingStats.tsx'
 import { DefendingStats } from '@/views/SingleEventView/EventSummary/stats/DefendingStats.tsx'
 import { GeneralStats } from '@/views/SingleEventView/EventSummary/stats/GeneralStats.tsx'
@@ -17,7 +18,8 @@ import './EventSummary.scss'
 
 export function EventSummary() {
   const [value, setValue] = useState('general')
-  const { teamId, eventId } = useParams()
+  const { eventId } = useParams()
+  const teamId = SessionInstance.getTeamId()
   const { teams, teamsError: error, teamsLoading: loading } =
     useOutletContext<DashboardLayoutOutletContext>()
   const team = teams.find(team => team.id === teamId)

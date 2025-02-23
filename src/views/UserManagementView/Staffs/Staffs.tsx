@@ -2,7 +2,7 @@ import classnames from 'classnames'
 import { FaPlus } from 'react-icons/fa'
 import { FiSearch } from 'react-icons/fi'
 import { useDispatch } from 'react-redux'
-import { Link, useParams } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 import { Column, Table } from '@/component/Table/Table.tsx'
 import { useToast } from '@/hooks/use-toast.ts'
@@ -17,6 +17,7 @@ import { EyeIcon } from 'lucide-react'
 import { deleteStaffThunk } from '@/store/slices/StaffSlice.ts'
 import { AppDispatch } from '@/store/types.ts'
 import useAuth from '@/useAuth.ts'
+import { SessionInstance } from '@/utils/SessionInstance.ts'
 import { ConfirmStaffDeletion } from '@/views/UserManagementView/Staffs/ConfirmStaffDeletion.tsx'
 
 const staffColumns: Column<never>[] = [
@@ -44,7 +45,7 @@ const staffColumns: Column<never>[] = [
 ]
 
 export function Staffs() {
-  const { teamId } = useParams()
+  const teamId = SessionInstance.getTeamId()
   const { toast } = useToast()
   const logger = useUpdates()
   const dispatch = useDispatch<AppDispatch>()
@@ -86,7 +87,7 @@ export function Staffs() {
     role: staff.role,
     verified: staff.isEmailVerified,
     action: {
-      manageLink: `/${teamId}/staffs/${staff.id}`,
+      manageLink: `/staffs/${staff.id}`,
       deleteStaffLink: () => handleDeleteStaff(staff.id),
     },
   }))

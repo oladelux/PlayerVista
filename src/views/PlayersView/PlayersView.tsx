@@ -11,6 +11,7 @@ import { usePlayer } from '@/hooks/usePlayer.ts'
 import { usePlayers } from '@/hooks/usePlayers.ts'
 import { calculateAge } from '@/services/helper.ts'
 import './PlayersView.scss'
+import { SessionInstance } from '@/utils/SessionInstance.ts'
 
 const playerColumns: Column<never>[] = [
   { key: 'name', title: 'Name' },
@@ -26,8 +27,8 @@ const playerColumns: Column<never>[] = [
     key: 'action',
     title: 'Action',
     render: (value: { teamId: string, playerId: string }) => (<div className='flex items-center gap-2'>
-      <Link className='table-link' to={`/${value.teamId}/players/${value.playerId}`}><EyeIcon width={16} /></Link>
-      <Link className='table-link border-l border-l-border-line px-2' to={`/${value.teamId}/player/${value.playerId}/statistics`}>View Stats</Link>
+      <Link className='table-link' to={`/manage-player/${value.playerId}`}><EyeIcon width={16} /></Link>
+      <Link className='table-link border-l border-l-border-line px-2' to={`/player-statistics/${value.playerId}`}>View Stats</Link>
     </div>),
   },
 ]
@@ -37,7 +38,7 @@ const predefinedOrder = [
 ]
 
 export function PlayersView(){
-  const { teamId } = useParams()
+  const teamId = SessionInstance.getTeamId()
   const { searchPlayerValue, handleSearchInput } = usePlayers()
   const { canCreatePlayer } = usePermission()
   const { players, loading, error } = usePlayer(undefined, teamId)

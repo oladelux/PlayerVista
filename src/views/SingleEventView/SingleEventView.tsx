@@ -14,11 +14,13 @@ import {
 } from '@/utils/date.ts'
 
 import './SingleEventView.scss'
+import { SessionInstance } from '@/utils/SessionInstance.ts'
 const now = new Date()
 
 export function SingleEventView() {
   const { events } = useEvents()
-  const { teamId, eventId } = useParams()
+  const { eventId } = useParams()
+  const teamId = SessionInstance.getTeamId()
   const { teams, teamsError: error, teamsLoading: loading } =
     useOutletContext<DashboardLayoutOutletContext>()
   const team = teams.find(team => team.id === teamId)

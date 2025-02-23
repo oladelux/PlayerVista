@@ -17,6 +17,8 @@ import { EventsView } from '@/views/EventsView/EventsView.tsx'
 import { ForgotPassword } from '@/views/ForgotPassword/ForgotPassword.tsx'
 import { Home } from '@/views/Home/Home.tsx'
 import { Login } from '@/views/Login/Login.tsx'
+import { ManageTeam } from '@/views/ManageTeams/form/ManageTeam.tsx'
+import { ManageTeams } from '@/views/ManageTeams/ManageTeams.tsx'
 import { AddPlayer } from '@/views/PlayersView/AddPlayer/AddPlayer.tsx'
 import { EditPlayer } from '@/views/PlayersView/EditPlayer/EditPlayer.tsx'
 import PlayerStats from '@/views/PlayersView/PlayerStats/PlayerStats.tsx'
@@ -28,8 +30,6 @@ import { EventSummary } from '@/views/SingleEventView/EventSummary/EventSummary.
 import { PlayerEventStats } from '@/views/SingleEventView/PlayerEventStats/PlayerEventStats.tsx'
 import { SingleEventView } from '@/views/SingleEventView/SingleEventView.tsx'
 import { StatisticsView } from '@/views/StatisticsView/StatisticsView.tsx'
-import { ManageTeam } from '@/views/Teams/form/ManageTeam.tsx'
-import { Teams } from '@/views/Teams/Teams.tsx'
 import { CreateTeam, DashboardCreateTeam } from '@/views/TeamView/CreateTeam/CreateTeam.tsx'
 import { TeamView } from '@/views/TeamView/TeamView.tsx'
 import { AddStaff } from '@/views/UserManagementView/Staffs/AddStaff/AddStaff.tsx'
@@ -81,12 +81,12 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <TeamView /> },
       { path: routes.dashboard, element: <Dashboard /> },
-      { path: routes.teams, element: <Teams /> },
+      { path: routes.manageTeams, element: <ManageTeams /> },
       { path: routes.addTeam, element: <CreateTeam /> },
       { path: routes.dashboardCreateTeam, element: <DashboardCreateTeam /> },
       { path: routes.manageTeam, element: <ManageTeam /> },
       { path: routes.players, element: <PlayersView /> },
-      { path: routes.singlePlayer, element: <EditPlayer /> },
+      { path: routes.managePlayer, element: <EditPlayer /> },
       { path: routes.playerStats, element: <PlayerStats /> },
       { path: routes.events, element: <EventsView /> },
       { path: routes.singleEvent, element: <SingleEventView /> },
@@ -105,14 +105,13 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
 
-  <StrictMode>
-    <Provider store={setupStore}>
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <AuthProvider>
-          <RouterProvider router={router} />
-          <Toaster />
-        </AuthProvider>
-      </LocalizationProvider>
-    </Provider>
-  </StrictMode>,
+
+  <Provider store={setupStore}>
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <AuthProvider>
+        <RouterProvider router={router} />
+        <Toaster />
+      </AuthProvider>
+    </LocalizationProvider>
+  </Provider>,
 )

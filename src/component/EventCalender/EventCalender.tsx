@@ -12,6 +12,7 @@ import { usePermission } from '@/hooks/usePermission.ts'
 import { UseUpdates } from '@/hooks/useUpdates.ts'
 import { convertToCalenderDate } from '@/services/helper.ts'
 import './EventCalender.scss'
+import { SessionInstance } from '@/utils/SessionInstance.ts'
 
 type NewEvent = {
   start: Date
@@ -27,7 +28,6 @@ type EventCalenderProps = {
 
 export const EventCalender:FC<EventCalenderProps> = props => {
   const navigate = useNavigate()
-  const { teamId } = useParams()
   const { canCreateEvent } = usePermission()
   const [isEventFormModal, setIsEventFormModal] = useState(false)
   const [isSelectedEventModal, setIsSelectedEventModal] = useState(false)
@@ -56,12 +56,12 @@ export const EventCalender:FC<EventCalenderProps> = props => {
       const now = new Date()
       setSelectedEvent(id)
       if(now > start) {
-        navigate(`/${teamId}/events/${id}`)
+        navigate(`/events/${id}`)
       } else {
         openSelectedEventModal()
       }
     },
-    [navigate, teamId],
+    [navigate],
   )
 
   useEffect(() => {

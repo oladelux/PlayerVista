@@ -1,8 +1,7 @@
 import classnames from 'classnames'
 import React, { FC, useState } from 'react'
 import { FaAngleRight, FaAngleDown } from 'react-icons/fa'
-import { useSelector } from 'react-redux'
-import { Link, useLocation, useParams } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 
 import DashboardActiveIcon from '../../assets/images/icons/dashboard-active.svg'
 import DashboardIcon from '../../assets/images/icons/dashboard.svg'
@@ -19,7 +18,6 @@ import TeamsIcon from '../../assets/images/icons/teams.svg'
 import UserManagementActiveIcon from '../../assets/images/icons/user-management-active.svg'
 import UserManagementIcon from '../../assets/images/icons/user-management.svg'
 import './SidebarMenu.scss'
-import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
 import useAuth from '@/useAuth.ts'
 
 type SidebarMenuProps = {
@@ -135,10 +133,9 @@ type SidebarFooterMenuProps = {
 };
 
 const SidebarFooterMenu: FC<SidebarFooterMenuProps> = (props) => {
-  const { teamId } = useParams()
   return (
     <div className='Sidebar-footer-menu'>
-      <Link to={`/${teamId}/settings`} className='Sidebar-footer-menu__nav'>
+      <Link to={'/settings'} className='Sidebar-footer-menu__nav'>
         <img
           className='Sidebar-footer-menu__nav-image'
           alt='settings-icon'
@@ -160,8 +157,8 @@ const SidebarFooterMenu: FC<SidebarFooterMenuProps> = (props) => {
 
 export const Sidebar: FC = () => {
   const { pathname } = useLocation()
-  const { teamId } = useParams()
-  const { userRole } = useSelector(settingsSelector)
+  const { localSession } = useAuth()
+  const userRole = localSession?.role
   const { signOut } = useAuth()
 
   const sideBarTabs: SideBarTabsType[] = [
@@ -170,35 +167,35 @@ export const Sidebar: FC = () => {
       tabType: 'DASHBOARD',
       image: DashboardIcon,
       activeImage: DashboardActiveIcon,
-      link: `/${teamId}`,
+      link: '/dashboard',
     },
     {
       tabName: 'Teams',
       tabType: 'TEAMS',
       image: TeamsIcon,
       activeImage: TeamsActiveIcon,
-      link: `/${teamId}/teams`,
+      link: '/manage-teams',
     },
     {
       tabName: 'Players',
       tabType: 'PLAYERS',
       image: PlayerIcon,
       activeImage: PlayerActiveIcon,
-      link: `/${teamId}/players`,
+      link: '/players',
     },
     {
       tabName: 'Calender',
       tabType: 'CALENDER',
       image: EventIcon,
       activeImage: EventActiveIcon,
-      link: `/${teamId}/events`,
+      link: '/events',
     },
     {
       tabName: 'Statistics',
       tabType: 'STATISTICS',
       image: StatisticsIcon,
       activeImage: StatisticsActiveIcon,
-      link: `/${teamId}/statistics`,
+      link: '/statistics',
     },
     /*{
       tabName: 'Message',
@@ -222,7 +219,7 @@ export const Sidebar: FC = () => {
       tabType: 'STAFF',
       image: UserManagementIcon,
       activeImage: UserManagementActiveIcon,
-      link: `/${teamId}/staffs`,
+      link: '/staffs',
     })
   }
 

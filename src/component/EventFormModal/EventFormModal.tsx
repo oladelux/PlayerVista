@@ -19,6 +19,7 @@ import { useAppDispatch } from '@/store/types.ts'
 import './EventFormModal.scss'
 import { useToast } from '@/hooks/use-toast.ts'
 import useAuth from '@/useAuth.ts'
+import { SessionInstance } from '@/utils/SessionInstance.ts'
 
 
 type EventFormModalProps = {
@@ -33,7 +34,7 @@ type EventFormModalProps = {
 const EventFormModal: FC<EventFormModalProps> = ({ onClose, startDate, logger }) => {
   const dispatch = useAppDispatch()
   const { toast } = useToast()
-  const { teamId } = useParams()
+  const teamId = SessionInstance.getTeamId()
   const { localSession } = useAuth()
   const [loading, setLoading] = useState(false)
 
