@@ -30,7 +30,7 @@ export default function PaymentCallback() {
         })
         if (response.status === SubscriptionStatus.ACTIVE) {
           if(userData.role === 'admin') {
-            navigate(routes.team)
+            navigate(routes.teams)
           } else {
             setCurrentTeam(userData.teamId)
             dispatch(setActiveTeamId({ teamId: userData.teamId }))
