@@ -1,16 +1,26 @@
 import { FC } from 'react'
+import * as React from 'react'
 import { useSelector } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
 
 import { Player, TeamResponse } from '@/api'
-import { DashboardHeader } from '@/component/DashboardLayout/DashboardLayout.tsx'
+import PlayerVistaLogo from '@/assets/images/icons/playervista.png'
 import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.tsx'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu.tsx'
 import { routes } from '@/constants/routes.ts'
 import { usePermission } from '@/hooks/usePermission.ts'
 import { useTeams } from '@/hooks/useTeams.ts'
+import { appService } from '@/singletons'
 import { playersSelector } from '@/store/slices/PlayersSlice.ts'
-import './TeamView.scss'
+import useAuth from '@/useAuth.ts'
 import { toLocalSession } from '@/utils/localSession.ts'
+import './TeamView.scss'
 
 const NoTeamView: FC = () => {
   const { canCreateTeam } = usePermission()
@@ -25,7 +35,23 @@ const NoTeamView: FC = () => {
 export function TeamView() {
   const { allPlayers } = useSelector(playersSelector)
   const { teams, error, loading } = useTeams()
+  const navigate = useNavigate()
   const isTeamsAvailable = teams.length > 0
+  const userData = appService.getUserData()
+  const { signOut } = useAuth()
+
+  function getUserInitials(): string {
+    if (!userData) return ''
+    const firstInitial = userData.firstName.charAt(0).toUpperCase()
+    const lastInitial = userData.lastName.charAt(0).toUpperCase()
+    return `${firstInitial}${lastInitial}`
+  }
+
+  function handleLogout() {
+    signOut()
+    navigate('/login')
+
+  }
 
   if (loading) return <LoadingPage />
   //TODO: Create Error Page
@@ -33,9 +59,30 @@ export function TeamView() {
 
   return (
     <>
-      <DashboardHeader teams={teams}/>
+      <div className='Dashboard-Layout__header'>
+        <div className='Dashboard-Layout__header-media'>
+          <img src={PlayerVistaLogo} alt='playervista' width={150}/>
+        </div>
+        <div className='Dashboard-Layout__header-nav'>
+          <div className='Dashboard-Layout__header-nav-profile mr-[30px]'>
+            <DropdownMenu>
+              <DropdownMenuTrigger className='focus-visible:outline-none'>
+                <Avatar>
+                  <AvatarImage src=''/>
+                  <AvatarFallback>{getUserInitials()}</AvatarFallback>
+                </Avatar>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem className='cursor-pointer hover:bg-dark-purple hover:text-white'>
+                  <div onClick={handleLogout}>Log out</div>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
+      </div>
       <div className='Team-view'>
-        { isTeamsAvailable ?
+        {isTeamsAvailable ?
           <div className='grid grid-cols-1 gap-3 md:grid-cols-4 '>
             {teams.map(team =>
               <TeamViewCard
@@ -47,7 +94,7 @@ export function TeamView() {
           </div>
           :
           <div className='Team-view__no-team'>
-            <NoTeamView />
+            <NoTeamView/>
           </div>
         }
       </div>
@@ -59,12 +106,15 @@ interface TeamViewCardProps {
   team: TeamResponse
   players: Player[]
 }
+
 const TeamViewCard: FC<TeamViewCardProps> = ({ team, players }) => {
   const navigate = useNavigate()
+
   function handleTeamClick() {
     toLocalSession({ currentTeamId: team.id }).catch(e => console.error('Error setting current team id:', e))
     navigate('/dashboard')
   }
+
   return (
     <div className='Team-view__team-card' onClick={handleTeamClick}>
       <div className='Team-view__team-card--media'>

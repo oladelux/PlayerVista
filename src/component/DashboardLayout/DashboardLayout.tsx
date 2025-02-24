@@ -2,7 +2,7 @@ import { useMediaQuery } from '@mui/material'
 import * as React from 'react'
 import { FC, useCallback } from 'react'
 import { useDispatch } from 'react-redux'
-import { useNavigate, useParams, Outlet } from 'react-router-dom'
+import { useNavigate, Outlet } from 'react-router-dom'
 
 import PlayerVistaLogo from '../../assets/images/icons/playervista.png'
 import { Sidebar } from '../Sidebar/SidebarMenu'
