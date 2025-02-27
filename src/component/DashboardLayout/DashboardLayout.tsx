@@ -1,14 +1,14 @@
 import { useMediaQuery } from '@mui/material'
 import * as React from 'react'
-import { FC, useCallback } from 'react'
-import { useDispatch } from 'react-redux'
+import { FC } from 'react'
 import { useNavigate, Outlet } from 'react-router-dom'
 
-import PlayerVistaLogo from '../../assets/images/icons/playervista.png'
-import { Sidebar } from '../Sidebar/SidebarMenu'
 import { Roles, TeamResponse } from '@/api'
+import { AppSidebar } from '@/component/AppSidebar/AppSidebar.tsx'
 import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
 import { MobileNav } from '@/component/MobileNav/MobileNav.tsx'
+import TeamSwitcher from '@/component/Spinner/TeamSwitcher/TeamSwitcher.tsx'
+import { useIsMobile } from '@/components/hooks/use-mobile.ts'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.tsx'
 import {
   DropdownMenu,
@@ -16,20 +16,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu.tsx'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.tsx'
+import { useRole } from '@/hooks/useRoles.ts'
 import { useTeams } from '@/hooks/useTeams.ts'
 import { appService } from '@/singletons'
-import { getEventsByTeamThunk } from '@/store/slices/EventsSlice.ts'
-import { getPlayersByTeamIdThunk } from '@/store/slices/PlayersSlice.ts'
-import { setActiveTeamId } from '@/store/slices/SettingsSlice.ts'
-import { getStaffsThunk } from '@/store/slices/StaffSlice.ts'
-import { AppDispatch } from '@/store/types.ts'
 import useAuth from '@/useAuth.ts'
-import { setCurrentTeam } from '@/utils/localStorage.ts'
 import './DashboardLayout.scss'
-import { useRole } from '@/hooks/useRoles.ts'
-import { toLocalSession } from '@/utils/localSession.ts'
-import { SessionInstance } from '@/utils/SessionInstance.ts'
+import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar.tsx'
 
 type DashboardHeaderProps = {
   teams: TeamResponse[]
@@ -44,26 +36,10 @@ export type DashboardLayoutOutletContext = {
 }
 
 export const DashboardHeader: FC<DashboardHeaderProps> = ({ teams }) => {
-  const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
   const userData = appService.getUserData()
   const { signOut } = useAuth()
-  const teamId = SessionInstance.getTeamId()
-  const activeTeamName = teams ? teams.find((team) => team.id === teamId)?.teamName : ''
-
-  const handleTeamChange = useCallback( async (id: string) => {
-    //navigate(`/${id}`)
-    toLocalSession({ currentTeamId: id })
-      .then(() => { window.location.reload() })
-      .catch(e => console.error('Error setting current team id:', e))
-    appService.setActiveTeam(id)
-    setCurrentTeam(id)
-    dispatch(setActiveTeamId({ teamId: id }))
-    dispatch(getPlayersByTeamIdThunk({ teamId: id }))
-    dispatch(getEventsByTeamThunk({ teamId: id }))
-    userData && dispatch(getStaffsThunk({ groupId: userData.groupId }))
-  }, [dispatch, userData])
-
+  const isMobile = useMediaQuery('(max-width:767px)')
   function getUserInitials(): string {
     if (!userData) return ''
     const firstInitial = userData.firstName.charAt(0).toUpperCase()
@@ -78,27 +54,11 @@ export const DashboardHeader: FC<DashboardHeaderProps> = ({ teams }) => {
   }
 
   return (
-    <div className='Dashboard-Layout__header'>
-      <div className='Dashboard-Layout__header-media'>
-        <img src={PlayerVistaLogo} alt='playervista' width={150} />
-      </div>
+    <div className='sticky top-0 z-10 flex items-center justify-between border-b border-at-background bg-white py-4'>
+      {isMobile ? <div></div> : <SidebarTrigger/>}
       <div className='Dashboard-Layout__header-nav'>
-        {teamId && <form className='Dashboard-Layout__header-nav-form'>
-          {teams.length > 1 &&
-            <Select value={teamId} onValueChange={(id: string) => handleTeamChange(id)}>
-              <SelectTrigger className='w-[180px]'>
-                <SelectValue defaultValue={teamId}>{activeTeamName}</SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                {teams.map((team) => (
-                  team.id !== teamId && (
-                    <SelectItem key={team.id} className='cursor-pointer' value={team.id}>{team.teamName}</SelectItem>
-                  )
-                ))}
-              </SelectContent>
-            </Select>}
-        </form>}
-        <div className='Dashboard-Layout__header-nav-profile mr-[30px]'>
+        {teams.length > 0 && <TeamSwitcher teams={teams}/>}
+        <div className='Dashboard-Layout__header-nav-profile mr-5'>
           <DropdownMenu>
             <DropdownMenuTrigger className='focus-visible:outline-none'>
               <Avatar>
@@ -129,27 +89,25 @@ export function DashboardLayout() {
   if (error) return 'This is an error page'
 
   return (
-    <div className='Dashboard-Layout'>
-      <DashboardHeader teams={teams}/>
-      <div className='Dashboard-Layout__wrapper'>
-        <div className='Dashboard-Layout__wrapper-content'>
-          {!isMobile && <div className='Dashboard-Layout__wrapper-content--sidebar'>
-            <Sidebar />
-          </div>}
-          {isMobile && <MobileNav/>}
-          <div className='Dashboard-Layout__wrapper-content--current-body'>
-            <Outlet context={
-              {
-                teams: teams,
-                roles: roles,
-                userRole: localSession?.role || '',
-                teamsLoading: loading,
-                teamsError: error,
-              } satisfies DashboardLayoutOutletContext
-            } />
-          </div>
+    <SidebarProvider>
+      {!isMobile && <div>
+        <AppSidebar/>
+      </div>}
+      {isMobile && <MobileNav/>}
+      <div className='w-full bg-at-background'>
+        <DashboardHeader teams={teams}/>
+        <div className='p-5'>
+          <Outlet context={
+            {
+              teams: teams,
+              roles: roles,
+              userRole: localSession?.role || '',
+              teamsLoading: loading,
+              teamsError: error,
+            } satisfies DashboardLayoutOutletContext
+          }/>
         </div>
       </div>
-    </div>
+    </SidebarProvider>
   )
 }
