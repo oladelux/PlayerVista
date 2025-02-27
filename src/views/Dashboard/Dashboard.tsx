@@ -2,7 +2,7 @@ import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined'
 import SendIcon from '@mui/icons-material/Send'
 import { Snackbar } from '@mui/material'
 import { Fragment, useEffect, useState } from 'react'
-import { Link, useOutletContext, useParams } from 'react-router-dom'
+import { Link, useOutletContext } from 'react-router-dom'
 
 import PointIcon from '../../assets/images/icons/point.png'
 import { Card } from '../../component/Card/Card'

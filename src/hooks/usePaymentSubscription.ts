@@ -13,7 +13,6 @@ export function usePaymentSubscription() {
       try {
         setLoading(true)
         const { status } = await getSubscription()
-        console.log(status)
         if (isMounted) {
           setIsActive(status === SubscriptionStatus.ACTIVE)
         }

@@ -262,17 +262,17 @@ export const StatsCard: FC<StatsCardProps> = props => {
         <div className='Stats-card__content-overview'>
           <div className='Stats-card__content-overview--title mb-8 font-semibold'>Quick Links</div>
           <div className='flex flex-col gap-3 px-5'>
-            <Link to='team/create-team'
+            <Link to='/add-team'
               className='flex w-fit items-center gap-2 border-b border-dark-purple text-sm text-dark-purple'
             >
               Add new team <ArrowTopRightOnSquareIcon className='h-4 fill-dark-purple'/>
             </Link>
-            <Link to='staffs/add-staff'
+            <Link to='/staffs/add-staff'
               className='flex w-fit items-center gap-2 border-b border-dark-purple text-sm text-dark-purple'
             >
               Add new staff <ArrowTopRightOnSquareIcon className='h-4 fill-dark-purple'/>
             </Link>
-            <Link to='players/add-player'
+            <Link to='/players/add-player'
               className='flex w-fit items-center gap-2 border-b border-dark-purple text-sm text-dark-purple'
             >
               Add new player <ArrowTopRightOnSquareIcon className='h-4 fill-dark-purple'/>

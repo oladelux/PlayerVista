@@ -11,10 +11,9 @@ import {
 } from '@/api'
 import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
 import { addCookie, removeCookie } from '@/services/cookies.ts'
-import { toLocalSession } from '@/services/localSession.ts'
 import { appService } from '@/singletons'
 import { AuthContext } from '@/useAuth.ts'
-import { getLocalSession } from '@/utils/localSession.ts'
+import { getLocalSession, toLocalSession } from '@/utils/localSession.ts'
 import { LocalSessionType } from '@/utils/LocalSessionType.ts'
 import { clearLocalStorage } from '@/utils/localStorage.ts'
 
@@ -26,8 +25,8 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [localSession, setLocalSession] = useState<LocalSessionType | null>(null)
   const updateSession = useCallback(async (session: LocalSessionType | null) => {
     if (session) {
+      await toLocalSession(session)
       setLocalSession(session)
-      toLocalSession(session)
     } else {
       setLocalSession(null)
       clearLocalStorage()
@@ -45,7 +44,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         parentUserId: user.parentUserId,
         groupId: user.groupId,
         role: user.role,
-        currentTeamId: session.currentTeamId || undefined,
+        currentTeamId: session.currentTeamId || user.teamId,
       }
       await updateSession(sessionData)
       return user
@@ -71,7 +70,7 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           parentUserId: user.parentUserId,
           groupId: user.groupId,
           role: user.role,
-          currentTeamId: undefined,
+          currentTeamId: user.teamId,
         }
         await updateSession(sessionData)
       } catch (e) {
