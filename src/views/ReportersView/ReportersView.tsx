@@ -1,17 +1,17 @@
-import { FC, useState } from 'react'
+import classnames from 'classnames'
+import { FC, Fragment, useState } from 'react'
+import { FaPlus } from 'react-icons/fa'
 import { FiSearch } from 'react-icons/fi'
 import { Link, useParams } from 'react-router-dom'
-import { FaPlus } from 'react-icons/fa'
-import classnames from 'classnames'
 
+import { AssignModal } from '../../component/AssignModal/AssignModal.tsx'
+import { Column, Table } from '../../component/Table/Table.tsx'
 import { AuthenticatedUserData, Reporter, TeamResponse } from '@/api'
 import { useEvents } from '@/hooks/useEvents.ts'
 
-import { Column, Table } from '../../component/Table/Table.tsx'
-import { DashboardLayout } from '../../component/DashboardLayout/DashboardLayout.tsx'
-import { AssignModal } from '../../component/AssignModal/AssignModal.tsx'
 
 import './ReportersView.scss'
+import { SessionInstance } from '@/utils/SessionInstance.ts'
 
 type ReportersViewProps = {
   user: AuthenticatedUserData
@@ -20,7 +20,7 @@ type ReportersViewProps = {
 }
 
 export const ReportersView:FC<ReportersViewProps> = ({ user, reporters, teams }) => {
-  const { teamId } = useParams()
+  const teamId = SessionInstance.getTeamId()
   const { scheduledMatches } = useEvents()
   const [isActiveAssignPopup, setIsActiveAssignPopup] = useState(false)
   const [activeReporter, setActiveReporter] = useState<string>('')
@@ -78,7 +78,7 @@ export const ReportersView:FC<ReportersViewProps> = ({ user, reporters, teams })
   }
 
   return (
-    <DashboardLayout>
+    <Fragment>
       <div className='Reporters-view'>
         <div className='Reporters-view__title'>Reporters</div>
         <div className='Reporters-view__header'>
@@ -103,6 +103,6 @@ export const ReportersView:FC<ReportersViewProps> = ({ user, reporters, teams })
       {isActiveAssignPopup && <AssignModal onClose={closeAssignPopup}
         activeReporter={activeReporter} scheduledMatches={scheduledMatches}
         currentTeam={currentTeam} />}
-    </DashboardLayout>
+    </Fragment>
   )
 }

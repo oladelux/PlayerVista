@@ -1,5 +1,5 @@
-import React, { PropsWithChildren, useState } from 'react'
 import { Form, Formik, FormikConfig, FormikValues } from 'formik'
+import React, { PropsWithChildren, useState } from 'react'
 
 import { FormikStepProps, ProgressBar } from './ProgressBar'
 import LoadingButton from '@/component/LoadingButton/LoadingButton.tsx'
@@ -41,7 +41,7 @@ export const FormikStepper =
               {step > 0 ?
                 <LoadingButton
                   isLoading={isSubmitting}
-                  className='bg-white border text-dark-purple border-dark-purple hover:bg-white'
+                  className='border border-dark-purple bg-white text-dark-purple hover:bg-white'
                   type='button'
                   onClick={() => setStep(s => s - 1)}
                 >

@@ -1,12 +1,11 @@
 import { FC, useState } from 'react'
 
-import { convertSecondsToGameMinute, getPlayerActions } from '@/utils/players.ts'
 import { Player, PlayerPerformance } from '@/api'
-
+import { Defensive, DefensiveData } from '@/component/Defensive/Defensive.tsx'
+import { Offensive, OffensiveData } from '@/component/Offensive/Offensive.tsx'
 import { TabButton } from '@/component/TabButton/TabButton.tsx'
 import { TabContent } from '@/component/TabContent/TabContent.tsx'
-import { Offensive, OffensiveData } from '@/component/Offensive/Offensive.tsx'
-import { Defensive, DefensiveData } from '@/component/Defensive/Defensive.tsx'
+import { convertSecondsToGameMinute, getPlayerActions } from '@/utils/players.ts'
 
 type StatisticsProps = {
   players: Player[]

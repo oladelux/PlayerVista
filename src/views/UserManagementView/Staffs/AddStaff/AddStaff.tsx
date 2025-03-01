@@ -1,21 +1,24 @@
-import React, { FC, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
-import { useSelector } from 'react-redux'
 import { Field } from 'formik'
 import generator from 'generate-password-ts'
+import React, { FC, useState } from 'react'
+import { useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 
-import { useAppDispatch } from '@/store/types.ts'
-import { AuthenticatedUserData, StaffData } from '@/api'
-import { createStaffThunk, staffSelector } from '@/store/slices/StaffSlice.ts'
-import { UseUpdates } from '@/hooks/useUpdates.ts'
-
-import { DashboardLayout } from '@/component/DashboardLayout/DashboardLayout.tsx'
 import { FormikStep, FormikStepper } from '../../../TeamView/CreateTeam/Step'
+import { AuthenticatedUserData, StaffData } from '@/api'
 import { SuccessConfirmationPopup } from '@/component/SuccessConfirmation/SuccessConfirmation.tsx'
+import { useUpdates, UseUpdates } from '@/hooks/useUpdates.ts'
+import { appService } from '@/singletons'
+import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
+import { createStaffThunk, staffSelector } from '@/store/slices/StaffSlice.ts'
+import { useAppDispatch } from '@/store/types.ts'
 
 import './AddStaff.scss'
-import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
+
 import { capitalize } from '@mui/material'
+
+import { SessionInstance } from '@/utils/SessionInstance.ts'
+
 
 const password = generator.generate({
   length: 10,
@@ -30,24 +33,26 @@ type AddStaffProps = {
   user: AuthenticatedUserData
 }
 
-export const AddStaff: FC<AddStaffProps> = ({ logger, user }) => {
+export function AddStaff() {
+  const logger = useUpdates()
+  const user = appService.getUserData()
+  if (!user) return null
+
   return (
-    <DashboardLayout>
-      <div className='Add-staff'>
-        <div className='Add-staff__header'>
-          <div className='Add-staff__header-title'>Hello Admin,</div>
-          <div className='Add-staff__header-sub-title'>Let’s add a new staff</div>
-        </div>
-        <AddStaffMultiStep user={user} logger={logger} />
+    <div className='Add-staff'>
+      <div className='Add-staff__header'>
+        <div className='Add-staff__header-title'>Hello Admin,</div>
+        <div className='Add-staff__header-sub-title'>Let’s add a new staff</div>
       </div>
-    </DashboardLayout>
+      <AddStaffMultiStep user={user} logger={logger} />
+    </div>
   )
 }
 
 const AddStaffMultiStep: FC<AddStaffProps> = ({ user, logger }) => {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
-  const { teamId } = useParams()
+  const teamId = SessionInstance.getTeamId()
   const { loadingCreatingStaff } = useSelector(staffSelector)
   const { roles } = useSelector(settingsSelector)
   const [isActiveConfirmationPopup, setIsActiveConfirmationPopup] = useState(false)
@@ -57,7 +62,7 @@ const AddStaffMultiStep: FC<AddStaffProps> = ({ user, logger }) => {
   const openConfirmationPopup = () => setIsActiveConfirmationPopup(true)
   const closeConfirmationPopup = async () => {
     setIsActiveConfirmationPopup(false)
-    navigate(`/team/${teamId}/staffs`)
+    navigate('/staffs')
   }
 
   return (

@@ -1,31 +1,32 @@
+import { Field } from 'formik'
 import React, { FC, useEffect, useMemo } from 'react'
 import ReactDOM from 'react-dom'
-import { Field } from 'formik'
+import { Control, useForm } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 
+import { FormikStep, FormikStepper } from '../../views/TeamView/CreateTeam/Step.tsx'
+import { CustomFormikDatePicker } from '../FormikWrapper/CustomFormikDatePicker.tsx'
+import { CustomFormikTimePicker } from '../FormikWrapper/CustomFormikTimePicker.tsx'
+import { Popup } from '../Popup/Popup.tsx'
+import { SingleEventType } from '@/api'
+import { combinedDate } from '@/services/helper.ts'
 import {
   eventsSelector,
   getSingleEventThunk,
   updateEventThunk,
 } from '@/store/slices/EventsSlice.ts'
 import { useAppDispatch } from '@/store/types.ts'
-import { SingleEventType } from '@/api'
-import { combinedDate } from '@/services/helper.ts'
-
-import { FormikStep, FormikStepper } from '../../views/TeamView/CreateTeam/Step.tsx'
-import { CustomFormikDatePicker } from '../FormikWrapper/CustomFormikDatePicker.tsx'
-import { CustomFormikTimePicker } from '../FormikWrapper/CustomFormikTimePicker.tsx'
-import { Popup } from '../Popup/Popup.tsx'
 
 import './SelectedEventModal.scss'
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form.tsx'
-import { Control, useForm } from 'react-hook-form'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group.tsx'
 import { Label } from '@/components/ui/label.tsx'
 import InputFormField from '@/components/form/InputFormField.tsx'
 import { Button } from '@/components/ui/button.tsx'
 import { eventSchema, EventSchemaIn, EventSchemaOut } from '@/component/EventFormModal/eventFormSchema.ts'
+
 import { zodResolver } from '@hookform/resolvers/zod'
+
 import { useToast } from '@/hooks/use-toast.ts'
 
 type SelectedEventModal = {
@@ -103,7 +104,7 @@ const SelectedEvent: FC<SelectedEventProps> = props => {
 
   return (
     <Popup onClose={props.onClose} className='Selected-event'>
-      <div className='p-10 bg-at-white w-[600px]'>
+      <div className='w-[600px] bg-at-white p-10'>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <div>
@@ -135,7 +136,7 @@ const SelectedEvent: FC<SelectedEventProps> = props => {
                 )}
               />
             </div>
-            <div className='grid grid-cols-2 md:grid-cols-2 sm:grid-cols-1 gap-5 mb-5'>
+            <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
               <InputFormField
                 control={form.control}
                 label='Date'
@@ -151,7 +152,7 @@ const SelectedEvent: FC<SelectedEventProps> = props => {
                 type='time'
               />
             </div>
-            <div className='grid grid-cols-2 md:grid-cols-2 sm:grid-cols-1 gap-5 mb-5'>
+            <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
               <InputFormField
                 control={form.control}
                 label='End Time'
@@ -167,7 +168,7 @@ const SelectedEvent: FC<SelectedEventProps> = props => {
                 type='text'
               />
             </div>
-            <div className='grid grid-cols-2 md:grid-cols-2 sm:grid-cols-1 gap-5 mb-5'>
+            <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
               <InputFormField
                 control={form.control}
                 label='Opponent Name'

@@ -7,9 +7,11 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import { PlayerPositionType, positionData } from '@/utils/players.ts'
 
 import ShirtIcon from '@/assets/images/shirt.png'
+import { positionData } from '@/utils/players.ts'
+import { PlayerPositionType } from '@/views/PlayersView/form/PlayerPosition.ts'
+
 
 type PlayerFieldPositionProps = {
   position: string

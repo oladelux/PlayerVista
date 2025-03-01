@@ -99,7 +99,7 @@
         max-height: calc(100vh - 115px);
         width: 100%;
         overflow-y: auto;
-        padding: 10px 50px 12px;
+        padding: 45px 50px 12px;
 
         @include mixins.mobile {
           padding: 10px;

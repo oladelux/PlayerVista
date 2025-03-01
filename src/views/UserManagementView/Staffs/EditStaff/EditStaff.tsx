@@ -1,21 +1,23 @@
-import { DashboardLayout } from '@/component/DashboardLayout/DashboardLayout.tsx'
-import React, { useEffect, useMemo, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Form, FormLabel } from '@/components/ui/form.tsx'
+import { useEffect, useMemo, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { useDispatch, useSelector } from 'react-redux'
+import { useParams } from 'react-router-dom'
+
+import { StaffData } from '@/api'
+import LoadingButton from '@/component/LoadingButton/LoadingButton.tsx'
 import InputFormField from '@/components/form/InputFormField.tsx'
 import SelectFormField from '@/components/form/SelectFormField.tsx'
+import { Form, FormLabel } from '@/components/ui/form.tsx'
 import { useToast } from '@/hooks/use-toast.ts'
+import { useStaff } from '@/hooks/useStaff.ts'
+import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
 import { getStaffThunk, staffSelector } from '@/store/slices/StaffSlice.ts'
+import { AppDispatch } from '@/store/types.ts'
 import { getStaffDefaultValues } from '@/views/UserManagementView/Staffs/EditStaff/staffDefaultValues.ts'
 import { staffSchema, StaffSchemaIn, StaffSchemaOut } from '@/views/UserManagementView/Staffs/EditStaff/staffSchema.ts'
-import { useStaff } from '@/hooks/useStaff.ts'
-import { StaffData } from '@/api'
-import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
-import { AppDispatch } from '@/store/types.ts'
-import { useParams } from 'react-router-dom'
-import LoadingButton from '@/component/LoadingButton/LoadingButton.tsx'
+
+
 
 export function EditStaff() {
   const dispatch = useDispatch<AppDispatch>()
@@ -72,61 +74,59 @@ export function EditStaff() {
   }, [dispatch, staffId])
 
   return (
-    <DashboardLayout>
-      <div className='py-2 px-2.5 mb-5 md:py-10 md:px-12 bg-white rounded-md'>
-        <div className=''>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
-              <div className='grid grid-cols-2 md:grid-cols-2 sm:grid-cols-1 gap-5 mb-5'>
-                <InputFormField
+    <div className='mb-5 rounded-md bg-white px-2.5 py-2 md:px-12 md:py-10'>
+      <div className=''>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
+              <InputFormField
+                control={form.control}
+                label='First Name'
+                name='firstName'
+                placeholder='First Name'
+                type='text'
+              />
+              <InputFormField
+                control={form.control}
+                label='Last Name'
+                name='lastName'
+                placeholder='Last Name'
+                type='text'
+              />
+            </div>
+            <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
+              <div>
+                <FormLabel htmlFor='role'>Role</FormLabel>
+                <SelectFormField
                   control={form.control}
-                  label='First Name'
-                  name='firstName'
-                  placeholder='First Name'
-                  type='text'
-                />
-                <InputFormField
-                  control={form.control}
-                  label='Last Name'
-                  name='lastName'
-                  placeholder='Last Name'
-                  type='text'
+                  name='role'
+                  options={Roles}
+                  inputClassName='w-48 h-10 mt-2'
                 />
               </div>
-              <div className='grid grid-cols-2 md:grid-cols-2 sm:grid-cols-1 gap-5 mb-5'>
-                <div>
-                  <FormLabel htmlFor='role'>Role</FormLabel>
-                  <SelectFormField
-                    control={form.control}
-                    name='role'
-                    options={Roles}
-                    inputClassName='w-48 h-10 mt-2'
-                  />
-                </div>
-                <div>
-                  <InputFormField
-                    control={form.control}
-                    label='Email'
-                    name='email'
-                    placeholder='Email'
-                    type='email'
-                  />
-                </div>
+              <div>
+                <InputFormField
+                  control={form.control}
+                  label='Email'
+                  name='email'
+                  placeholder='Email'
+                  type='email'
+                />
               </div>
-              <div className='my-5'>
-                <LoadingButton
-                  isLoading={loading}
-                  type='submit'
-                  className='bg-dark-purple text-white'
-                >
+            </div>
+            <div className='my-5'>
+              <LoadingButton
+                isLoading={loading}
+                type='submit'
+                className='bg-dark-purple text-white'
+              >
                   Update
-                </LoadingButton>
-              </div>
-            </form>
-          </Form>
-        </div>
+              </LoadingButton>
+            </div>
+          </form>
+        </Form>
       </div>
-    </DashboardLayout>
+    </div>
   )
 
 }

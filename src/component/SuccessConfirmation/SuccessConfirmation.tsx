@@ -2,8 +2,8 @@ import { FC } from 'react'
 import ReactDOM from 'react-dom'
 import { FiCheck } from 'react-icons/fi'
 
-import { Popup } from '../Popup/Popup.tsx'
 import { Button } from '../Button/Button.tsx'
+import { Popup } from '../Popup/Popup.tsx'
 
 import './SuccessConfirmation.scss'
 

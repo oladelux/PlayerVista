@@ -280,7 +280,7 @@ export type PageCreatorEventsType = {
     number: number
 }
 
-type EventsCreatorEventsType =  {
+type EventsCreatorEventsType = {
     _links: {
         self: LinkType
         attractions: LinkType[]

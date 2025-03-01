@@ -1,19 +1,18 @@
-import { Form } from '@/components/ui/form.tsx'
-import InputFormField from '@/components/form/InputFormField.tsx'
-import { z } from 'zod'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import CheckboxFormField from '@/components/form/CheckboxFormField.tsx'
-import { AllPermissions } from '@/utils/allPermissions.ts'
-import { useDispatch } from 'react-redux'
-import { AppDispatch } from '@/store/types.ts'
-import { createRoleThunk } from '@/store/slices/SettingsSlice.ts'
-import { AuthenticatedUserData, RoleFormData } from '@/api'
 import { capitalize } from '@mui/material'
-import { UseUpdates } from '@/hooks/useUpdates.ts'
-import { useToast } from '@/hooks/use-toast.ts'
 import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+
+import { AuthenticatedUserData, RoleFormData } from '@/api'
 import LoadingButton from '@/component/LoadingButton/LoadingButton.tsx'
+import CheckboxFormField from '@/components/form/CheckboxFormField.tsx'
+import InputFormField from '@/components/form/InputFormField.tsx'
+import { Form } from '@/components/ui/form.tsx'
+import { useToast } from '@/hooks/use-toast.ts'
+import { UseUpdates } from '@/hooks/useUpdates.ts'
+import { roleService } from '@/singletons'
+import { AllPermissions } from '@/utils/allPermissions.ts'
 
 const createNewRoleSchema = z.object({
   roleName: z.string(),
@@ -30,7 +29,6 @@ type CreateNewRoleFormProps = {
 }
 
 export default function CreateNewRoleForm({ user, logger, setDialogOpen }: CreateNewRoleFormProps) {
-  const dispatch = useDispatch<AppDispatch>()
   const { toast } = useToast()
   const [loading, setLoading] = useState(false)
   const defaultValues: createNewRoleSchemaIn = {
@@ -52,10 +50,7 @@ export default function CreateNewRoleForm({ user, logger, setDialogOpen }: Creat
         permissions: values.permissions || [],
         createdByUserId: user.id,
       }
-      dispatch(createRoleThunk({
-        data,
-      }))
-        .unwrap()
+      roleService.insert(data)
         .then(() => {
           setLoading(false)
           logger.setUpdate({ message: 'added a new role', userId: user.id, groupId: user.groupId })
@@ -82,7 +77,7 @@ export default function CreateNewRoleForm({ user, logger, setDialogOpen }: Creat
         <InputFormField control={form.control} name='roleName' placeholder='e.g Admin' label='Role Name'/>
         <div className='mt-4'>
           <h3 className='font-semibold'>Permissions</h3>
-          <div className='grid grid-cols-2 gap-2 mt-2'>
+          <div className='mt-2 grid grid-cols-2 gap-2'>
             {AllPermissions.map((permission) => (
               <CheckboxFormField
                 key={permission}

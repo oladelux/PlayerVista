@@ -1,20 +1,17 @@
-import { FC, useMemo } from 'react'
+import { EyeIcon } from 'lucide-react'
+import React, { useMemo } from 'react'
 import { FaPlus } from 'react-icons/fa'
 import { FiSearch } from 'react-icons/fi'
-
-import { Player } from '@/api'
-import { calculateAge } from '@/services/helper.ts'
-import { usePlayers } from '@/hooks/usePlayers.ts'
-
 import { Link, useParams } from 'react-router-dom'
-import { DashboardLayout } from '../../component/DashboardLayout/DashboardLayout'
-import { Column, Table } from '../../component/Table/Table'
 
-import './PlayersView.scss'
-import { useSelector } from 'react-redux'
-import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
+import { Column, Table } from '../../component/Table/Table'
+import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
 import { usePermission } from '@/hooks/usePermission.ts'
-import { EyeIcon } from 'lucide-react'
+import { usePlayer } from '@/hooks/usePlayer.ts'
+import { usePlayers } from '@/hooks/usePlayers.ts'
+import { calculateAge } from '@/services/helper.ts'
+import './PlayersView.scss'
+import { SessionInstance } from '@/utils/SessionInstance.ts'
 
 const playerColumns: Column<never>[] = [
   { key: 'name', title: 'Name' },
@@ -29,26 +26,22 @@ const playerColumns: Column<never>[] = [
   {
     key: 'action',
     title: 'Action',
-    render: (value: { teamId: string, playerId: string }) => (<div className='flex gap-2 items-center'>
-      <Link className='table-link' to={`/team/${value.teamId}/players/${value.playerId}`}><EyeIcon width={16} /></Link>
-      <Link className='table-link border-l border-l-border-line px-2' to={`/team/${value.teamId}/player/${value.playerId}/statistics`}>View Stats</Link>
+    render: (value: { teamId: string, playerId: string }) => (<div className='flex items-center gap-2'>
+      <Link className='table-link' to={`/manage-player/${value.playerId}`}><EyeIcon width={16} /></Link>
+      <Link className='table-link border-l border-l-border-line px-2' to={`/player-statistics/${value.playerId}`}>View Stats</Link>
     </div>),
   },
 ]
-
-type PlayersViewProps = {
-  players: Player[]
-}
 
 const predefinedOrder = [
   'GK', 'LB', 'LWB', 'CB', 'RWB', 'RB', 'CDM', 'CM', 'LM', 'RM', 'CAM', 'LW', 'RW', 'CF', 'ST',
 ]
 
-export const PlayersView:FC<PlayersViewProps> = ({ players }) => {
-  const { teamId } = useParams()
+export function PlayersView(){
+  const teamId = SessionInstance.getTeamId()
   const { searchPlayerValue, handleSearchInput } = usePlayers()
-  const { userRole } = useSelector(settingsSelector)
-  const { canCreatePlayer } = usePermission(userRole)
+  const { canCreatePlayer } = usePermission()
+  const { players, loading, error } = usePlayer(undefined, teamId)
 
   const filteredPlayers = useMemo(() => {
     return players.filter(player => {
@@ -78,31 +71,36 @@ export const PlayersView:FC<PlayersViewProps> = ({ players }) => {
     return predefinedOrder.indexOf(a.position) - predefinedOrder.indexOf(b.position)
   })
 
+  if (loading) return <LoadingPage />
+  //TODO: Create Error Page
+  if (error) {
+    console.log(error)
+    return 'This is an error page'
+  }
+
   return (
-    <DashboardLayout>
-      <div className='Players-view'>
-        <div className='Players-view__title'>Players</div>
-        <div className='Players-view__header'>
-          <div className='Players-view__header-form'>
-            <FiSearch className='Players-view__header-form--search-icon'/>
-            <input
-              className='Players-view__header-form--input'
-              type='text'
-              name='search'
-              placeholder='Search'
-              value={searchPlayerValue}
-              onChange={handleSearchInput}
-            />
-          </div>
-          {canCreatePlayer && <Link to={`/team/${teamId}/players/add-player`} className='Players-view__header-link'>
-            <FaPlus/>
-            <span className='Players-view__header-link--text'>Add Player</span>
-          </Link>}
+    <div className='Players-view'>
+      <div className='Players-view__title'>Players</div>
+      <div className='Players-view__header'>
+        <div className='Players-view__header-form'>
+          <FiSearch className='Players-view__header-form--search-icon'/>
+          <input
+            className='Players-view__header-form--input'
+            type='text'
+            name='search'
+            placeholder='Search'
+            value={searchPlayerValue}
+            onChange={handleSearchInput}
+          />
         </div>
-        <div className='Players-view__content'>
-          <Table columns={playerColumns} data={sortedTeamPlayers} />
-        </div>
+        {canCreatePlayer && <Link to={'add-player'} className='Players-view__header-link'>
+          <FaPlus/>
+          <span className='Players-view__header-link--text'>Add Player</span>
+        </Link>}
       </div>
-    </DashboardLayout>
+      <div className='Players-view__content'>
+        <Table columns={playerColumns} data={sortedTeamPlayers} />
+      </div>
+    </div>
   )
 }

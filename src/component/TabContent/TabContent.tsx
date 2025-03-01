@@ -1,5 +1,5 @@
-import {FC, PropsWithChildren} from "react"
-import classnames from "classnames"
+import classnames from 'classnames'
+import { FC, PropsWithChildren } from 'react'
 
 import './TabContent.scss'
 

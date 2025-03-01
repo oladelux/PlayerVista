@@ -1,14 +1,15 @@
-import { Form } from '@/components/ui/form.tsx'
-import { z } from 'zod'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import InputFormField from '@/components/form/InputFormField.tsx'
-import { AuthenticatedUserData } from '@/api'
 import bcrypt from 'bcryptjs'
 import { useState } from 'react'
-import { useUser } from '@/hooks/useUser.ts'
-import { useToast } from '@/hooks/use-toast'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+
+import { AuthenticatedUserData } from '@/api'
 import LoadingButton from '@/component/LoadingButton/LoadingButton.tsx'
+import InputFormField from '@/components/form/InputFormField.tsx'
+import { Form } from '@/components/ui/form.tsx'
+import { useToast } from '@/hooks/use-toast'
+import { useUser } from '@/hooks/useUser.ts'
 
 const changePasswordSchema = z.object({
   currentPassword: z.string(),
@@ -77,7 +78,7 @@ export default function ChangePasswordForm({ user }: ChangePasswordFormProps) {
 
   return (
     <div className='mt-10'>
-      <h1 className='font-semibold text-dark-purple mb-5'>Change Password</h1>
+      <h1 className='mb-5 font-semibold text-dark-purple'>Change Password</h1>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className='flex flex-col'>
           <div className='flex flex-col gap-5'>

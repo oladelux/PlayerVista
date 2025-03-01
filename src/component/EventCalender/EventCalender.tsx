@@ -1,20 +1,18 @@
-import React, { FC, useCallback, useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
-import { CalenderEvents } from '../../constants/events.ts'
-import { Calendar, dayjsLocalizer, Views } from 'react-big-calendar'
 import dayjs from 'dayjs'
-
-import { AuthenticatedUserData, Event } from '../../api'
-import { convertToCalenderDate } from '../../services/helper.ts'
-import { UseUpdates } from '../../hooks/useUpdates.ts'
+import React, { FC, useCallback, useEffect, useState } from 'react'
+import { Calendar, dayjsLocalizer, Views } from 'react-big-calendar'
+import { useSelector } from 'react-redux'
+import { useNavigate, useParams } from 'react-router-dom'
 
 import { EventFormModalPortal } from '../EventFormModal/EventFormModal.tsx'
 import { SelectedEventModal } from '../SelectedEventModal/SelectedEventModal.tsx'
-
-import './EventCalender.scss'
-import { useSelector } from 'react-redux'
-import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
+import { Event } from '@/api'
+import { CalenderEvents } from '@/constants/events.ts'
 import { usePermission } from '@/hooks/usePermission.ts'
+import { UseUpdates } from '@/hooks/useUpdates.ts'
+import { convertToCalenderDate } from '@/services/helper.ts'
+import './EventCalender.scss'
+import { SessionInstance } from '@/utils/SessionInstance.ts'
 
 type NewEvent = {
   start: Date
@@ -26,14 +24,11 @@ const localizer = dayjsLocalizer(dayjs)
 type EventCalenderProps = {
   events: Event[]
   logger: UseUpdates
-  user: AuthenticatedUserData
 }
 
 export const EventCalender:FC<EventCalenderProps> = props => {
   const navigate = useNavigate()
-  const { teamId } = useParams()
-  const { userRole } = useSelector(settingsSelector)
-  const { canCreateEvent } = usePermission(userRole)
+  const { canCreateEvent } = usePermission()
   const [isEventFormModal, setIsEventFormModal] = useState(false)
   const [isSelectedEventModal, setIsSelectedEventModal] = useState(false)
   const [myEvents, setEvents] = useState<CalenderEvents[]>([])
@@ -61,12 +56,12 @@ export const EventCalender:FC<EventCalenderProps> = props => {
       const now = new Date()
       setSelectedEvent(id)
       if(now > start) {
-        navigate(`/team/${teamId}/events/${id}`)
+        navigate(`/events/${id}`)
       } else {
         openSelectedEventModal()
       }
     },
-    [navigate, teamId],
+    [navigate],
   )
 
   useEffect(() => {
@@ -100,7 +95,6 @@ export const EventCalender:FC<EventCalenderProps> = props => {
           onClose={closeEventFormModal}
           startDate={eventStartDate}
           logger={props.logger}
-          user={props.user}
         />
       }
       {isSelectedEventModal &&

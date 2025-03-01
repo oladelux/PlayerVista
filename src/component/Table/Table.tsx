@@ -1,4 +1,5 @@
 import { FC, ReactElement, ReactNode } from 'react'
+
 import './Table.scss'
 import { Button } from '../Button/Button'
 

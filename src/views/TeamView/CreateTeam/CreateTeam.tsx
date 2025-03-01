@@ -1,17 +1,16 @@
-import { ChangeEvent, FC, useState } from 'react'
-import { Field } from 'formik'
-import { useNavigate } from 'react-router-dom'
 import CenterFocusWeakIcon from '@mui/icons-material/CenterFocusWeak'
+import { Field } from 'formik'
+import { ChangeEvent, FC, useState } from 'react'
+import { useNavigate, useOutletContext } from 'react-router-dom'
 
-import { useAppDispatch } from '@/store/types.ts'
-import { createTeamThunk, getTeamsThunk } from '@/store/slices/TeamSlice.ts'
-import { AuthenticatedUserData, TeamFormData, TeamResponse, uploadImageToCloudinary } from '@/api'
-import { UseUpdates } from '@/hooks/useUpdates.ts'
-import { cloudName, cloudUploadPresets } from '@/config/constants.ts'
-
-import { DashboardHeader } from '@/component/DashboardLayout/DashboardLayout.tsx'
-import { SuccessConfirmationPopup } from '@/component/SuccessConfirmation/SuccessConfirmation.tsx'
 import { FormikStep, FormikStepper } from './Step'
+import { AuthenticatedUserData, TeamFormData, TeamResponse, uploadImageToCloudinary } from '@/api'
+import { DashboardHeader, DashboardLayoutOutletContext } from '@/component/DashboardLayout/DashboardLayout.tsx'
+import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
+import { SuccessConfirmationPopup } from '@/component/SuccessConfirmation/SuccessConfirmation.tsx'
+import { cloudName, cloudUploadPresets } from '@/config/constants.ts'
+import { useUpdates, UseUpdates } from '@/hooks/useUpdates.ts'
+import { appService, teamService } from '@/singletons'
 
 import './CreateTeam.scss'
 
@@ -21,24 +20,40 @@ type DashboardCreateTeamProps = {
   teams: TeamResponse[]
 }
 
-export const CreateTeam: FC<DashboardCreateTeamProps> = ({ logger, user, teams }) => {
+export function CreateTeam() {
+  const logger = useUpdates()
+  const userData = appService.getUserData()
+
+  //TODO: Create Error Page
+  if ( !userData) return 'This is an error page'
+
   return (
     <>
-      <DashboardHeader teams={teams} />
+      <DashboardHeader teams={[]} />
       <div className='Create-team'>
         <div className='Create-team__content p-3 md:p-11'>
           <div className='Create-team__content-header'>
             <div className='Create-team__content-header-title'>Hello Admin,</div>
             <div className='Create-team__content-header-sub-title'>Let’s create a team for you in three easy steps</div>
           </div>
-          <CreateTeamMultiStep logger={logger} user={user} teams={teams}/>
+          <CreateTeamMultiStep logger={logger} user={userData} teams={[]}/>
         </div>
       </div>
     </>
   )
 }
 
-export const DashboardCreateTeam: FC<DashboardCreateTeamProps> = ({ logger, user, teams }) => {
+export function DashboardCreateTeam(){
+  const { teams, teamsError: error, teamsLoading: loading } =
+    useOutletContext<DashboardLayoutOutletContext>()
+
+  const logger = useUpdates()
+  const userData = appService.getUserData()
+
+  if (loading) return <LoadingPage />
+  //TODO: Create Error Page
+  if (error || !userData) return 'This is an error page'
+
   return (
     <div className='Create-team'>
       <div className='Create-team__content px-12 py-10'>
@@ -46,7 +61,7 @@ export const DashboardCreateTeam: FC<DashboardCreateTeamProps> = ({ logger, user
           <div className='Create-team__content-header-title'>Hello Admin,</div>
           <div className='Create-team__content-header-sub-title'>Let’s create a team for you in three easy steps</div>
         </div>
-        <CreateTeamMultiStep logger={logger} user={user} teams={teams} />
+        <CreateTeamMultiStep logger={logger} user={userData} teams={teams} />
       </div>
     </div>
   )
@@ -54,8 +69,6 @@ export const DashboardCreateTeam: FC<DashboardCreateTeamProps> = ({ logger, user
 
 const CreateTeamMultiStep: FC<DashboardCreateTeamProps> = ({ logger, user }) => {
   const navigate = useNavigate()
-  const dispatch = useAppDispatch()
-
   const [selectedImage, setSelectedImage] = useState<string>('')
   const [file, setFile] = useState<string>('')
   const [isUploading, setIsUploading] = useState(false)
@@ -65,7 +78,6 @@ const CreateTeamMultiStep: FC<DashboardCreateTeamProps> = ({ logger, user }) => 
   const openConfirmationPopup = () => setIsActiveConfirmationPopup(true)
   const closeConfirmationPopup = async () => {
     setIsActiveConfirmationPopup(false)
-    await dispatch(getTeamsThunk({ userId: user.id }))
     navigate('/team')
   }
 
@@ -127,13 +139,13 @@ const CreateTeamMultiStep: FC<DashboardCreateTeamProps> = ({ logger, user }) => 
             creationYear: new Date(values.creationYear).getFullYear().toString(),
             logo: file,
           }
-          await dispatch(createTeamThunk({ data }))
-            .unwrap()
+          teamService.insert(data)
             .then(() => {
               logger.setUpdate({ message: 'added a new team', userId: user.id, groupId: user.groupId })
               logger.sendUpdates(user.groupId)
               openConfirmationPopup()
               resetForm()
+              navigate('/')
             })
         }}
       >

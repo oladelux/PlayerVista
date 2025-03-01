@@ -1,29 +1,24 @@
-import { ChangeEvent, FC, FormEvent, useState } from 'react'
-import { Link } from 'react-router-dom'
 import cl from 'classnames'
+import { ChangeEvent, FormEvent, useState } from 'react'
 import { FaRegCheckCircle } from 'react-icons/fa'
-
-import { AppController } from '@/hooks/useAppController.ts'
-import { routes } from '@/constants/routes.ts'
-import { getRandomQuote } from '@/constants/randomQuotes.ts'
-import { isPasswordValid } from '@/services/validation.ts'
+import { Link, useNavigate } from 'react-router-dom'
 
 import { InputField } from '../../component/InputField/InputField'
-import { Button } from '../../component/Button/Button'
 import { PasswordInputField } from '../../component/PasswordInputField/PasswordInputField'
 import LoadingButton from '@/component/LoadingButton/LoadingButton.tsx'
+import { getRandomQuote } from '@/constants/randomQuotes.ts'
+import { routes } from '@/constants/routes.ts'
 import { useToast } from '@/hooks/use-toast.ts'
-
+import { isPasswordValid } from '@/services/validation.ts'
 import './SignUp.scss'
+import useAuth from '@/useAuth.ts'
 
 
 const randomQuote = getRandomQuote()
-type SignUpProps = {
-  controller: AppController
-}
 
-export const SignUp: FC<SignUpProps> = props => {
-  const { authentication } = props.controller
+export function SignUp() {
+  const { signUp } = useAuth()
+  const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
   const { toast } = useToast()
   const [registrationData, setRegistrationData] = useState({
@@ -54,7 +49,7 @@ export const SignUp: FC<SignUpProps> = props => {
       ...registrationData,
       role: 'admin',
     }
-    authentication.register(data)
+    signUp(data).then(() => navigate(routes.selectPlan))
       .catch(() => {
         setLoading(false)
         toast({
@@ -134,7 +129,7 @@ export const SignUp: FC<SignUpProps> = props => {
           <LoadingButton
             isLoading={loading}
             type='submit'
-            className='bg-dark-purple text-white hover:bg-dark-purple hover:text-white w-full'
+            className='w-full bg-dark-purple text-white hover:bg-dark-purple hover:text-white'
           >Sign up
           </LoadingButton>
         </form>

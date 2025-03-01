@@ -1,5 +1,9 @@
 import { FC, useEffect, useState } from 'react'
-import { DashboardLayout } from '../../component/DashboardLayout/DashboardLayout'
+import { Link } from 'react-router-dom'
+
+import AwayIcon from '../../assets/images/icons/away.svg'
+import HomeIcon from '../../assets/images/icons/home.svg'
+import { Event } from '@/api'
 import {
   Select,
   SelectContent,
@@ -7,23 +11,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Event } from '@/api'
-import { Link, useParams } from 'react-router-dom'
-import HomeIcon from '../../assets/images/icons/home.svg'
-import AwayIcon from '../../assets/images/icons/away.svg'
 
 import './StatisticsView.scss'
+import { useEvents } from '@/hooks/useEvents.ts'
 import { formatSingleEventDate } from '@/utils/date'
+import { SessionInstance } from '@/utils/SessionInstance.ts'
 
-interface StatisticsViewProps {
-  teamEvent: (year: number) => Event[]
-}
 const currentYearValue = new Date().getFullYear()
 
-export const StatisticsView: FC<StatisticsViewProps> = ({ teamEvent }) => {
+export function StatisticsView() {
+  const teamId = SessionInstance.getTeamId()
+  const event = useEvents(teamId, undefined)
+  const teamEvent = event.getTeamEvent
   const [selectedEvent, setSelectedEvent] = useState<Event[]>([])
   const [currentSelectedYear, setCurrentSelectedYear] = useState<number>(currentYearValue)
-  const { teamId } = useParams()
 
   const currentYear = new Date().getFullYear()
   const years = Array.from({ length: 5 }, (_, i) => currentYear - i)
@@ -43,48 +44,45 @@ export const StatisticsView: FC<StatisticsViewProps> = ({ teamEvent }) => {
   })
 
   return (
-    <DashboardLayout>
-      <div className='Statistics-view'>
-        <Select
-          onValueChange={handleYearChange}
-          defaultValue={currentSelectedYear.toString()}
-        >
-          <SelectTrigger className='w-[180px]'>
-            <SelectValue placeholder='Year' />
-          </SelectTrigger>
-          <SelectContent>
-            {years.map((year) => (
-              <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <div className='mt-5 flex flex-col gap-5'>
-          {sortedEvents.length > 0 ? (
-            sortedEvents.map((event) =>
-              teamId && (<EventCard key={event.id} event={event} teamId={teamId}/>),
-            )
-          ) : (
-            <p>No events found for this year.</p>
-          )}
-        </div>
+    <div className='Statistics-view'>
+      <Select
+        onValueChange={handleYearChange}
+        defaultValue={currentSelectedYear.toString()}
+      >
+        <SelectTrigger className='w-[180px]'>
+          <SelectValue placeholder='Year' />
+        </SelectTrigger>
+        <SelectContent>
+          {years.map((year) => (
+            <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      <div className='mt-5 flex flex-col gap-5'>
+        {sortedEvents.length > 0 ? (
+          sortedEvents.map((event) =>
+            teamId && (<EventCard key={event.id} event={event} />),
+          )
+        ) : (
+          <p>No events found for this year.</p>
+        )}
       </div>
-    </DashboardLayout>
+    </div>
   )
 }
 
 interface EventCardProps {
   event: Event;
-  teamId: string;
 }
 
-const EventCard: FC<EventCardProps> = ({ event, teamId }) => {
+const EventCard: FC<EventCardProps> = ({ event }) => {
   return (
-    <div className='Event-card h-20 flex items-center justify-between px-2 md:px-5 border rounded-lg'>
+    <div className='Event-card flex h-20 items-center justify-between rounded-lg border px-2 md:px-5'>
       <div className='w-1/5 text-sm'>
         {formatSingleEventDate(event.startDate)}
       </div>
       <div className='w-1/4 font-medium'>vs. {event.opponent}</div>
-      <div className='bg-[#37003c] rounded-lg p-2 ' title={event.location.toUpperCase()}>
+      <div className='rounded-lg bg-[#37003c] p-2 ' title={event.location.toUpperCase()}>
         {event.location === 'home' ? (
           <img src={HomeIcon} width={20} alt='home-icon'/>
         ) : (
@@ -93,7 +91,7 @@ const EventCard: FC<EventCardProps> = ({ event, teamId }) => {
       </div>
       <Link
         className='border-b border-[#37003c] text-sm'
-        to={`/team/${teamId}/statistics/${event.id}`}
+        to={`/statistics/${event.id}`}
       >
         View Stats
       </Link>

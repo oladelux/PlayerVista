@@ -1,51 +1,45 @@
 import { FC, useMemo } from 'react'
-import { useParams } from 'react-router-dom'
+import { useOutletContext, useParams } from 'react-router-dom'
 
+import ClubLogo from '../../assets/images/club.png'
 import { TeamResponse, Event } from '@/api'
+import { DashboardLayoutOutletContext } from '@/component/DashboardLayout/DashboardLayout.tsx'
+import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
+import { useEvents } from '@/hooks/useEvents.ts'
 import { formatDate } from '@/services/helper.ts'
+import { appService } from '@/singletons'
 import {
   formatSingleEventDate,
   formatSingleEventTime,
 } from '@/utils/date.ts'
-import { EventsHook } from '@/hooks/useEvents.ts'
-
-import { DashboardLayout } from '../../component/DashboardLayout/DashboardLayout.tsx'
-
-import ClubLogo from '../../assets/images/club.png'
 
 import './SingleEventView.scss'
-
-type SingleEventViewProps = {
-  events: EventsHook;
-  teams: TeamResponse[];
-};
-
+import { SessionInstance } from '@/utils/SessionInstance.ts'
 const now = new Date()
 
-export const SingleEventView: FC<SingleEventViewProps> = (props) => {
-  const { events, teams } = props
-  const { teamId, eventId } = useParams()
+export function SingleEventView() {
+  const { events } = useEvents()
+  const { eventId } = useParams()
+  const teamId = SessionInstance.getTeamId()
+  const { teams, teamsError: error, teamsLoading: loading } =
+    useOutletContext<DashboardLayoutOutletContext>()
+  const team = teams.find(team => team.id === teamId)
+  const userData = appService.getUserData()
 
   const isEvent = useMemo(() => {
     if (teamId) {
       return (
-        events.events &&
-        events.events.find((event) => event.id === eventId)
+        events &&
+        events.find((event) => event.id === eventId)
       )
     }
   }, [teamId, events, eventId])
 
-  const isTeam = useMemo(() => {
-    if (teams) {
-      return teams.find((team) => team.id === teamId)
-    }
-  }, [teamId, teams])
-
   const isMatches = useMemo(() => {
     if (teamId) {
       return (
-        events.events &&
-        events.events.filter(
+        events &&
+        events.filter(
           (event) => event.type === 'match' && new Date(event.startDate) > now,
         )
       )
@@ -55,8 +49,8 @@ export const SingleEventView: FC<SingleEventViewProps> = (props) => {
   const isTraining = useMemo(() => {
     if (teamId) {
       return (
-        events.events &&
-        events.events.filter(
+        events &&
+        events.filter(
           (event) =>
             event.type === 'training' && new Date(event.startDate) > now,
         )
@@ -64,28 +58,30 @@ export const SingleEventView: FC<SingleEventViewProps> = (props) => {
     }
   }, [teamId, events])
 
+  if (loading) return <LoadingPage />
+  //TODO: Create Error Page
+  if (error || !userData) return 'This is an error page'
+
   return (
-    <DashboardLayout>
-      <div className='Single-event'>
-        <div className='Single-event__header'>
-          <div className='Single-event__header-title'>Event Updates</div>
-        </div>
-        {isEvent && isTeam && isTraining && isEvent.type === 'training' && (
-          <SingleTraining
-            isEvent={isEvent}
-            isTeam={isTeam}
-            isTraining={isTraining}
-          />
-        )}
-        {isEvent && isTeam && isMatches && isEvent.type === 'match' && (
-          <SingleMatch
-            isEvent={isEvent}
-            isTeam={isTeam}
-            isMatches={isMatches}
-          />
-        )}
+    <div className='Single-event'>
+      <div className='Single-event__header'>
+        <div className='Single-event__header-title'>Event Updates</div>
       </div>
-    </DashboardLayout>
+      {isEvent && team && isTraining && isEvent.type === 'training' && (
+        <SingleTraining
+          isEvent={isEvent}
+          isTeam={team}
+          isTraining={isTraining}
+        />
+      )}
+      {isEvent && team && isMatches && isEvent.type === 'match' && (
+        <SingleMatch
+          isEvent={isEvent}
+          isTeam={team}
+          isMatches={isMatches}
+        />
+      )}
+    </div>
   )
 }
 
