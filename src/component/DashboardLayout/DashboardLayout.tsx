@@ -8,7 +8,6 @@ import { AppSidebar } from '@/component/AppSidebar/AppSidebar.tsx'
 import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
 import { MobileNav } from '@/component/MobileNav/MobileNav.tsx'
 import TeamSwitcher from '@/component/Spinner/TeamSwitcher/TeamSwitcher.tsx'
-import { useIsMobile } from '@/components/hooks/use-mobile.ts'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.tsx'
 import {
   DropdownMenu,
@@ -16,12 +15,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu.tsx'
+import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar.tsx'
 import { useRole } from '@/hooks/useRoles.ts'
 import { useTeams } from '@/hooks/useTeams.ts'
 import { appService } from '@/singletons'
 import useAuth from '@/useAuth.ts'
 import './DashboardLayout.scss'
-import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar.tsx'
 
 type DashboardHeaderProps = {
   teams: TeamResponse[]

@@ -726,7 +726,7 @@ export async function generatePDF(data: { html: string}): Promise<Response> {
 
 type SubscribeData = {
   subscriptionPlan: SubscriptionPlan
-  planPeriod: SubscriptionType
+  planPeriod: SubscriptionFrequencyType
 }
 
 export enum SubscriptionPlan {
@@ -734,7 +734,7 @@ export enum SubscriptionPlan {
   PRO = 'pro',
 }
 
-export enum SubscriptionType {
+export enum SubscriptionFrequencyType {
   MONTHLY = 'monthly',
   YEARLY = 'yearly',
 }
