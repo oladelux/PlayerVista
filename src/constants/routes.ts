@@ -1,5 +1,4 @@
 export enum Routes {
-  HOME='/home',
   LOGIN = '/login',
   DEMO_BOOKING = 'https://calendly.com/admin-playervista/demo-book',
   EMAIL_VERIFICATION = '/verify-email/:hash',
@@ -35,7 +34,6 @@ export enum Routes {
 }
 
 export const routes = {
-  home: Routes.HOME,
   login: Routes.LOGIN,
   demoBooking: Routes.DEMO_BOOKING,
   emailVerification: Routes.EMAIL_VERIFICATION,

@@ -1,5 +1,6 @@
 import { LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { StrictMode } from 'react'
 import * as React from 'react'
 import * as ReactDOM from 'react-dom/client'
 import { Provider } from 'react-redux'
@@ -15,7 +16,6 @@ import { ChangePasswordView } from '@/views/ChangePasswordView/ChangePasswordVie
 import { Dashboard } from '@/views/Dashboard/Dashboard.tsx'
 import { EventsView } from '@/views/EventsView/EventsView.tsx'
 import { ForgotPassword } from '@/views/ForgotPassword/ForgotPassword.tsx'
-import { Home } from '@/views/Home/Home.tsx'
 import { Login } from '@/views/Login/Login.tsx'
 import { ManageTeam } from '@/views/ManageTeams/form/ManageTeam.tsx'
 import { ManageTeams } from '@/views/ManageTeams/ManageTeams.tsx'
@@ -37,13 +37,8 @@ import { EditStaff } from '@/views/UserManagementView/Staffs/EditStaff/EditStaff
 import { Staffs } from '@/views/UserManagementView/Staffs/Staffs.tsx'
 
 import './App.scss'
-import { StrictMode } from 'react'
 
 const router = createBrowserRouter([
-  {
-    path: routes.home,
-    element: <Home />,
-  },
   {
     path: routes.login,
     element: <Login />,
@@ -105,13 +100,14 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
 
-
-  <Provider store={setupStore}>
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <AuthProvider>
-        <RouterProvider router={router} />
-        <Toaster />
-      </AuthProvider>
-    </LocalizationProvider>
-  </Provider>,
+  <StrictMode>
+    <Provider store={setupStore}>
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <AuthProvider>
+          <RouterProvider router={router} />
+          <Toaster />
+        </AuthProvider>
+      </LocalizationProvider>
+    </Provider>
+  </StrictMode>,
 )
