@@ -60,7 +60,7 @@ export function PricingCard({ tier, paymentFrequency, onTierClick }: PricingCard
                 style: 'currency',
                 currency: 'NGN',
                 currencyDisplay: 'narrowSymbol',
-                trailingZeroDisplay: 'stripIfInteger',
+                maximumFractionDigits: 0,
               }}
               value={price}
               className='text-4xl font-medium'
