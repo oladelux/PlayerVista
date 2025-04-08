@@ -1,18 +1,19 @@
-import cl from 'classnames'
 import { ChangeEvent, FormEvent, useState } from 'react'
+
+import cl from 'classnames'
 import { FaRegCheckCircle } from 'react-icons/fa'
 import { Link, useNavigate } from 'react-router-dom'
 
-import { InputField } from '../../component/InputField/InputField'
-import { PasswordInputField } from '../../component/PasswordInputField/PasswordInputField'
 import LoadingButton from '@/component/LoadingButton/LoadingButton.tsx'
 import { getRandomQuote } from '@/constants/randomQuotes.ts'
 import { routes } from '@/constants/routes.ts'
 import { useToast } from '@/hooks/use-toast.ts'
 import { isPasswordValid } from '@/services/validation.ts'
-import './SignUp.scss'
 import useAuth from '@/useAuth.ts'
+import './SignUp.scss'
 
+import { InputField } from '../../component/InputField/InputField'
+import { PasswordInputField } from '../../component/PasswordInputField/PasswordInputField'
 
 const randomQuote = getRandomQuote()
 
@@ -34,7 +35,7 @@ export function SignUp() {
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target
-    setRegistrationData((prev) => {
+    setRegistrationData(prev => {
       return {
         ...prev,
         [name]: value,
@@ -49,7 +50,8 @@ export function SignUp() {
       ...registrationData,
       role: 'admin',
     }
-    signUp(data).then(() => navigate(routes.selectPlan))
+    signUp(data)
+      .then(() => navigate(routes.selectPlan))
       .catch(() => {
         setLoading(false)
         toast({
@@ -60,7 +62,7 @@ export function SignUp() {
       .finally(() => setLoading(false))
   }
 
-  return(
+  return (
     <div className='Sign-up'>
       <div className='Sign-up__hero'>
         <div className='Sign-up__hero-overlay'>
@@ -107,34 +109,57 @@ export function SignUp() {
           </div>
           <div className='Sign-up__form-validate'>
             <div className='Sign-up__form-validate-text'>Must contain 8 characters along with:</div>
-            <div className={cl('Sign-up__form-validate-text', { 'Sign-up__form-validate-text--valid': hasUppercase })}>
+            <div
+              className={cl('Sign-up__form-validate-text', {
+                'Sign-up__form-validate-text--valid': hasUppercase,
+              })}
+            >
               <FaRegCheckCircle
-                className={cl('Sign-up__form-validate-text--icon',
-                  { 'Sign-up__form-validate-text--valid': hasUppercase })}
-              />One UPPERCASE letter
+                className={cl('Sign-up__form-validate-text--icon', {
+                  'Sign-up__form-validate-text--valid': hasUppercase,
+                })}
+              />
+              One UPPERCASE letter
             </div>
-            <div className={cl('Sign-up__form-validate-text', { 'Sign-up__form-validate-text--valid': hasDigit })}>
+            <div
+              className={cl('Sign-up__form-validate-text', {
+                'Sign-up__form-validate-text--valid': hasDigit,
+              })}
+            >
               <FaRegCheckCircle
-                className={cl('Sign-up__form-validate-text--icon',
-                  { 'Sign-up__form-validate-text--valid': hasDigit })}
-              />One number
+                className={cl('Sign-up__form-validate-text--icon', {
+                  'Sign-up__form-validate-text--valid': hasDigit,
+                })}
+              />
+              One number
             </div>
-            <div className={cl('Sign-up__form-validate-text', { 'Sign-up__form-validate-text--valid': hasLowercase })}>
+            <div
+              className={cl('Sign-up__form-validate-text', {
+                'Sign-up__form-validate-text--valid': hasLowercase,
+              })}
+            >
               <FaRegCheckCircle
-                className={cl('Sign-up__form-validate-text--icon',
-                  { 'Sign-up__form-validate-text--valid': hasLowercase })}
-              />One lowercase letter
+                className={cl('Sign-up__form-validate-text--icon', {
+                  'Sign-up__form-validate-text--valid': hasLowercase,
+                })}
+              />
+              One lowercase letter
             </div>
           </div>
           <LoadingButton
             isLoading={loading}
             type='submit'
             className='w-full bg-dark-purple text-white hover:bg-dark-purple hover:text-white'
-          >Sign up
+          >
+            Sign up
           </LoadingButton>
         </form>
-        <div className='Sign-up__form-sign-up'>Already have an account?
-          <Link to={routes.login} className='Sign-up__form-sign-up--bold'>Sign in</Link></div>
+        <div className='Sign-up__form-sign-up'>
+          Already have an account?
+          <Link to={routes.login} className='Sign-up__form-sign-up--bold'>
+            Sign in
+          </Link>
+        </div>
       </div>
     </div>
   )

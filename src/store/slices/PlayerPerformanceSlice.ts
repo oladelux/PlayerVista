@@ -1,6 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 
-import { AsyncThunkLoading, RootState } from '../types'
 import {
   ClientError,
   getPerformanceByEvent,
@@ -9,6 +8,8 @@ import {
   PlayerPerformance,
   PlayerPerformanceResponse,
 } from '@/api'
+
+import { AsyncThunkLoading, RootState } from '../types'
 
 type InitialPlayerPerformanceState = {
   performance: PlayerPerformance[]
@@ -53,17 +54,20 @@ export const getPerformanceByEventThunk = createAsyncThunk<
 
 export const getPerformanceByEventAndPlayerThunk = createAsyncThunk<
   PlayerPerformance,
-  { eventId: string, playerId: string }
->('performance/getPerformanceByEventAndPlayer', async ({ eventId, playerId }, { rejectWithValue }) => {
-  try {
-    return await getPerformanceByEventAndPlayer(eventId, playerId)
-  } catch (e) {
-    if (e instanceof ClientError) {
-      return rejectWithValue(e.message)
+  { eventId: string; playerId: string }
+>(
+  'performance/getPerformanceByEventAndPlayer',
+  async ({ eventId, playerId }, { rejectWithValue }) => {
+    try {
+      return await getPerformanceByEventAndPlayer(eventId, playerId)
+    } catch (e) {
+      if (e instanceof ClientError) {
+        return rejectWithValue(e.message)
+      }
+      return rejectWithValue('Unexpected error in getting performance data')
     }
-    return rejectWithValue('Unexpected error in getting performance data')
-  }
-})
+  },
+)
 
 export const getPerformancesForPlayerThunk = createAsyncThunk<
   PlayerPerformanceResponse,
@@ -83,20 +87,16 @@ export const playerPerformanceSlice = createSlice({
   name: 'performance',
   initialState,
   reducers: {
-    clearPerformanceState: (
-      state,
-    ) => {
+    clearPerformanceState: state => {
       state.performance = []
       state.loadingGettingPlayerPerformanceStatus = 'idle'
     },
-    clearPlayerPerformanceData: (
-      state,
-    ) => {
+    clearPlayerPerformanceData: state => {
       state.playerPerformance = null
       state.loadingGettingPlayerPerformanceByPlayerIdStatus = 'idle'
     },
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
       .addCase(getPerformanceByEventThunk.pending, state => {
         state.loadingGettingPlayerPerformanceStatus = 'pending'
@@ -109,9 +109,7 @@ export const playerPerformanceSlice = createSlice({
         }
       })
       .addCase(getPerformanceByEventThunk.rejected, (state, action) => {
-        if (
-          state.loadingGettingPlayerPerformanceStatus === 'pending'
-        ) {
+        if (state.loadingGettingPlayerPerformanceStatus === 'pending') {
           state.loadingGettingPlayerPerformanceStatus = 'failed'
           console.error('Error getting performance', action.error)
         }
@@ -127,9 +125,7 @@ export const playerPerformanceSlice = createSlice({
         }
       })
       .addCase(getPerformanceByEventAndPlayerThunk.rejected, (state, action) => {
-        if (
-          state.loadingGettingPlayerPerformanceByPlayerAndEventStatus === 'pending'
-        ) {
+        if (state.loadingGettingPlayerPerformanceByPlayerAndEventStatus === 'pending') {
           state.loadingGettingPlayerPerformanceByPlayerAndEventStatus = 'failed'
           console.error('Error getting player performance', action.error)
         }
@@ -145,9 +141,7 @@ export const playerPerformanceSlice = createSlice({
         }
       })
       .addCase(getPerformancesForPlayerThunk.rejected, (state, action) => {
-        if (
-          state.loadingGettingPlayerPerformanceByPlayerIdStatus === 'pending'
-        ) {
+        if (state.loadingGettingPlayerPerformanceByPlayerIdStatus === 'pending') {
           state.loadingGettingPlayerPerformanceByPlayerIdStatus = 'failed'
           console.error('Error getting full player performance', action.error)
         }
@@ -155,10 +149,7 @@ export const playerPerformanceSlice = createSlice({
   },
 })
 
-export const {
-  clearPerformanceState,
-  clearPlayerPerformanceData,
-} = playerPerformanceSlice.actions
+export const { clearPerformanceState, clearPlayerPerformanceData } = playerPerformanceSlice.actions
 
 export const playerPerformanceSelector = (state: RootState) => state.playerPerformance
 

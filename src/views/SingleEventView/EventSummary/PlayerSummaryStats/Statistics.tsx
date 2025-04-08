@@ -21,7 +21,8 @@ export const Statistics: FC<StatisticsProps> = ({ players, performance }) => {
   const offensiveData: OffensiveData[] = data.map(item => {
     const actions = item.actions || {}
     const shotOnTarget = actions.shots?.filter(shot => shot.value === 'SUCCESSFUL')?.length || 0
-    const shotOffTarget = actions.shots?.filter(shot => shot.value === 'NOT_SUCCESSFUL')?.length || 0
+    const shotOffTarget =
+      actions.shots?.filter(shot => shot.value === 'NOT_SUCCESSFUL')?.length || 0
     const completedPasses = actions.passes?.filter(item => item.value === 'SUCCESSFUL')?.length || 0
 
     return {
@@ -59,7 +60,7 @@ export const Statistics: FC<StatisticsProps> = ({ players, performance }) => {
       <div className='Statistics__title'>Player Statistics</div>
       <div className='Statistics__wrapper'>
         <div className='Statistics__wrapper-tab'>
-          {tabCategory.map(category =>
+          {tabCategory.map(category => (
             <TabButton
               className='Statistics__wrapper-tab-category'
               key={category}
@@ -67,16 +68,16 @@ export const Statistics: FC<StatisticsProps> = ({ players, performance }) => {
               onClick={() => setSelectedCategory(category)}
             >
               {category}
-            </TabButton>,
-          )}
+            </TabButton>
+          ))}
         </div>
         <div className='Event-summary__content-section'>
-          {tabCategory.map(category =>
+          {tabCategory.map(category => (
             <TabContent key={category} isActive={selectedCategory === category}>
               {category === 'Offensive' && <Offensive offensiveData={offensiveData} />}
               {category === 'Defensive' && <Defensive defensiveData={defensiveData} />}
-            </TabContent>,
-          )}
+            </TabContent>
+          ))}
         </div>
       </div>
     </div>

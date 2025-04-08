@@ -1,6 +1,7 @@
 import DefaultPlayerImage from '../assets/images/test.png'
 import DefaultPlayerImage2 from '../assets/images/test2.png'
 import DefaultPlayerImage3 from '../assets/images/test3.png'
+
 export const title = 'PlayerVista | Player Management System'
 export const cloudName = import.meta.env.VITE_CLOUD_NAME
 export const cloudUploadPresets = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESETS

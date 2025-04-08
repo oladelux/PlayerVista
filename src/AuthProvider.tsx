@@ -6,7 +6,8 @@ import {
   getAuthenticatedUser,
   loginAuthentication,
   logout,
-  register, SignUpFormData,
+  register,
+  SignUpFormData,
   UnauthorizedError,
 } from '@/api'
 import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
@@ -18,7 +19,7 @@ import { LocalSessionType } from '@/utils/LocalSessionType.ts'
 import { clearLocalStorage } from '@/utils/localStorage.ts'
 
 export interface AuthProviderProps {
-  children: React.ReactNode;
+  children: React.ReactNode
 }
 const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isAuthenticationLoading, setIsAuthenticationLoading] = useState<boolean>(true)
@@ -35,28 +36,31 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }, [])
 
-  const refreshUserData = useCallback(async ( session: LocalSessionType) => {
-    try {
-      const user = await getAuthenticatedUser()
-      appService.setUserData(user)
-      const sessionData: LocalSessionType = {
-        userId: user.id,
-        parentUserId: user.parentUserId,
-        groupId: user.groupId,
-        role: user.role,
-        currentTeamId: session.currentTeamId || user.teamId,
+  const refreshUserData = useCallback(
+    async (session: LocalSessionType) => {
+      try {
+        const user = await getAuthenticatedUser()
+        appService.setUserData(user)
+        const sessionData: LocalSessionType = {
+          userId: user.id,
+          parentUserId: user.parentUserId,
+          groupId: user.groupId,
+          role: user.role,
+          currentTeamId: session.currentTeamId || user.teamId,
+        }
+        await updateSession(sessionData)
+        return user
+      } catch (e) {
+        if (e instanceof UnauthorizedError) {
+          await updateSession(null)
+        } else {
+          console.error('Unhandled error refreshing user data:', e)
+        }
+        return undefined
       }
-      await updateSession(sessionData)
-      return user
-    } catch (e) {
-      if (e instanceof UnauthorizedError) {
-        await updateSession(null)
-      } else {
-        console.error('Unhandled error refreshing user data:', e)
-      }
-      return undefined
-    }
-  }, [updateSession])
+    },
+    [updateSession],
+  )
 
   const signIn = useCallback(
     async (credentials: AuthenticationCredentials) => {
@@ -81,20 +85,23 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     [updateSession],
   )
 
-  const signUp = useCallback(async (data: SignUpFormData) => {
-    try {
-      const res = await register(data)
-      if (res.status === 204) {
-        const loginData = { email: data.email, password: data.password }
-        await signIn(loginData)
-      } else {
-        console.log('Unexpected response from registration')
+  const signUp = useCallback(
+    async (data: SignUpFormData) => {
+      try {
+        const res = await register(data)
+        if (res.status === 204) {
+          const loginData = { email: data.email, password: data.password }
+          await signIn(loginData)
+        } else {
+          console.log('Unexpected response from registration')
+        }
+      } catch (e) {
+        console.error('Registration failed', e)
+        throw e
       }
-    } catch (e) {
-      console.error('Registration failed', e)
-      throw e
-    }
-  }, [signIn])
+    },
+    [signIn],
+  )
 
   const signOut = useCallback(async () => {
     try {

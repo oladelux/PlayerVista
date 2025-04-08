@@ -1,18 +1,16 @@
-import React, { useId } from 'react'
-import { Link } from 'react-router-dom'
+import { useId } from 'react'
 
+import { Link } from 'react-router-dom'
 
 import DashboardActiveIcon from '@/assets/images/icons/dashboard-active.svg'
 import DashboardIcon from '@/assets/images/icons/dashboard.svg'
 import EventActiveIcon from '@/assets/images/icons/event-active.svg'
 import EventIcon from '@/assets/images/icons/event.svg'
+import LogoutIcon from '@/assets/images/icons/logoutIcon.svg'
 import PlayerActiveIcon from '@/assets/images/icons/player-active.svg'
 import PlayerIcon from '@/assets/images/icons/player.svg'
-import PlayerVistaIcon from '@/assets/images/icons/playervista-icon.png'
 import PlayerVistaLogo from '@/assets/images/icons/playervista.png'
 import SettingsIcon from '@/assets/images/icons/settingsIcon.svg'
-import StatisticsActiveIcon from '@/assets/images/icons/statistics-active-icon.svg'
-import StatisticsIcon from '@/assets/images/icons/statistics-icon.svg'
 import TeamsActiveIcon from '@/assets/images/icons/teams-active.svg'
 import TeamsIcon from '@/assets/images/icons/teams.svg'
 import UserManagementActiveIcon from '@/assets/images/icons/user-management-active.svg'
@@ -26,14 +24,17 @@ import {
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
-  SidebarMenuItem, SidebarSeparator, useSidebar,
+  SidebarMenuItem,
+  SidebarSeparator,
+  SidebarTrigger,
+  useSidebar,
 } from '@/components/ui/sidebar'
 
 const footerItems = [
   {
-    title: 'Settings',
-    icon: SettingsIcon,
-    url: '/settings',
+    title: 'Logout',
+    icon: LogoutIcon,
+    url: '/logout',
   },
 ]
 
@@ -67,18 +68,16 @@ const items = [
     url: '/events',
   },
   {
-    title: 'Statistics',
-    tabType: 'STATISTICS',
-    icon: StatisticsIcon,
-    activeImage: StatisticsActiveIcon,
-    url: '/statistics',
-  },
-  {
     title: 'Staff',
     tabType: 'STAFF',
     icon: UserManagementIcon,
     activeImage: UserManagementActiveIcon,
     url: '/staffs',
+  },
+  {
+    title: 'Settings',
+    icon: SettingsIcon,
+    url: '/settings',
   },
 ]
 
@@ -89,16 +88,21 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible='icon'>
       <SidebarHeader className={state === 'expanded' ? 'p-5' : 'p-2'}>
-        {state === 'expanded' ?
-          <img src={PlayerVistaLogo} alt='playervista' width={150}/> :
-          <img src={PlayerVistaIcon} alt='playervista' width={30} className='rounded-lg ' />}
+        {state === 'expanded' ? (
+          <div className='flex items-center justify-between gap-2'>
+            <img src={PlayerVistaLogo} alt='playervista' width={150} />
+            <SidebarTrigger />
+          </div>
+        ) : (
+          <SidebarTrigger />
+        )}
       </SidebarHeader>
       <SidebarSeparator />
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map((item) => (
+              {items.map(item => (
                 <SidebarMenuItem key={keyId} className='mb-2'>
                   <SidebarMenuButton asChild>
                     <Link to={item.url}>
@@ -119,7 +123,7 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
-          {footerItems.map((item) => (
+          {footerItems.map(item => (
             <SidebarMenuItem key={keyId} className='mb-4'>
               <SidebarMenuButton asChild>
                 <Link to={item.url}>

@@ -43,10 +43,10 @@ export class PerformanceService {
     }
     from(getPerformancesForPlayer(playerId))
       .pipe(
-        map((xResponse) => {
+        map(xResponse => {
           this.updateState({ performanceByPlayer: xResponse.data, loading: false })
         }),
-        catchError((e) => {
+        catchError(e => {
           this.updateState({ performanceByPlayer: [], loading: false, error: e.message })
           return []
         }),
@@ -54,21 +54,22 @@ export class PerformanceService {
       .subscribe()
   }
 
-  public getPerformanceByEventAndPlayer(
-    eventId: string | undefined,
-    playerId: string | undefined,
-  ) {
+  public getPerformanceByEventAndPlayer(eventId: string | undefined, playerId: string | undefined) {
     this.updateState({ loading: true, error: undefined })
     if (!eventId || !playerId) {
-      this.updateState({ performanceByEventAndPlayer: null, loading: false, error: 'No player or event found' })
+      this.updateState({
+        performanceByEventAndPlayer: null,
+        loading: false,
+        error: 'No player or event found',
+      })
       return
     }
     from(getPerformanceByEventAndPlayer(eventId, playerId))
       .pipe(
-        map((xResponse) => {
+        map(xResponse => {
           this.updateState({ performanceByEventAndPlayer: xResponse, loading: false })
         }),
-        catchError((e) => {
+        catchError(e => {
           this.updateState({ performanceByEventAndPlayer: null, loading: false, error: e.message })
           return []
         }),
@@ -84,10 +85,10 @@ export class PerformanceService {
     }
     from(getPerformanceByEvent(eventId))
       .pipe(
-        map((xResponse) => {
+        map(xResponse => {
           this.updateState({ performanceByEvent: xResponse, loading: false })
         }),
-        catchError((e) => {
+        catchError(e => {
           this.updateState({ performanceByEvent: [], loading: false, error: e.message })
           return []
         }),

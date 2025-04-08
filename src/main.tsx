@@ -1,12 +1,11 @@
+import { StrictMode } from 'react'
+
 import { LocalizationProvider } from '@mui/x-date-pickers'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
-import { StrictMode } from 'react'
-import * as React from 'react'
 import * as ReactDOM from 'react-dom/client'
 import { Provider } from 'react-redux'
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
 
-import { setupStore } from './store'
 import AuthProvider from '@/AuthProvider.tsx'
 import { AuthRequiredWrapper } from '@/AuthRequiredWrapper.tsx'
 import { Layout } from '@/component/Layout/Layout.tsx'
@@ -21,7 +20,6 @@ import { ManageTeam } from '@/views/ManageTeams/form/ManageTeam.tsx'
 import { ManageTeams } from '@/views/ManageTeams/ManageTeams.tsx'
 import { AddPlayer } from '@/views/PlayersView/AddPlayer/AddPlayer.tsx'
 import { EditPlayer } from '@/views/PlayersView/EditPlayer/EditPlayer.tsx'
-import PlayerStats from '@/views/PlayersView/PlayerStats/PlayerStats.tsx'
 import { PlayersView } from '@/views/PlayersView/PlayersView.tsx'
 import SelectPlan from '@/views/SelectPlan/SelectPlan.tsx'
 import { SettingsView } from '@/views/SettingsView/SettingsView.tsx'
@@ -37,6 +35,9 @@ import { EditStaff } from '@/views/UserManagementView/Staffs/EditStaff/EditStaff
 import { Staffs } from '@/views/UserManagementView/Staffs/Staffs.tsx'
 
 import './App.scss'
+import { setupStore } from './store'
+import { PlayerStats } from './views/PlayersView/PlayerStats/PlayerStats'
+import { TeamStats } from './views/TeamStats/TeamStats'
 
 const router = createBrowserRouter([
   {
@@ -83,6 +84,7 @@ const router = createBrowserRouter([
       { path: routes.players, element: <PlayersView /> },
       { path: routes.managePlayer, element: <EditPlayer /> },
       { path: routes.playerStats, element: <PlayerStats /> },
+      { path: routes.teamStats, element: <TeamStats /> },
       { path: routes.events, element: <EventsView /> },
       { path: routes.singleEvent, element: <SingleEventView /> },
       { path: routes.statistics, element: <StatisticsView /> },
@@ -99,7 +101,6 @@ const router = createBrowserRouter([
 ])
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-
   <StrictMode>
     <Provider store={setupStore}>
       <LocalizationProvider dateAdapter={AdapterDayjs}>

@@ -1,12 +1,9 @@
-import { useParams } from 'react-router-dom'
-
-import { EventCalender } from '../../component/EventCalender/EventCalender.tsx'
 import { useEvents } from '@/hooks/useEvents.ts'
 import { useUpdates } from '@/hooks/useUpdates.ts'
-
-import './EventsView.scss'
 import { SessionInstance } from '@/utils/SessionInstance.ts'
 
+import { EventCalender } from '../../component/EventCalender/EventCalender.tsx'
+import './EventsView.scss'
 
 export function EventsView() {
   const teamId = SessionInstance.getTeamId()

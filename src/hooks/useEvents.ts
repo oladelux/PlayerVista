@@ -22,9 +22,7 @@ export const useEvents = (teamId?: string, eventId?: string) => {
   })
 
   function getTeamEvent(year: number) {
-    return events.filter(
-      (event) => new Date(event.startDate).getFullYear() === year,
-    )
+    return events.filter(event => new Date(event.startDate).getFullYear() === year)
   }
 
   useEffect(() => {
@@ -34,10 +32,10 @@ export const useEvents = (teamId?: string, eventId?: string) => {
       setLoading(state.loading)
       setError(state.error)
     })
-    if(teamId){
+    if (teamId) {
       eventService.getEventsByTeamId(teamId)
     }
-    if(eventId){
+    if (eventId) {
       eventService.getEvent(eventId)
     }
 

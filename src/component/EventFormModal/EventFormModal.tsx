@@ -1,11 +1,14 @@
+import { FC, useEffect, useMemo, useState } from 'react'
+
 import { zodResolver } from '@hookform/resolvers/zod'
-import React, { FC, useEffect, useMemo, useState } from 'react'
 import ReactDOM from 'react-dom'
 import { Control, useForm } from 'react-hook-form'
-import { useParams } from 'react-router-dom'
 
-import { Popup } from '../Popup/Popup.tsx'
-import { eventSchema, EventSchemaIn, EventSchemaOut } from '@/component/EventFormModal/eventFormSchema.ts'
+import {
+  eventSchema,
+  EventSchemaIn,
+  EventSchemaOut,
+} from '@/component/EventFormModal/eventFormSchema.ts'
 import LoadingButton from '@/component/LoadingButton/LoadingButton.tsx'
 import InputFormField from '@/components/form/InputFormField.tsx'
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form.tsx'
@@ -16,11 +19,12 @@ import { combinedDate } from '@/services/helper.ts'
 import { createEventThunk } from '@/store/slices/EventsSlice.ts'
 import { useAppDispatch } from '@/store/types.ts'
 
-import './EventFormModal.scss'
 import { useToast } from '@/hooks/use-toast.ts'
 import useAuth from '@/useAuth.ts'
 import { SessionInstance } from '@/utils/SessionInstance.ts'
+import './EventFormModal.scss'
 
+import { Popup } from '../Popup/Popup.tsx'
 
 type EventFormModalProps = {
   /**
@@ -60,7 +64,7 @@ const EventFormModal: FC<EventFormModalProps> = ({ onClose, startDate, logger })
   }, [defaultValues, form])
 
   async function onSubmit(values: EventSchemaOut) {
-    if(!teamId || !localSession) return
+    if (!teamId || !localSession) return
     setLoading(true)
     const data = {
       type: 'match',
@@ -76,7 +80,11 @@ const EventFormModal: FC<EventFormModalProps> = ({ onClose, startDate, logger })
     await dispatch(createEventThunk({ data }))
       .unwrap()
       .then(() => {
-        logger.setUpdate({ message: 'added a new event', userId: localSession.userId, groupId: localSession.groupId })
+        logger.setUpdate({
+          message: 'added a new event',
+          userId: localSession.userId,
+          groupId: localSession.groupId,
+        })
         logger.sendUpdates(localSession.groupId)
         toast({
           variant: 'success',
@@ -84,7 +92,8 @@ const EventFormModal: FC<EventFormModalProps> = ({ onClose, startDate, logger })
         })
         setLoading(false)
         onClose()
-      }).catch(() => {
+      })
+      .catch(() => {
         setLoading(false)
         toast({
           variant: 'error',
@@ -100,7 +109,9 @@ const EventFormModal: FC<EventFormModalProps> = ({ onClose, startDate, logger })
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <div>
               <div className='text-lg font-bold'>Match Information</div>
-              <div className='text-sm text-gray-500'>Fill in the information below to create an event</div>
+              <div className='text-sm text-gray-500'>
+                Fill in the information below to create an event
+              </div>
             </div>
             <div className='my-5'>
               <FormField
@@ -109,13 +120,17 @@ const EventFormModal: FC<EventFormModalProps> = ({ onClose, startDate, logger })
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className='flex gap-10'>
+                      <RadioGroup
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        className='flex gap-10'
+                      >
                         <div className='flex items-center space-x-2'>
-                          <RadioGroupItem value='home' id='home'/>
+                          <RadioGroupItem value='home' id='home' />
                           <Label htmlFor='home'>Home</Label>
                         </div>
                         <div className='flex items-center space-x-2'>
-                          <RadioGroupItem value='away' id='away'/>
+                          <RadioGroupItem value='away' id='away' />
                           <Label htmlFor='away'>Away</Label>
                         </div>
                       </RadioGroup>
@@ -192,8 +207,7 @@ export const EventFormModalPortal: FC<EventFormModalProps> = props => {
   const container = document.body
 
   return ReactDOM.createPortal(
-    <EventFormModal
-      onClose={props.onClose}
-      startDate={props.startDate}
-      logger={props.logger} />, container)
+    <EventFormModal onClose={props.onClose} startDate={props.startDate} logger={props.logger} />,
+    container,
+  )
 }

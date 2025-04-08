@@ -6,7 +6,7 @@ import { performanceService } from '@/singletons'
 /**
  * Hook to manage performance.
  */
-export const usePerformance = (playerId?: string, eventId?: string ) => {
+export const usePerformance = (playerId?: string, eventId?: string) => {
   const [performanceByPlayer, setPerformanceByPlayer] = useState<PlayerPerformance[]>([])
   const [performanceByEvent, setPerformanceByEvent] = useState<PlayerPerformance[]>([])
   const [performanceByEventAndPlayer, setPerformanceByEventAndPlayer] =
@@ -22,7 +22,7 @@ export const usePerformance = (playerId?: string, eventId?: string ) => {
       setLoading(state.loading)
       setError(state.error)
     })
-    if (playerId){
+    if (playerId) {
       performanceService.getPerformanceByPlayerId(playerId)
     }
     if (eventId) {

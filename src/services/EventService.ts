@@ -1,7 +1,7 @@
 import { BehaviorSubject, from } from 'rxjs'
 import { catchError, map } from 'rxjs/operators'
 
-import { Event, SingleEventType, getSingleEvent, getEventsByTeamId } from '@/api'
+import { Event, SingleEventType, getEventsByTeamId, getSingleEvent } from '@/api'
 
 type EventState = {
   events: Event[]
@@ -36,10 +36,10 @@ export class EventService {
     }
     from(getEventsByTeamId(teamId))
       .pipe(
-        map((xResponse) => {
+        map(xResponse => {
           this.updateState({ events: xResponse.data, loading: false })
         }),
-        catchError((e) => {
+        catchError(e => {
           this.updateState({ events: [], loading: false, error: e.message })
           return []
         }),
@@ -55,10 +55,10 @@ export class EventService {
     }
     from(getSingleEvent(eventId))
       .pipe(
-        map((xResponse) => {
+        map(xResponse => {
           this.updateState({ event: xResponse, loading: false })
         }),
-        catchError((e) => {
+        catchError(e => {
           this.updateState({ event: null, loading: false, error: e.message })
           return []
         }),

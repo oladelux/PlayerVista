@@ -1,8 +1,6 @@
 import { useState } from 'react'
 
-import {
-  generatePDF,
-} from '@/api'
+import { generatePDF } from '@/api'
 import LoadingButton from '@/component/LoadingButton/LoadingButton.tsx'
 import { PdfType } from '@/config/PdfType.ts'
 import { useToast } from '@/hooks/use-toast.ts'
@@ -10,18 +8,22 @@ import { downloadBlob } from '@/utils/downloadFile.ts'
 import { renderHTML } from '@/utils/pdfGenerate.ts'
 
 type DownloadPdfButtonProps<T> = {
-  filename: string,
-  pdfType: PdfType,
-  templateName: string,
-  data: T,
+  filename: string
+  pdfType: PdfType
+  templateName: string
+  data: T
 }
 
-export default function DownloadPdfButton<T>(
-  { filename, pdfType, templateName, data }: DownloadPdfButtonProps<T> ) {
+export default function DownloadPdfButton<T>({
+  filename,
+  pdfType,
+  templateName,
+  data,
+}: DownloadPdfButtonProps<T>) {
   const [loading, setLoading] = useState(false)
   const { toast } = useToast()
 
-  async function savePdf(){
+  async function savePdf() {
     setLoading(true)
     try {
       const html = await renderHTML(templateName, data)

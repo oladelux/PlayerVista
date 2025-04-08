@@ -1,11 +1,11 @@
 import { FC, useEffect } from 'react'
+
 import { Link, useNavigate, useParams } from 'react-router-dom'
 
 import { AuthenticatedUserData, TeamResponse } from '../../api'
 import { DashboardHeader } from '../../component/DashboardLayout/DashboardLayout'
 import { useCountdown } from '../../hooks/useCountdown.ts'
 import { UserHook } from '../../hooks/useUser.ts'
-
 
 import './EmailVerification.scss'
 
@@ -28,24 +28,35 @@ export const EmailVerification: FC<EmailVerificationProps> = ({ teams, user, use
 
   return (
     <>
-      <DashboardHeader teams={teams}/>
+      <DashboardHeader
+        teams={teams}
+        titleDescription={{ title: 'Email Verification', description: '' }}
+      />
       <div className='Email-verification'>
-        {!countdown.emailVerified &&
-            <div className='Email-verification__wrapper'>
-              <div className='Email-verification__wrapper-title'>Verifying Email Address</div>
-              <div className='Email-verification__wrapper-text'>Redirecting to dashboard in {countdown.secondsRemaining}</div>
-              <div className='Email-verification__wrapper-text'>
-                Click <Link
-                  to='#'
-                  onClick={countdown.navigateToDashboard}
-                  className='Email-verification__wrapper-text--link'
-                >here</Link> if it doesn't automatically redirect
-              </div>
-              {countdown.emailVerificationFailed &&
-                <div className='Email-verification__wrapper-failed'>Email verification unsuccessful...</div>
-              }
+        {!countdown.emailVerified && (
+          <div className='Email-verification__wrapper'>
+            <div className='Email-verification__wrapper-title'>Verifying Email Address</div>
+            <div className='Email-verification__wrapper-text'>
+              Redirecting to dashboard in {countdown.secondsRemaining}
             </div>
-        }
+            <div className='Email-verification__wrapper-text'>
+              Click{' '}
+              <Link
+                to='#'
+                onClick={countdown.navigateToDashboard}
+                className='Email-verification__wrapper-text--link'
+              >
+                here
+              </Link>{' '}
+              if it doesn't automatically redirect
+            </div>
+            {countdown.emailVerificationFailed && (
+              <div className='Email-verification__wrapper-failed'>
+                Email verification unsuccessful...
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </>
   )
