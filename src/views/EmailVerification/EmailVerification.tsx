@@ -30,7 +30,9 @@ export const EmailVerification: FC<EmailVerificationProps> = ({ teams, user, use
     <>
       <DashboardHeader
         teams={teams}
-        titleDescription={{ title: 'Email Verification', description: '' }}
+        title='Email Verification'
+        description='Verify your email address to continue'
+        backLink={'/login'}
       />
       <div className='Email-verification'>
         {!countdown.emailVerified && (

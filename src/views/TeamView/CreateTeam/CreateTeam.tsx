@@ -1,410 +1,128 @@
-import { ChangeEvent, FC, useState } from 'react'
+import { useState } from 'react'
 
-import CenterFocusWeakIcon from '@mui/icons-material/CenterFocusWeak'
-import { Field } from 'formik'
-import { useNavigate, useOutletContext } from 'react-router-dom'
+import { Check, ShieldCheck } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 
-import { AuthenticatedUserData, TeamFormData, TeamResponse, uploadImageToCloudinary } from '@/api'
-import {
-  DashboardHeader,
-  DashboardLayoutOutletContext,
-} from '@/component/DashboardLayout/DashboardLayout.tsx'
-import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
-import { SuccessConfirmationPopup } from '@/component/SuccessConfirmation/SuccessConfirmation.tsx'
-import { cloudName, cloudUploadPresets } from '@/config/constants.ts'
-import { useUpdates, UseUpdates } from '@/hooks/useUpdates.ts'
+import { TeamFormData } from '@/api'
+import { TeamMultiStepForm } from '@/components/team/TeamMultiStepForm'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { useToast } from '@/hooks/use-toast'
+import { useUpdates } from '@/hooks/useUpdates'
+import { TeamFormValues } from '@/lib/schema/teamSchema'
 import { appService, teamService } from '@/singletons'
 
-import { FormikStep, FormikStepper } from './Step'
-
-import './CreateTeam.scss'
-
-type DashboardCreateTeamProps = {
-  logger: UseUpdates
-  user: AuthenticatedUserData
-  teams: TeamResponse[]
-}
-
 export function CreateTeam() {
-  const logger = useUpdates()
-  const userData = appService.getUserData()
-
-  //TODO: Create Error Page
-  if (!userData) return 'This is an error page'
-
-  return (
-    <>
-      <DashboardHeader teams={[]} />
-      <div className='Create-team'>
-        <div className='Create-team__content p-3 md:p-11'>
-          <div className='Create-team__content-header'>
-            <div className='Create-team__content-header-title'>Hello Admin,</div>
-            <div className='Create-team__content-header-sub-title'>
-              Let’s create a team for you in three easy steps
-            </div>
-          </div>
-          <CreateTeamMultiStep logger={logger} user={userData} teams={[]} />
-        </div>
-      </div>
-    </>
-  )
-}
-
-export function DashboardCreateTeam() {
-  const {
-    teams,
-    teamsError: error,
-    teamsLoading: loading,
-  } = useOutletContext<DashboardLayoutOutletContext>()
-
-  const logger = useUpdates()
-  const userData = appService.getUserData()
-
-  if (loading) return <LoadingPage />
-  //TODO: Create Error Page
-  if (error || !userData) return 'This is an error page'
-
-  return (
-    <div className='Create-team'>
-      <div className='Create-team__content px-12 py-10'>
-        <div className='Create-team__content-header'>
-          <div className='Create-team__content-header-title'>Hello Admin,</div>
-          <div className='Create-team__content-header-sub-title'>
-            Let’s create a team for you in three easy steps
-          </div>
-        </div>
-        <CreateTeamMultiStep logger={logger} user={userData} teams={teams} />
-      </div>
-    </div>
-  )
-}
-
-const CreateTeamMultiStep: FC<DashboardCreateTeamProps> = ({ logger, user }) => {
   const navigate = useNavigate()
-  const [selectedImage, setSelectedImage] = useState<string>('')
-  const [file, setFile] = useState<string>('')
-  const [isUploading, setIsUploading] = useState(false)
+  const { toast } = useToast()
+  const [showSuccess, setShowSuccess] = useState(false)
+  const user = appService.getUserData()
+  const logger = useUpdates()
 
-  const [isActiveConfirmationPopup, setIsActiveConfirmationPopup] = useState(false)
+  const handleSubmit = async (values: TeamFormValues) => {
+    if (!user) {
+      console.error('User not found')
+      return
+    }
+    const data: TeamFormData = {
+      ...values,
+      userId: user.id,
+      creationYear: new Date(values.creationYear).getFullYear().toString(),
+      logo: values.logo || '',
+      headCoach: values.headCoach || '',
+      headCoachContact: values.headCoachContact || '',
+      assistantCoach: values.assistantCoach || '',
+      assistantCoachContact: values.assistantCoachContact || '',
+      medicalPersonnel: values.medicalPersonnel || '',
+      medicalPersonnelContact: values.medicalPersonnelContact || '',
+      kitManager: values.kitManager || '',
+      kitManagerContact: values.kitManagerContact || '',
+      mediaManager: values.mediaManager || '',
+      mediaManagerContact: values.mediaManagerContact || '',
+      logisticsCoordinator: values.logisticsCoordinator || '',
+      logisticsCoordinatorContact: values.logisticsCoordinatorContact || '',
+      stadiumName: values.stadiumName,
+      street: values.street,
+      postcode: values.postcode,
+      city: values.city,
+      country: values.country,
+      ageGroup: values.ageGroup || '',
+      teamGender: values.teamGender || '',
+      teamName: values.teamName,
+    }
+    teamService.insert(data).then(() => {
+      logger.setUpdate({
+        message: 'added a new team',
+        userId: user.id,
+        groupId: user.groupId,
+      })
+      logger.sendUpdates(user.groupId)
+      navigate('/')
+    })
 
-  const openConfirmationPopup = () => setIsActiveConfirmationPopup(true)
-  const closeConfirmationPopup = async () => {
-    setIsActiveConfirmationPopup(false)
-    navigate('/team')
+    // In a real app, you'd dispatch an action or call an API here
+    // For demo purposes, we'll just simulate a delay
+    await new Promise(resolve => setTimeout(resolve, 1500))
+
+    setShowSuccess(true)
+    toast({
+      variant: 'success',
+      description: `${data.teamName} has been created and you're all set to go!`,
+    })
   }
 
-  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const imgFile = e.target.files
-    if (imgFile) {
-      setSelectedImage(URL.createObjectURL(imgFile[0]))
-      setIsUploading(true)
-
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        uploadImageToCloudinary({
-          folder: 'teamImage',
-          file: reader.result as string,
-          cloud_name: cloudName,
-          upload_preset: cloudUploadPresets,
-        })
-          .then(res => {
-            setIsUploading(false)
-            setFile(res.url)
-          })
-          .catch(err => {
-            console.error('Error uploading image:', err)
-            setIsUploading(false)
-          })
-      }
-      reader.readAsDataURL(imgFile[0])
-    }
+  const handleGoToDashboard = () => {
+    navigate('/')
   }
 
   return (
-    <div className='Multi-step'>
-      <FormikStepper
-        initialValues={{
-          teamName: '',
-          creationYear: '',
-          teamGender: '',
-          ageGroup: '',
-          headCoach: '',
-          headCoachContact: '',
-          assistantCoach: '',
-          assistantCoachContact: '',
-          medicalPersonnel: '',
-          medicalPersonnelContact: '',
-          kitManager: '',
-          kitManagerContact: '',
-          mediaManager: '',
-          mediaManagerContact: '',
-          logisticsCoordinator: '',
-          logisticsCoordinatorContact: '',
-          stadiumName: '',
-          street: '',
-          postcode: '',
-          city: '',
-          country: '',
-        }}
-        onSubmit={async (values, { resetForm }) => {
-          const data: TeamFormData = {
-            ...(values as TeamFormData),
-            userId: user.id,
-            creationYear: new Date(values.creationYear).getFullYear().toString(),
-            logo: file,
-          }
-          teamService.insert(data).then(() => {
-            logger.setUpdate({
-              message: 'added a new team',
-              userId: user.id,
-              groupId: user.groupId,
-            })
-            logger.sendUpdates(user.groupId)
-            openConfirmationPopup()
-            resetForm()
-            navigate('/')
-          })
-        }}
-      >
-        <FormikStep label='Team Info'>
-          <div className='Multi-step__title'>Please provide the following details</div>
-          <div className='Multi-step__team'>
-            <div className='Multi-step__team-image'>
-              <input
-                id='teamImage'
-                name='teamImage'
-                className='Multi-step__team-image--input'
-                type='file'
-                accept='image/*'
-                onChange={handleImageChange}
-                disabled={isUploading}
-              />
-              <label htmlFor='teamImage' className='Multi-step__team-image--label'>
-                <div className='Multi-step__team-image--label-preview'>
-                  {selectedImage ? (
-                    <img
-                      alt='preview'
-                      className='Multi-step__team-image--label-preview-img'
-                      src={selectedImage}
-                    />
-                  ) : (
-                    <CenterFocusWeakIcon className='Multi-step__team-image--label-preview-icon' />
-                  )}
+    <div className='flex min-h-screen flex-col bg-background'>
+      <header className='sticky top-0 z-10 border-b bg-white/95 backdrop-blur-sm'>
+        <div className='container flex h-16 items-center px-4 sm:px-6'>
+          <div className='flex items-center gap-2'>
+            <ShieldCheck className='size-6 text-primary' />
+            <span className='text-xl font-semibold'>Team Manager</span>
+          </div>
+        </div>
+      </header>
+
+      <main className='flex-1 py-10'>
+        <div className='container mx-auto max-w-7xl px-4'>
+          {showSuccess ? (
+            <Card className='mx-auto max-w-2xl border-green-100 shadow-md'>
+              <CardHeader className='pb-2'>
+                <CardTitle className='flex items-center gap-2 text-2xl text-green-600'>
+                  <Check className='size-6' />
+                  Welcome to Team Manager!
+                </CardTitle>
+                <CardDescription>Your team has been created successfully.</CardDescription>
+              </CardHeader>
+              <CardContent className='pt-4'>
+                <p className='mb-6 text-muted-foreground'>
+                  You're all set to start managing your team. Your dashboard is ready with all the
+                  tools you need to add players, schedule matches, and track performance.
+                </p>
+                <div className='flex flex-col gap-3 sm:flex-row'>
+                  <Button onClick={handleGoToDashboard}>Go to Dashboard</Button>
                 </div>
-              </label>
-              <div className='Multi-step__team-image--title'>Choose your team logo</div>
-            </div>
-          </div>
-          <div className='Multi-step__layout'>
-            <div className='Multi-step__layout-form-group'>
-              <div className='Multi-step__layout-form-group--label'>Team Name</div>
-              <Field
-                className='Multi-step__layout-form-group--field'
-                type='text'
-                name='teamName'
-                placeholder='Enter name of team here'
-              />
-            </div>
-            <div className='Multi-step__layout-form-group'>
-              <div className='Multi-step__layout-form-group--label'>Year of Establishment</div>
-              <Field
-                className='Multi-step__layout-form-group--field'
-                type='text'
-                name='creationYear'
-                placeholder='Select Date'
-              />
-            </div>
-            <div className='Multi-step__layout-form-group'>
-              <div className='Multi-step__layout-form-group--label'>Team Gender</div>
-              <Field
-                className='Multi-step__layout-form-group--field'
-                as='select'
-                name='teamGender'
-                placeholder='Select Gender'
-              >
-                <option>Select Gender</option>
-                <option value='Male'>Male</option>
-                <option value='Female'>Female</option>
-              </Field>
-            </div>
-            <div className='Multi-step__layout-form-group'>
-              <div className='Multi-step__layout-form-group--label'>Age Group</div>
-              <Field className='Multi-step__layout-form-group--field' as='select' name='ageGroup'>
-                <option>Select Age Group</option>
-                <option value='under-7'>Under-7</option>
-                <option value='under-9'>Under-9</option>
-                <option value='under-11'>Under-11</option>
-                <option value='under-13'>Under-13</option>
-                <option value='under-15'>Under-15</option>
-                <option value='under-17'>Under-17</option>
-                <option value='under-19'>Under-19</option>
-                <option value='under-21'>Under-21</option>
-                <option value='senior-team'>Senior Team</option>
-              </Field>
-            </div>
-          </div>
-        </FormikStep>
-        <FormikStep label='Team Personnel'>
-          <div className='Multi-step__title'>Please provide the following details</div>
-          <div className='Multi-step__layout'>
-            <div className='Multi-step__layout-form-group'>
-              <div className='Multi-step__layout-form-group--label'>Head Coach \ Contact</div>
-              <div className='Multi-step__layout-form-group--2'>
-                <Field
-                  className='Multi-step__layout-form-group--2__field'
-                  type='text'
-                  name='headCoach'
-                  placeholder='Enter name of head coach'
-                />
-                <Field
-                  className='Multi-step__layout-form-group--2__field'
-                  type='tel'
-                  name='headCoachContact'
-                  placeholder='Phone Number'
-                />
+              </CardContent>
+            </Card>
+          ) : (
+            <div className='space-y-6'>
+              <div className='mx-auto mb-8 max-w-3xl text-center'>
+                <h1 className='text-3xl font-bold tracking-tight sm:text-4xl'>
+                  Welcome to Team Manager
+                </h1>
+                <p className='mt-3 text-lg text-muted-foreground'>
+                  Let's set up your first team in a few simple steps
+                </p>
               </div>
+
+              <TeamMultiStepForm onSubmit={handleSubmit} />
             </div>
-            <div className='Multi-step__layout-form-group'>
-              <div className='Multi-step__layout-form-group--label'>Assistant Coach \ Contact</div>
-              <div className='Multi-step__layout-form-group--2'>
-                <Field
-                  className='Multi-step__layout-form-group--2__field'
-                  type='text'
-                  name='assistantCoach'
-                  placeholder='Enter name of assistant coach'
-                />
-                <Field
-                  className='Multi-step__layout-form-group--2__field'
-                  type='tel'
-                  name='assistantCoachContact'
-                  placeholder='Phone Number'
-                />
-              </div>
-            </div>
-            <div className='Multi-step__layout-form-group'>
-              <div className='Multi-step__layout-form-group--label'>
-                Medical Personnel \ Contact
-              </div>
-              <div className='Multi-step__layout-form-group--2'>
-                <Field
-                  className='Multi-step__layout-form-group--2__field'
-                  type='text'
-                  name='medicalPersonnel'
-                  placeholder='Enter name of Medical Staff'
-                />
-                <Field
-                  className='Multi-step__layout-form-group--2__field'
-                  type='tel'
-                  name='medicalPersonnelContact'
-                  placeholder='Phone Number'
-                />
-              </div>
-            </div>
-            <div className='Multi-step__layout-form-group'>
-              <div className='Multi-step__layout-form-group--label'>Kit Manager \ Contact</div>
-              <div className='Multi-step__layout-form-group--2'>
-                <Field
-                  className='Multi-step__layout-form-group--2__field'
-                  type='text'
-                  name='kitManager'
-                  placeholder='Enter name of kit manager'
-                />
-                <Field
-                  className='Multi-step__layout-form-group--2__field'
-                  type='tel'
-                  name='kitManagerContact'
-                  placeholder='Phone Number'
-                />
-              </div>
-            </div>
-            <div className='Multi-step__layout-form-group'>
-              <div className='Multi-step__layout-form-group--label'>Media Manager \ Contact</div>
-              <div className='Multi-step__layout-form-group--2'>
-                <Field
-                  className='Multi-step__layout-form-group--2__field'
-                  type='text'
-                  name='mediaManager'
-                  placeholder='Enter name of media manager'
-                />
-                <Field
-                  className='Multi-step__layout-form-group--2__field'
-                  type='tel'
-                  name='mediaManagerContact'
-                  placeholder='Phone Number'
-                />
-              </div>
-            </div>
-            <div className='Multi-step__layout-form-group'>
-              <div className='Multi-step__layout-form-group--label'>
-                Logistics Coordinator \ Contact
-              </div>
-              <div className='Multi-step__layout-form-group--2'>
-                <Field
-                  className='Multi-step__layout-form-group--2__field'
-                  type='text'
-                  name='logisticsCoordinator'
-                  placeholder='Enter name of logistics coordinator'
-                />
-                <Field
-                  className='Multi-step__layout-form-group--2__field'
-                  type='tel'
-                  name='logisticsCoordinatorContact'
-                  placeholder='Phone Number'
-                />
-              </div>
-            </div>
-          </div>
-        </FormikStep>
-        <FormikStep label='Team Details'>
-          <div className='Multi-step__title'>Please provide the following details</div>
-          <div className='Multi-step__layout'>
-            <div className='Multi-step__layout-form-group'>
-              <div className='Multi-step__layout-form-group--label'>Name of Stadium</div>
-              <Field
-                className='Multi-step__layout-form-group--field'
-                type='text'
-                name='stadiumName'
-                placeholder='Enter name of stadium here'
-              />
-            </div>
-            <div className='Multi-step__layout-form-group'>
-              <div className='Multi-step__layout-form-group--label'>Location of Stadium</div>
-              <div className='Multi-step__layout-form-group--3'>
-                <Field
-                  className='Multi-step__layout-form-group--3__field'
-                  type='text'
-                  name='street'
-                  placeholder='Street'
-                />
-                <Field
-                  className='Multi-step__layout-form-group--3__field'
-                  type='string'
-                  name='postcode'
-                  placeholder='Postcode'
-                />
-                <Field
-                  className='Multi-step__layout-form-group--3__field'
-                  type='text'
-                  name='city'
-                  placeholder='City'
-                />
-                <Field
-                  className='Multi-step__layout-form-group--3__field'
-                  type='text'
-                  name='country'
-                  placeholder='Country'
-                />
-              </div>
-            </div>
-          </div>
-        </FormikStep>
-      </FormikStepper>
-      {isActiveConfirmationPopup && (
-        <SuccessConfirmationPopup
-          onClose={closeConfirmationPopup}
-          title='Team added successfully'
-        />
-      )}
+          )}
+        </div>
+      </main>
     </div>
   )
 }
