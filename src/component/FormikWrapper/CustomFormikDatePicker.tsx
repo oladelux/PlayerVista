@@ -6,5 +6,11 @@ export const CustomFormikDatePicker = ({ ...props }) => {
   const [field] = useField(props.field)
   const { setFieldValue } = useFormikContext()
 
-  return <DatePicker {...props} value={dayjs(field.value)} onChange={(val) => setFieldValue(field.name, val)} />
+  return (
+    <DatePicker
+      {...props}
+      value={dayjs(field.value)}
+      onChange={val => setFieldValue(field.name, val)}
+    />
+  )
 }

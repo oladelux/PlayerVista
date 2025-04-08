@@ -1,6 +1,7 @@
+import { useState } from 'react'
+
 import { zodResolver } from '@hookform/resolvers/zod'
 import { capitalize } from '@mui/material'
-import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -41,7 +42,7 @@ export default function CreateNewRoleForm({ user, logger, setDialogOpen }: Creat
     defaultValues,
   })
 
-  async function onSubmit (values: createNewRoleSchemaOut){
+  async function onSubmit(values: createNewRoleSchemaOut) {
     setLoading(true)
     try {
       const data: RoleFormData = {
@@ -50,17 +51,16 @@ export default function CreateNewRoleForm({ user, logger, setDialogOpen }: Creat
         permissions: values.permissions || [],
         createdByUserId: user.id,
       }
-      roleService.insert(data)
-        .then(() => {
-          setLoading(false)
-          logger.setUpdate({ message: 'added a new role', userId: user.id, groupId: user.groupId })
-          logger.sendUpdates(user.groupId)
-          setDialogOpen(false)
-          toast({
-            variant: 'success',
-            description: 'Role successfully created',
-          })
+      roleService.insert(data).then(() => {
+        setLoading(false)
+        logger.setUpdate({ message: 'added a new role', userId: user.id, groupId: user.groupId })
+        logger.sendUpdates(user.groupId)
+        setDialogOpen(false)
+        toast({
+          variant: 'success',
+          description: 'Role successfully created',
         })
+      })
     } catch (error) {
       setLoading(false)
       toast({
@@ -74,11 +74,16 @@ export default function CreateNewRoleForm({ user, logger, setDialogOpen }: Creat
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
-        <InputFormField control={form.control} name='roleName' placeholder='e.g Admin' label='Role Name'/>
+        <InputFormField
+          control={form.control}
+          name='roleName'
+          placeholder='e.g Admin'
+          label='Role Name'
+        />
         <div className='mt-4'>
           <h3 className='font-semibold'>Permissions</h3>
           <div className='mt-2 grid grid-cols-2 gap-2'>
-            {AllPermissions.map((permission) => (
+            {AllPermissions.map(permission => (
               <CheckboxFormField
                 key={permission}
                 control={form.control}

@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react'
+import { FC, useState } from 'react'
 
 type MonthScheduleProps = {
   title: string
@@ -6,14 +6,13 @@ type MonthScheduleProps = {
 }
 
 export const MonthSchedule: FC<MonthScheduleProps> = ({ title, children }) => {
-
   const [isOpen, setIsOpen] = useState(false)
 
   const toggleOpen = () => {
     setIsOpen(!isOpen)
   }
 
-  return(
+  return (
     <div className='my-4 flex flex-col'>
       <div className='cursor-pointer p-2 shadow-md' onClick={toggleOpen}>
         <h3 className='text-yellowColor text-xl'>{title}</h3>

@@ -1,6 +1,7 @@
+import { useMemo, useState } from 'react'
+
 import { zodResolver } from '@hookform/resolvers/zod'
 import { capitalize } from '@mui/material'
-import { useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -103,11 +104,7 @@ export default function ProfileForm({ user, canManageRole, roles }: ProfileFormP
           />
         </div>
         <div className='my-5'>
-          <LoadingButton
-            isLoading={loading}
-            type='submit'
-            className='bg-dark-purple text-white'
-          >
+          <LoadingButton isLoading={loading} type='submit' className='bg-dark-purple text-white'>
             Update
           </LoadingButton>
         </div>

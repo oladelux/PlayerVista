@@ -38,10 +38,10 @@ export class TeamService {
     }
     from(getTeamsByUser(userId))
       .pipe(
-        map((xResponse) => {
+        map(xResponse => {
           this.updateState({ teams: xResponse.data, teamsLoading: false })
         }),
-        catchError((e) => {
+        catchError(e => {
           this.updateState({ teams: [], teamsLoading: false, error: e.message })
           return []
         }),
@@ -57,10 +57,10 @@ export class TeamService {
     }
     from(getTeam(teamId))
       .pipe(
-        map((xResponse) => {
+        map(xResponse => {
           this.updateState({ team: xResponse, teamLoading: false })
         }),
-        catchError((e) => {
+        catchError(e => {
           this.updateState({ team: null, teamLoading: false, error: e.message })
           return []
         }),
@@ -75,7 +75,7 @@ export class TeamService {
         map(() => {
           this.updateState({ teamLoading: false })
         }),
-        catchError((e) => {
+        catchError(e => {
           this.updateState({ teamLoading: false, error: e.message })
           return []
         }),
@@ -91,7 +91,7 @@ export class TeamService {
           this.updateState({ teamsLoading: false })
           this.getTeams(data.userId)
         }),
-        catchError((e) => {
+        catchError(e => {
           this.updateState({ teamsLoading: false, error: e.message })
           return []
         }),

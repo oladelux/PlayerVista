@@ -56,7 +56,7 @@ const TIERS = [
       monthly: 'Custom',
       yearly: 'Custom',
     },
-    description: 'Custom plan for your club\'s needs',
+    description: "Custom plan for your club's needs",
     features: [
       'Tailored solutions for your specific needs',
       'Unlimited players, teams, staff, matches, and roles',
@@ -69,8 +69,9 @@ const TIERS = [
 ]
 
 export default function SelectPlan() {
-  const [selectedFrequency, setSelectedFrequency] =
-    useState<SubscriptionFrequencyType>(PAYMENT_FREQUENCIES[0])
+  const [selectedFrequency, setSelectedFrequency] = useState<SubscriptionFrequencyType>(
+    PAYMENT_FREQUENCIES[0],
+  )
 
   const handleTierClick = async (tierId: string) => {
     switch (tierId) {

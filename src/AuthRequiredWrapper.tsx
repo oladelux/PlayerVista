@@ -1,10 +1,11 @@
 import { ReactNode } from 'react'
+
 import { Navigate } from 'react-router-dom'
 
 import useAuth from '@/useAuth.ts'
 
 export interface AuthRequiredWrapperProps {
-  children: ReactNode;
+  children: ReactNode
 }
 
 export function AuthRequiredWrapper({ children }: AuthRequiredWrapperProps) {

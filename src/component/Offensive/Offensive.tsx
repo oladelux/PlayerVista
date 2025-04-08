@@ -33,7 +33,7 @@ type OffensiveProps = {
   offensiveData: OffensiveData[]
 }
 
-export const Offensive:FC<OffensiveProps> = ({ offensiveData }) => {
+export const Offensive: FC<OffensiveProps> = ({ offensiveData }) => {
   return (
     <div className='Offensive'>
       <Table columns={offensiveColumns} data={offensiveData} />

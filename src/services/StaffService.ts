@@ -36,10 +36,10 @@ export class StaffService {
     }
     from(getStaffs(groupId))
       .pipe(
-        map((xResponse) => {
+        map(xResponse => {
           this.updateState({ staffs: xResponse.data, loading: false })
         }),
-        catchError((e) => {
+        catchError(e => {
           this.updateState({ staffs: [], loading: false, error: e.message })
           return []
         }),
@@ -55,10 +55,10 @@ export class StaffService {
     }
     from(getUserDetails(userId))
       .pipe(
-        map((xResponse) => {
+        map(xResponse => {
           this.updateState({ staff: xResponse, loading: false })
         }),
-        catchError((e) => {
+        catchError(e => {
           this.updateState({ staff: null, loading: false, error: e.message })
           return []
         }),

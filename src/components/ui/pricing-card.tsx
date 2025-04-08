@@ -1,8 +1,9 @@
 'use client'
 
+import * as React from 'react'
+
 import NumberFlow from '@number-flow/react'
 import { BadgeCheck, ArrowRight } from 'lucide-react'
-import * as React from 'react'
 
 import { SubscriptionFrequencyType } from '@/api'
 import { Badge } from '@/components/ui/badge'
@@ -37,9 +38,7 @@ export function PricingCard({ tier, paymentFrequency, onTierClick }: PricingCard
     <Card
       className={cn(
         'relative flex flex-col gap-8 overflow-hidden p-6',
-        isHighlighted
-          ? 'bg-foreground text-background'
-          : 'bg-background text-foreground',
+        isHighlighted ? 'bg-foreground text-background' : 'bg-background text-foreground',
         isPopular && 'ring-2 ring-primary',
       )}
     >
@@ -65,9 +64,7 @@ export function PricingCard({ tier, paymentFrequency, onTierClick }: PricingCard
               value={price}
               className='text-4xl font-medium'
             />
-            <p className='-mt-2 text-xs text-muted-foreground'>
-              Per month
-            </p>
+            <p className='-mt-2 text-xs text-muted-foreground'>Per month</p>
           </>
         ) : (
           <h1 className='text-4xl font-medium'>{price}</h1>

@@ -1,14 +1,22 @@
-import { Field } from 'formik'
-import React, { FC, useEffect, useMemo } from 'react'
-import ReactDOM from 'react-dom'
+import { FC, useEffect, useMemo } from 'react'
+
+import { zodResolver } from '@hookform/resolvers/zod'
+import { createPortal } from 'react-dom'
 import { Control, useForm } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 
-import { FormikStep, FormikStepper } from '../../views/TeamView/CreateTeam/Step.tsx'
-import { CustomFormikDatePicker } from '../FormikWrapper/CustomFormikDatePicker.tsx'
-import { CustomFormikTimePicker } from '../FormikWrapper/CustomFormikTimePicker.tsx'
-import { Popup } from '../Popup/Popup.tsx'
 import { SingleEventType } from '@/api'
+import {
+  eventSchema,
+  EventSchemaIn,
+  EventSchemaOut,
+} from '@/component/EventFormModal/eventFormSchema.ts'
+import InputFormField from '@/components/form/InputFormField.tsx'
+import { Button } from '@/components/ui/button.tsx'
+import { Form, FormControl, FormField, FormItem } from '@/components/ui/form.tsx'
+import { Label } from '@/components/ui/label.tsx'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group.tsx'
+import { useToast } from '@/hooks/use-toast.ts'
 import { combinedDate } from '@/services/helper.ts'
 import {
   eventsSelector,
@@ -17,21 +25,9 @@ import {
 } from '@/store/slices/EventsSlice.ts'
 import { useAppDispatch } from '@/store/types.ts'
 
+import { Popup } from '../Popup/Popup.tsx'
+
 import './SelectedEventModal.scss'
-import { Form, FormControl, FormField, FormItem } from '@/components/ui/form.tsx'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group.tsx'
-import { Label } from '@/components/ui/label.tsx'
-import InputFormField from '@/components/form/InputFormField.tsx'
-import { Button } from '@/components/ui/button.tsx'
-import {
-  eventSchema,
-  EventSchemaIn,
-  EventSchemaOut,
-} from '@/component/EventFormModal/eventFormSchema.ts'
-
-import { zodResolver } from '@hookform/resolvers/zod'
-
-import { useToast } from '@/hooks/use-toast.ts'
 
 type SelectedEventModal = {
   /**
@@ -212,9 +208,9 @@ export const SelectedEventModal: FC<SelectedEventModal> = ({ onClose, id }) => {
 
   useEffect(() => {
     dispatch(getSingleEventThunk({ eventId: id }))
-  }, [])
+  }, [dispatch, id])
 
-  return ReactDOM.createPortal(
+  return createPortal(
     <SelectedEvent onClose={onClose} selectedEvent={selectedEvent} eventId={id} />,
     container,
   )

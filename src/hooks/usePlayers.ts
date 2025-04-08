@@ -1,9 +1,11 @@
 import { FormEvent, useEffect, useState } from 'react'
+
 import { useSelector } from 'react-redux'
 
-import { getPlayersByTeamIdThunk, playersSelector } from '../store/slices/PlayersSlice'
 import { useUser } from '@/hooks/useUser.ts'
 import { useAppDispatch } from '@/store/types.ts'
+
+import { getPlayersByTeamIdThunk, playersSelector } from '../store/slices/PlayersSlice'
 
 /**
  * Hook to manage players.

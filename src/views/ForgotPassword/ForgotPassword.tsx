@@ -1,5 +1,6 @@
-import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
+
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom'
 import { z } from 'zod'
@@ -48,7 +49,7 @@ export function ForgotPassword() {
       if (e instanceof ClientError) {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-expect-error
-        if(e.responseBody.errors.email === 'emailNotExists') {
+        if (e.responseBody.errors.email === 'emailNotExists') {
           toast({
             variant: 'error',
             title: 'Error resetting password',
@@ -64,8 +65,7 @@ export function ForgotPassword() {
         })
         console.error({ message: 'Reset password failed', reason: e })
       }
-    }
-    finally {
+    } finally {
       setLoading(false)
     }
   }
@@ -76,11 +76,12 @@ export function ForgotPassword() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onForgotPassword)}>
             <div className='mb-5'>
-              <img src={PlayerVistaLogo} alt='playervista logo'/>
+              <img src={PlayerVistaLogo} alt='playervista logo' />
             </div>
             <h1 className='text-lg text-dark-purple'>Reset Password</h1>
-            <div className='py-4 text-sm text-at-grey'>Kindly enter email address to reset your password.
-                A reset link would be sent to this email address.
+            <div className='py-4 text-sm text-at-grey'>
+              Kindly enter email address to reset your password. A reset link would be sent to this
+              email address.
             </div>
             <div className='flex flex-col gap-5'>
               <InputFormField
@@ -96,10 +97,12 @@ export function ForgotPassword() {
                 type='submit'
                 className='w-full bg-dark-purple text-white hover:bg-dark-purple hover:text-white'
               >
-                  Send Reset Link
+                Send Reset Link
               </LoadingButton>
               <div>
-                <Link to={routes.login} className='text-sm text-at-grey'>Back to Login</Link>
+                <Link to={routes.login} className='text-sm text-at-grey'>
+                  Back to Login
+                </Link>
               </div>
             </div>
           </form>

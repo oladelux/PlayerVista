@@ -1,4 +1,5 @@
 import { FC } from 'react'
+
 import { Helmet, HelmetProvider } from 'react-helmet-async'
 
 import Favicon from '../../assets/images/favicon.png'

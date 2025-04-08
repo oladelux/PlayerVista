@@ -6,7 +6,8 @@ import {
   createReporter,
   getReporters,
   Reporter,
-  ReporterData, retractReporter,
+  ReporterData,
+  retractReporter,
 } from '../../api'
 import { AsyncThunkLoading, RootState } from '../types.ts'
 
@@ -35,43 +36,43 @@ const initialState: InitialStaffState = {
 /**
  * Create a new reporter
  */
-export const createReporterThunk = createAsyncThunk<
-  Reporter,
-  { data: ReporterData }
->('reporters/add-reporter', async ({ data }, { rejectWithValue }) => {
-  try {
-    return await createReporter(data)
-  } catch (e) {
-    if (e instanceof ClientError) {
-      return rejectWithValue(e.message)
+export const createReporterThunk = createAsyncThunk<Reporter, { data: ReporterData }>(
+  'reporters/add-reporter',
+  async ({ data }, { rejectWithValue }) => {
+    try {
+      return await createReporter(data)
+    } catch (e) {
+      if (e instanceof ClientError) {
+        return rejectWithValue(e.message)
+      }
+      return rejectWithValue('Unexpected error in creating reporter')
     }
-    return rejectWithValue('Unexpected error in creating reporter')
-  }
-})
+  },
+)
 
 /**
  * Gets all reporters
  */
-export const getReportersThunk = createAsyncThunk<
-  Reporter[],
-  { teamId: string }
->('reporters/getReporters', async ({ teamId }, { rejectWithValue }) => {
-  try {
-    return await getReporters(teamId)
-  } catch (e) {
-    if (e instanceof ClientError) {
-      return rejectWithValue(e.message)
+export const getReportersThunk = createAsyncThunk<Reporter[], { teamId: string }>(
+  'reporters/getReporters',
+  async ({ teamId }, { rejectWithValue }) => {
+    try {
+      return await getReporters(teamId)
+    } catch (e) {
+      if (e instanceof ClientError) {
+        return rejectWithValue(e.message)
+      }
+      return rejectWithValue('Unexpected error in getting reporters')
     }
-    return rejectWithValue('Unexpected error in getting reporters')
-  }
-})
+  },
+)
 
 /**
  * The thunk for assigning reporter to an event
  */
 export const assignReporterThunk = createAsyncThunk<
   Reporter,
-  { data: { eventId: string }, reporterId: string }
+  { data: { eventId: string }; reporterId: string }
 >('reporters/assignReporter', ({ data, reporterId }, { rejectWithValue }) => {
   try {
     return assignReporter(data, reporterId)
@@ -88,7 +89,7 @@ export const assignReporterThunk = createAsyncThunk<
  */
 export const retractReporterThunk = createAsyncThunk<
   Reporter,
-  { data: { eventId: string }, reporterId: string }
+  { data: { eventId: string }; reporterId: string }
 >('reporters/retractReporter', ({ data, reporterId }, { rejectWithValue }) => {
   try {
     return retractReporter(data, reporterId)
@@ -104,28 +105,24 @@ export const reporterSlice = createSlice({
   name: 'reporters',
   initialState,
   reducers: {
-    clearReporterState: (
-      state,
-    ) => {
+    clearReporterState: state => {
       state.loadingCreatingReporter = 'idle'
       state.reporters = []
     },
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
       .addCase(createReporterThunk.pending, state => {
         state.loadingCreatingReporter = 'pending'
       })
       .addCase(createReporterThunk.fulfilled, (state, action) => {
         state.loadingCreatingReporter = 'succeeded'
-        if(action.payload) {
+        if (action.payload) {
           state.reporters.push(action.payload)
         }
       })
       .addCase(createReporterThunk.rejected, (state, action) => {
-        if (
-          state.loadingCreatingReporter === 'pending'
-        ) {
+        if (state.loadingCreatingReporter === 'pending') {
           state.loadingCreatingReporter = 'failed'
           console.error('Error creating new reporter', action.error)
         }
@@ -135,14 +132,12 @@ export const reporterSlice = createSlice({
       })
       .addCase(getReportersThunk.fulfilled, (state, action) => {
         state.loadingGettingReporters = 'succeeded'
-        if(action.payload) {
+        if (action.payload) {
           state.reporters = action.payload
         }
       })
       .addCase(getReportersThunk.rejected, (state, action) => {
-        if (
-          state.loadingGettingReporters === 'pending'
-        ) {
+        if (state.loadingGettingReporters === 'pending') {
           state.loadingGettingReporters = 'failed'
           console.error('Error getting all reporters', action.error)
         }
@@ -154,19 +149,18 @@ export const reporterSlice = createSlice({
         state.loadingAssigningReporter = 'succeeded'
         const updatedReporter = action.payload
 
-        if(updatedReporter) {
+        if (updatedReporter) {
           const reportersFromState = state.reporters
-          const reporterIndex = reportersFromState.findIndex(reporter =>
-            reporter.id === updatedReporter.id)
+          const reporterIndex = reportersFromState.findIndex(
+            reporter => reporter.id === updatedReporter.id,
+          )
           if (reporterIndex !== -1) {
             state.reporters[reporterIndex] = updatedReporter
           }
         }
       })
       .addCase(assignReporterThunk.rejected, (state, action) => {
-        if (
-          state.loadingAssigningReporter === 'pending'
-        ) {
+        if (state.loadingAssigningReporter === 'pending') {
           state.loadingAssigningReporter = 'failed'
           console.error('Error assigning reporter', action.error)
         }
@@ -178,19 +172,18 @@ export const reporterSlice = createSlice({
         state.loadingRetractingReporter = 'succeeded'
         const updatedReporter = action.payload
 
-        if(updatedReporter) {
+        if (updatedReporter) {
           const reportersFromState = state.reporters
-          const reporterIndex = reportersFromState.findIndex(reporter =>
-            reporter.id === updatedReporter.id)
+          const reporterIndex = reportersFromState.findIndex(
+            reporter => reporter.id === updatedReporter.id,
+          )
           if (reporterIndex !== -1) {
             state.reporters[reporterIndex] = updatedReporter
           }
         }
       })
       .addCase(retractReporterThunk.rejected, (state, action) => {
-        if (
-          state.loadingRetractingReporter === 'pending'
-        ) {
+        if (state.loadingRetractingReporter === 'pending') {
           state.loadingRetractingReporter = 'failed'
           console.error('Error retracting reporter', action.error)
         }
@@ -198,10 +191,7 @@ export const reporterSlice = createSlice({
   },
 })
 
-
-export const {
-  clearReporterState,
-} = reporterSlice.actions
+export const { clearReporterState } = reporterSlice.actions
 
 export const reporterSelector = (state: RootState) => state.reporters
 

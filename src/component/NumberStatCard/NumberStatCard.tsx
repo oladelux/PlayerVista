@@ -1,5 +1,5 @@
 interface NumberStatCardProps {
-  value: string;
+  value: string
 }
 
 export const NumberStatCard = ({ value }: NumberStatCardProps) => {

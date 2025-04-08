@@ -22,6 +22,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
+import { TeamType } from './TeamStats'
+
 // Mock data for performance over time
 const performanceData = [
   { month: 'Aug', played: 3, won: 2, drawn: 1, lost: 0, goalsFor: 7, goalsAgainst: 2 },
@@ -53,12 +55,24 @@ const playerContributions = [
 ]
 
 // Custom tooltip component
-const CustomTooltip = ({ active, payload, label }: any) => {
+type CustomTooltipProps = {
+  active: boolean
+  payload: CustomTooltipPayload[]
+  label: string
+}
+
+type CustomTooltipPayload = {
+  color: string
+  name: string
+  value: number
+}
+
+const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
   if (active && payload && payload.length) {
     return (
       <div className='rounded-md border border-border bg-background p-2 text-xs shadow-sm'>
         <p className='font-medium'>{label}</p>
-        {payload.map((entry: any, index: number) => (
+        {payload.map((entry: CustomTooltipPayload, index: number) => (
           <div key={index} className='mt-1 flex items-center gap-1.5'>
             <div className='size-2 rounded-full' style={{ backgroundColor: entry.color }} />
             <span className='text-muted-foreground'>
@@ -73,7 +87,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 }
 
 type TeamPerformanceStatsProps = {
-  teamData: any
+  teamData: TeamType
 }
 
 export function TeamPerformanceStats({ teamData }: TeamPerformanceStatsProps) {
@@ -231,7 +245,7 @@ export function TeamPerformanceStats({ teamData }: TeamPerformanceStatsProps) {
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
                       </Pie>
-                      <Tooltip content={<CustomTooltip />} />
+                      <Tooltip content={<CustomTooltip active={true} payload={[]} label={''} />} />
                       <Legend />
                     </PieChart>
                   </ResponsiveContainer>
@@ -261,7 +275,7 @@ export function TeamPerformanceStats({ teamData }: TeamPerformanceStatsProps) {
                     <CartesianGrid strokeDasharray='3 3' vertical={false} />
                     <XAxis dataKey='month' />
                     <YAxis />
-                    <Tooltip content={<CustomTooltip />} />
+                    <Tooltip content={<CustomTooltip active={true} payload={[]} label={''} />} />
                     <Line
                       type='monotone'
                       dataKey='points'
@@ -342,7 +356,7 @@ export function TeamPerformanceStats({ teamData }: TeamPerformanceStatsProps) {
                       <CartesianGrid strokeDasharray='3 3' vertical={false} />
                       <XAxis dataKey='month' />
                       <YAxis />
-                      <Tooltip content={<CustomTooltip />} />
+                      <Tooltip content={<CustomTooltip active={true} payload={[]} label={''} />} />
                       <Area
                         type='monotone'
                         dataKey='goalDifference'

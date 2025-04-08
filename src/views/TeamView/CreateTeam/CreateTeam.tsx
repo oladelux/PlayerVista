@@ -1,16 +1,21 @@
+import { ChangeEvent, FC, useState } from 'react'
+
 import CenterFocusWeakIcon from '@mui/icons-material/CenterFocusWeak'
 import { Field } from 'formik'
-import { ChangeEvent, FC, useState } from 'react'
 import { useNavigate, useOutletContext } from 'react-router-dom'
 
-import { FormikStep, FormikStepper } from './Step'
 import { AuthenticatedUserData, TeamFormData, TeamResponse, uploadImageToCloudinary } from '@/api'
-import { DashboardHeader, DashboardLayoutOutletContext } from '@/component/DashboardLayout/DashboardLayout.tsx'
+import {
+  DashboardHeader,
+  DashboardLayoutOutletContext,
+} from '@/component/DashboardLayout/DashboardLayout.tsx'
 import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
 import { SuccessConfirmationPopup } from '@/component/SuccessConfirmation/SuccessConfirmation.tsx'
 import { cloudName, cloudUploadPresets } from '@/config/constants.ts'
 import { useUpdates, UseUpdates } from '@/hooks/useUpdates.ts'
 import { appService, teamService } from '@/singletons'
+
+import { FormikStep, FormikStepper } from './Step'
 
 import './CreateTeam.scss'
 
@@ -25,7 +30,7 @@ export function CreateTeam() {
   const userData = appService.getUserData()
 
   //TODO: Create Error Page
-  if ( !userData) return 'This is an error page'
+  if (!userData) return 'This is an error page'
 
   return (
     <>
@@ -34,18 +39,23 @@ export function CreateTeam() {
         <div className='Create-team__content p-3 md:p-11'>
           <div className='Create-team__content-header'>
             <div className='Create-team__content-header-title'>Hello Admin,</div>
-            <div className='Create-team__content-header-sub-title'>Let’s create a team for you in three easy steps</div>
+            <div className='Create-team__content-header-sub-title'>
+              Let’s create a team for you in three easy steps
+            </div>
           </div>
-          <CreateTeamMultiStep logger={logger} user={userData} teams={[]}/>
+          <CreateTeamMultiStep logger={logger} user={userData} teams={[]} />
         </div>
       </div>
     </>
   )
 }
 
-export function DashboardCreateTeam(){
-  const { teams, teamsError: error, teamsLoading: loading } =
-    useOutletContext<DashboardLayoutOutletContext>()
+export function DashboardCreateTeam() {
+  const {
+    teams,
+    teamsError: error,
+    teamsLoading: loading,
+  } = useOutletContext<DashboardLayoutOutletContext>()
 
   const logger = useUpdates()
   const userData = appService.getUserData()
@@ -59,7 +69,9 @@ export function DashboardCreateTeam(){
       <div className='Create-team__content px-12 py-10'>
         <div className='Create-team__content-header'>
           <div className='Create-team__content-header-title'>Hello Admin,</div>
-          <div className='Create-team__content-header-sub-title'>Let’s create a team for you in three easy steps</div>
+          <div className='Create-team__content-header-sub-title'>
+            Let’s create a team for you in three easy steps
+          </div>
         </div>
         <CreateTeamMultiStep logger={logger} user={userData} teams={teams} />
       </div>
@@ -94,13 +106,15 @@ const CreateTeamMultiStep: FC<DashboardCreateTeamProps> = ({ logger, user }) => 
           file: reader.result as string,
           cloud_name: cloudName,
           upload_preset: cloudUploadPresets,
-        }).then(res => {
-          setIsUploading(false)
-          setFile(res.url)
-        }).catch(err => {
-          console.error('Error uploading image:', err)
-          setIsUploading(false)
         })
+          .then(res => {
+            setIsUploading(false)
+            setFile(res.url)
+          })
+          .catch(err => {
+            console.error('Error uploading image:', err)
+            setIsUploading(false)
+          })
       }
       reader.readAsDataURL(imgFile[0])
     }
@@ -139,14 +153,17 @@ const CreateTeamMultiStep: FC<DashboardCreateTeamProps> = ({ logger, user }) => 
             creationYear: new Date(values.creationYear).getFullYear().toString(),
             logo: file,
           }
-          teamService.insert(data)
-            .then(() => {
-              logger.setUpdate({ message: 'added a new team', userId: user.id, groupId: user.groupId })
-              logger.sendUpdates(user.groupId)
-              openConfirmationPopup()
-              resetForm()
-              navigate('/')
+          teamService.insert(data).then(() => {
+            logger.setUpdate({
+              message: 'added a new team',
+              userId: user.id,
+              groupId: user.groupId,
             })
+            logger.sendUpdates(user.groupId)
+            openConfirmationPopup()
+            resetForm()
+            navigate('/')
+          })
         }}
       >
         <FormikStep label='Team Info'>
@@ -164,15 +181,18 @@ const CreateTeamMultiStep: FC<DashboardCreateTeamProps> = ({ logger, user }) => 
               />
               <label htmlFor='teamImage' className='Multi-step__team-image--label'>
                 <div className='Multi-step__team-image--label-preview'>
-                  {selectedImage ?
-                    <img alt='preview' className='Multi-step__team-image--label-preview-img' src={selectedImage}/>
-                    : <CenterFocusWeakIcon className='Multi-step__team-image--label-preview-icon'/>
-                  }
+                  {selectedImage ? (
+                    <img
+                      alt='preview'
+                      className='Multi-step__team-image--label-preview-img'
+                      src={selectedImage}
+                    />
+                  ) : (
+                    <CenterFocusWeakIcon className='Multi-step__team-image--label-preview-icon' />
+                  )}
                 </div>
               </label>
-              <div className='Multi-step__team-image--title'>
-                Choose your team logo
-              </div>
+              <div className='Multi-step__team-image--title'>Choose your team logo</div>
             </div>
           </div>
           <div className='Multi-step__layout'>
@@ -209,11 +229,7 @@ const CreateTeamMultiStep: FC<DashboardCreateTeamProps> = ({ logger, user }) => 
             </div>
             <div className='Multi-step__layout-form-group'>
               <div className='Multi-step__layout-form-group--label'>Age Group</div>
-              <Field
-                className='Multi-step__layout-form-group--field'
-                as='select'
-                name='ageGroup'
-              >
+              <Field className='Multi-step__layout-form-group--field' as='select' name='ageGroup'>
                 <option>Select Age Group</option>
                 <option value='under-7'>Under-7</option>
                 <option value='under-9'>Under-9</option>
@@ -266,7 +282,9 @@ const CreateTeamMultiStep: FC<DashboardCreateTeamProps> = ({ logger, user }) => 
               </div>
             </div>
             <div className='Multi-step__layout-form-group'>
-              <div className='Multi-step__layout-form-group--label'>Medical Personnel \ Contact</div>
+              <div className='Multi-step__layout-form-group--label'>
+                Medical Personnel \ Contact
+              </div>
               <div className='Multi-step__layout-form-group--2'>
                 <Field
                   className='Multi-step__layout-form-group--2__field'
@@ -317,7 +335,9 @@ const CreateTeamMultiStep: FC<DashboardCreateTeamProps> = ({ logger, user }) => 
               </div>
             </div>
             <div className='Multi-step__layout-form-group'>
-              <div className='Multi-step__layout-form-group--label'>Logistics Coordinator \ Contact</div>
+              <div className='Multi-step__layout-form-group--label'>
+                Logistics Coordinator \ Contact
+              </div>
               <div className='Multi-step__layout-form-group--2'>
                 <Field
                   className='Multi-step__layout-form-group--2__field'
@@ -379,8 +399,12 @@ const CreateTeamMultiStep: FC<DashboardCreateTeamProps> = ({ logger, user }) => 
           </div>
         </FormikStep>
       </FormikStepper>
-      {isActiveConfirmationPopup && <SuccessConfirmationPopup
-        onClose={closeConfirmationPopup} title='Team added successfully' />}
+      {isActiveConfirmationPopup && (
+        <SuccessConfirmationPopup
+          onClose={closeConfirmationPopup}
+          title='Team added successfully'
+        />
+      )}
     </div>
   )
 }

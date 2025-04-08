@@ -1,5 +1,6 @@
+import { HTMLInputAutoCompleteAttribute, HTMLInputTypeAttribute } from 'react'
+
 import classnames from 'classnames'
-import React, { HTMLInputAutoCompleteAttribute, HTMLInputTypeAttribute } from 'react'
 import { Control, FieldPath, FieldValues } from 'react-hook-form'
 
 import {
@@ -12,28 +13,27 @@ import {
 } from '@/components/ui/form.tsx'
 import { Input } from '@/components/ui/input.tsx'
 
-
 interface InputFormFieldProps<
   TName extends FieldPath<TFieldValues>,
   TFieldValues extends FieldValues = FieldValues,
 > {
-  control: Control<TFieldValues> | Control<TFieldValues, never>;
-  name: TName;
-  label?: string;
-  placeholder: string;
-  type?: HTMLInputTypeAttribute;
-  description?: string;
-  className?: string;
-  autoComplete?: HTMLInputAutoCompleteAttribute;
-  inputClassName?: string;
-  disabled?: boolean;
-  readOnly?: boolean;
+  control: Control<TFieldValues> | Control<TFieldValues, never>
+  name: TName
+  label?: string
+  placeholder: string
+  type?: HTMLInputTypeAttribute
+  description?: string
+  className?: string
+  autoComplete?: HTMLInputAutoCompleteAttribute
+  inputClassName?: string
+  disabled?: boolean
+  readOnly?: boolean
 }
 
 export default function InputFormField<
-  TName extends FieldPath<TFieldValues>, TFieldValues extends FieldValues = FieldValues>(
-  props: InputFormFieldProps<TName, TFieldValues>,
-) {
+  TName extends FieldPath<TFieldValues>,
+  TFieldValues extends FieldValues = FieldValues,
+>(props: InputFormFieldProps<TName, TFieldValues>) {
   return (
     <FormField
       control={props.control as Control<TFieldValues>}

@@ -22,7 +22,9 @@ export default function CreateNewRoleDialog({ user, logger }: CreateNewRoleDialo
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger className='my-5' asChild>
-        <Button className='bg-dark-purple px-6 py-2 text-white hover:bg-dark-purple'>Create Role</Button>
+        <Button className='bg-dark-purple px-6 py-2 text-white hover:bg-dark-purple'>
+          Create Role
+        </Button>
       </DialogTrigger>
       <DialogContent className='sm:max-w-md'>
         <DialogHeader>

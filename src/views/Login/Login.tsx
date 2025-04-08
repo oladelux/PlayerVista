@@ -1,16 +1,18 @@
-import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
+
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { Link, Navigate, useSearchParams } from 'react-router-dom'
 import { z } from 'zod'
 
-import PlayerVistaLogo from '../../assets/images/playervista.svg'
 import LoadingButton from '@/component/LoadingButton/LoadingButton.tsx'
 import InputFormField from '@/components/form/InputFormField.tsx'
 import { Form } from '@/components/ui/form.tsx'
 import { routes } from '@/constants/routes.ts'
 import { useToast } from '@/hooks/use-toast.ts'
 import useAuth from '@/useAuth.ts'
+
+import PlayerVistaLogo from '../../assets/images/playervista.svg'
 
 export function Login() {
   const [getSearchParams] = useSearchParams()
@@ -45,7 +47,7 @@ export function LoginForm() {
     },
   })
 
-  function onLogin (values: LoginSchemaOut) {
+  function onLogin(values: LoginSchemaOut) {
     setLoading(true)
     signIn({
       email: values.email,
@@ -61,7 +63,7 @@ export function LoginForm() {
       .finally(() => setLoading(false))
   }
 
-  return(
+  return (
     <div className='flex min-h-svh flex-col items-center justify-center gap-5 bg-white p-5'>
       <div className='w-full max-w-sm'>
         <Form {...form}>
@@ -93,7 +95,9 @@ export function LoginForm() {
                 Sign in
               </LoadingButton>
               <div>
-                <Link to={routes.forgotPassword} className='text-sm text-at-grey underline'>Forgot Password?</Link>
+                <Link to={routes.forgotPassword} className='text-sm text-at-grey underline'>
+                  Forgot Password?
+                </Link>
               </div>
             </div>
           </form>

@@ -1,6 +1,7 @@
+import { useEffect, useState } from 'react'
+
 import { zodResolver } from '@hookform/resolvers/zod'
 import classnames from 'classnames'
-import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -13,7 +14,7 @@ import { roleService } from '@/singletons'
 import { AllPermissions } from '@/utils/allPermissions.ts'
 
 const capitalize = (text: string) => {
-  return text.replace(/\b\w/g, (char) => char.toUpperCase()).replace(/_/g, ' ')
+  return text.replace(/\b\w/g, char => char.toUpperCase()).replace(/_/g, ' ')
 }
 
 type RolesViewProps = {
@@ -21,11 +22,13 @@ type RolesViewProps = {
 }
 
 const rolesSchema = z.object({
-  roles: z.array(z.object({
-    id: z.string(),
-    name: z.string(),
-    permissions: z.array(z.string()),
-  })),
+  roles: z.array(
+    z.object({
+      id: z.string(),
+      name: z.string(),
+      permissions: z.array(z.string()),
+    }),
+  ),
 })
 
 type rolesSchemaIn = Partial<z.input<typeof rolesSchema>>
@@ -49,20 +52,18 @@ export default function RolesView({ roles }: RolesViewProps) {
   const activeRoleData = roles[activeRoleIndex] || { permissions: [] }
   const updatedPermissions = form.watch(`roles.${activeRoleIndex}.permissions`) as string[]
 
-  async function onSubmit(){
+  async function onSubmit() {
     setLoading(true)
     try {
-      roleService.patch(
-        roles[activeRoleIndex].id,
-        updatedPermissions,
-        roles[activeRoleIndex].groupId,
-      ).then(() => {
-        setLoading(false)
-        toast({
-          variant: 'success',
-          description: 'Permissions updated successfully',
+      roleService
+        .patch(roles[activeRoleIndex].id, updatedPermissions, roles[activeRoleIndex].groupId)
+        .then(() => {
+          setLoading(false)
+          toast({
+            variant: 'success',
+            description: 'Permissions updated successfully',
+          })
         })
-      })
     } catch (error) {
       setLoading(false)
       toast({
@@ -75,16 +76,19 @@ export default function RolesView({ roles }: RolesViewProps) {
 
   useEffect(() => {
     if (activeRoleData) {
-      form.reset({
-        roles: [
-          ...roles.slice(0, activeRoleIndex),
-          {
-            ...activeRoleData,
-            permissions: activeRoleData.permissions,
-          },
-          ...roles.slice(activeRoleIndex + 1),
-        ],
-      }, { keepDefaultValues: true })
+      form.reset(
+        {
+          roles: [
+            ...roles.slice(0, activeRoleIndex),
+            {
+              ...activeRoleData,
+              permissions: activeRoleData.permissions,
+            },
+            ...roles.slice(activeRoleIndex + 1),
+          ],
+        },
+        { keepDefaultValues: true },
+      )
     }
   }, [activeRole, activeRoleData, activeRoleIndex, form, roles])
 
@@ -93,13 +97,16 @@ export default function RolesView({ roles }: RolesViewProps) {
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <div className='grid w-full grid-cols-4 gap-3 bg-at-background p-5'>
           <div className='col-span-1 bg-at-white p-5'>
-            {roles.slice()
-              .sort((a, b) => a.name.localeCompare(b.name)).map(role => (
+            {roles
+              .slice()
+              .sort((a, b) => a.name.localeCompare(b.name))
+              .map(role => (
                 <div
                   key={role.id}
                   onClick={() => setActiveRole(role.name)}
-                  className={classnames('cursor-pointer rounded p-2',
-                    { 'bg-dark-purple text-white': activeRole === role.name })}
+                  className={classnames('cursor-pointer rounded p-2', {
+                    'bg-dark-purple text-white': activeRole === role.name,
+                  })}
                 >
                   {capitalize(role.name)}
                 </div>
@@ -108,7 +115,7 @@ export default function RolesView({ roles }: RolesViewProps) {
           <div className='col-span-3 bg-at-white p-5'>
             <h2 className='text-lg font-bold'>{capitalize(activeRole)} Permissions</h2>
             <div className='mt-3 grid grid-cols-2 gap-3'>
-              {AllPermissions.map((permission) => (
+              {AllPermissions.map(permission => (
                 <CheckboxFormField
                   key={permission}
                   control={form.control}

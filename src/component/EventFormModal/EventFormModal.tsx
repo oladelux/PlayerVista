@@ -1,7 +1,7 @@
 import { FC, useEffect, useMemo, useState } from 'react'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import ReactDOM from 'react-dom'
+import { createPortal } from 'react-dom'
 import { Control, useForm } from 'react-hook-form'
 
 import {
@@ -14,12 +14,11 @@ import InputFormField from '@/components/form/InputFormField.tsx'
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form.tsx'
 import { Label } from '@/components/ui/label.tsx'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group.tsx'
+import { useToast } from '@/hooks/use-toast.ts'
 import { UseUpdates } from '@/hooks/useUpdates.ts'
 import { combinedDate } from '@/services/helper.ts'
 import { createEventThunk } from '@/store/slices/EventsSlice.ts'
 import { useAppDispatch } from '@/store/types.ts'
-
-import { useToast } from '@/hooks/use-toast.ts'
 import useAuth from '@/useAuth.ts'
 import { SessionInstance } from '@/utils/SessionInstance.ts'
 import './EventFormModal.scss'
@@ -206,7 +205,7 @@ const EventFormModal: FC<EventFormModalProps> = ({ onClose, startDate, logger })
 export const EventFormModalPortal: FC<EventFormModalProps> = props => {
   const container = document.body
 
-  return ReactDOM.createPortal(
+  return createPortal(
     <EventFormModal onClose={props.onClose} startDate={props.startDate} logger={props.logger} />,
     container,
   )

@@ -1,11 +1,18 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 
-import { AsyncThunkLoading, RootState } from '../types'
 import {
-  ClientError, Event,
-  EventFormData, addEvent, EventDataResponse, SingleEventType,
-  getSingleEvent, updateEvent, getEventsByTeamId,
+  ClientError,
+  Event,
+  EventFormData,
+  addEvent,
+  EventDataResponse,
+  SingleEventType,
+  getSingleEvent,
+  updateEvent,
+  getEventsByTeamId,
 } from '@/api'
+
+import { AsyncThunkLoading, RootState } from '../types'
 
 type InitialEventsState = {
   /**
@@ -46,19 +53,19 @@ const initialState: InitialEventsState = {
 /**
  * Create a new event
  */
-export const createEventThunk = createAsyncThunk<
-  Event,
-  { data: EventFormData }
->('events/addEvent', async ({ data }, { rejectWithValue }) => {
-  try {
-    return await addEvent(data)
-  } catch (e) {
-    if (e instanceof ClientError) {
-      return rejectWithValue(e.message)
+export const createEventThunk = createAsyncThunk<Event, { data: EventFormData }>(
+  'events/addEvent',
+  async ({ data }, { rejectWithValue }) => {
+    try {
+      return await addEvent(data)
+    } catch (e) {
+      if (e instanceof ClientError) {
+        return rejectWithValue(e.message)
+      }
+      return rejectWithValue('Unexpected error in adding event')
     }
-    return rejectWithValue('Unexpected error in adding event')
-  }
-})
+  },
+)
 
 /**
  * Gets all events for a team
@@ -83,7 +90,7 @@ export const getEventsByTeamThunk = createAsyncThunk<
 export const getSingleEventThunk = createAsyncThunk<
   SingleEventType,
   { eventId: string | undefined }
->('events/getSingleEvent', async({ eventId }, { rejectWithValue }) => {
+>('events/getSingleEvent', async ({ eventId }, { rejectWithValue }) => {
   try {
     if (!eventId) {
       return rejectWithValue('Event ID is required to fetch events')
@@ -100,27 +107,25 @@ export const getSingleEventThunk = createAsyncThunk<
 /**
  * The thunk for updating team event
  */
-export const updateEventThunk = createAsyncThunk<
-  unknown,
-  { data: EventFormData, eventId: string }
->('events/updateEvent', ({ data, eventId }, { rejectWithValue }) => {
-  try {
-    return updateEvent(data, eventId)
-  } catch (e) {
-    if (e instanceof ClientError) {
-      return rejectWithValue(e.message)
+export const updateEventThunk = createAsyncThunk<unknown, { data: EventFormData; eventId: string }>(
+  'events/updateEvent',
+  ({ data, eventId }, { rejectWithValue }) => {
+    try {
+      return updateEvent(data, eventId)
+    } catch (e) {
+      if (e instanceof ClientError) {
+        return rejectWithValue(e.message)
+      }
+      return rejectWithValue('Unexpected error in updating player')
     }
-    return rejectWithValue('Unexpected error in updating player')
-  }
-})
+  },
+)
 
 export const eventsSlice = createSlice({
   name: 'events',
   initialState,
   reducers: {
-    clearEventState: (
-      state,
-    ) => {
+    clearEventState: state => {
       state.loadingCreatingNewEventStatus = 'idle'
       state.loadingGettingEventsStatus = 'idle'
       state.loadingGettingSingleEvent = 'idle'
@@ -129,12 +134,12 @@ export const eventsSlice = createSlice({
       state.selectedEvent = undefined
     },
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
       .addCase(createEventThunk.pending, state => {
         state.loadingCreatingNewEventStatus = 'pending'
       })
-      .addCase(createEventThunk.fulfilled, (state) => {
+      .addCase(createEventThunk.fulfilled, state => {
         state.loadingCreatingNewEventStatus = 'succeeded'
         /*const { teamId } = action.meta.arg
         if (action.payload) {
@@ -142,9 +147,7 @@ export const eventsSlice = createSlice({
         }*/
       })
       .addCase(createEventThunk.rejected, (state, action) => {
-        if (
-          state.loadingCreatingNewEventStatus === 'pending'
-        ) {
+        if (state.loadingCreatingNewEventStatus === 'pending') {
           state.loadingCreatingNewEventStatus = 'failed'
           console.error('Error creating new event', action.error)
         }
@@ -160,9 +163,7 @@ export const eventsSlice = createSlice({
         }
       })
       .addCase(getEventsByTeamThunk.rejected, (state, action) => {
-        if (
-          state.loadingGettingEventsStatus === 'pending'
-        ) {
+        if (state.loadingGettingEventsStatus === 'pending') {
           state.loadingGettingEventsStatus = 'failed'
           console.error('Error getting events', action.error)
         }
@@ -178,9 +179,7 @@ export const eventsSlice = createSlice({
         }
       })
       .addCase(getSingleEventThunk.rejected, (state, action) => {
-        if (
-          state.loadingGettingSingleEvent === 'pending'
-        ) {
+        if (state.loadingGettingSingleEvent === 'pending') {
           state.loadingGettingSingleEvent = 'failed'
           console.error('Error getting selected event', action.error)
         }
@@ -189,16 +188,12 @@ export const eventsSlice = createSlice({
         state.loadingUpdatingEvent = 'pending'
       })
       .addCase(updateEventThunk.fulfilled, state => {
-        if (
-          state.loadingUpdatingEvent === 'pending'
-        ) {
+        if (state.loadingUpdatingEvent === 'pending') {
           state.loadingUpdatingEvent = 'succeeded'
         }
       })
       .addCase(updateEventThunk.rejected, (state, action) => {
-        if (
-          state.loadingUpdatingEvent === 'pending'
-        ) {
+        if (state.loadingUpdatingEvent === 'pending') {
           state.loadingUpdatingEvent = 'failed'
           console.error('Error updating event', action.error)
         }
@@ -206,9 +201,7 @@ export const eventsSlice = createSlice({
   },
 })
 
-export const {
-  clearEventState,
-} = eventsSlice.actions
+export const { clearEventState } = eventsSlice.actions
 
 export const eventsSelector = (state: RootState) => state.events
 

@@ -36,10 +36,10 @@ export class LogService {
     }
     from(getLogs(userData.groupId))
       .pipe(
-        map((xResponse) => {
+        map(xResponse => {
           this.updateState({ logs: xResponse.data, loading: false })
         }),
-        catchError((e) => {
+        catchError(e => {
           this.updateState({ logs: [], loading: false, error: e.message })
           return []
         }),

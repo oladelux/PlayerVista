@@ -1,17 +1,26 @@
 import { FC, Fragment, useState } from 'react'
+
 import { Link, useParams } from 'react-router-dom'
 
 import { Player, PlayerActions } from '@/api'
 import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
 import { Slider } from '@/components/ui/slider.tsx'
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table.tsx'
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table.tsx'
 import { usePerformance } from '@/hooks/usePerformance.ts'
 import { getPlayerActions } from '@/utils/players.ts'
 
 interface GeneralStatsProps {
   players: Player[]
 }
-type GeneralActionType = 'passes' | 'tackles' | 'shots' | 'aerialDuels' | 'goals' | 'assists';
+type GeneralActionType = 'passes' | 'tackles' | 'shots' | 'aerialDuels' | 'goals' | 'assists'
 
 export const GeneralStats: FC<GeneralStatsProps> = ({ players }) => {
   const { eventId } = useParams()
@@ -19,55 +28,62 @@ export const GeneralStats: FC<GeneralStatsProps> = ({ players }) => {
   const { performanceByEvent, loading, error } = usePerformance(undefined, eventId)
   const data = getPlayerActions(players, performanceByEvent)
 
-  const getPlayerDataById =
-  (id: string): { actions: PlayerActions | undefined, minutePlayed: number } | undefined => {
-    const playerData = data.find((player) => player.playerId === id)
-    if(playerData){
+  const getPlayerDataById = (
+    id: string,
+  ): { actions: PlayerActions | undefined; minutePlayed: number } | undefined => {
+    const playerData = data.find(player => player.playerId === id)
+    if (playerData) {
       return { actions: playerData.actions, minutePlayed: playerData.minutePlayed }
     }
     return undefined
   }
 
   const renderPlayerActions = (actions: PlayerActions | undefined) => {
-    const actionTypes: GeneralActionType[] = ['passes', 'tackles', 'shots', 'aerialDuels', 'goals', 'assists']
+    const actionTypes: GeneralActionType[] = [
+      'passes',
+      'tackles',
+      'shots',
+      'aerialDuels',
+      'goals',
+      'assists',
+    ]
     if (!actions) {
-      return actionTypes.map((type) => {
-        if(type === 'goals' || type === 'assists') {
+      return actionTypes.map(type => {
+        if (type === 'goals' || type === 'assists') {
           return (
             <Fragment key={type}>
-              <TableCell className='border-r text-center'>
-                0
-              </TableCell>
+              <TableCell className='border-r text-center'>0</TableCell>
             </Fragment>
           )
         }
         return (
           <Fragment key={type}>
-            <TableCell className='border-r text-center' key={`${type}-total`}>0</TableCell>
-            <TableCell className='border-r text-center' key={`${type}-successful`}>0</TableCell>
+            <TableCell className='border-r text-center' key={`${type}-total`}>
+              0
+            </TableCell>
+            <TableCell className='border-r text-center' key={`${type}-successful`}>
+              0
+            </TableCell>
           </Fragment>
-        ) })
+        )
+      })
     }
-    return actionTypes.map((type) => {
-      const filteredActions = actions[type]?.filter(action =>
-        action.timestamp >= timeRange[0] && action.timestamp <= timeRange[1],
+    return actionTypes.map(type => {
+      const filteredActions = actions[type]?.filter(
+        action => action.timestamp >= timeRange[0] && action.timestamp <= timeRange[1],
       )
-      if(type === 'goals' || type === 'assists') {
+      if (type === 'goals' || type === 'assists') {
         return (
           <Fragment key={type}>
-            <TableCell className='border-r text-center'>
-              {filteredActions.length ?? 0}
-            </TableCell>
+            <TableCell className='border-r text-center'>{filteredActions.length ?? 0}</TableCell>
           </Fragment>
         )
       }
       return (
         <Fragment key={type}>
+          <TableCell className='border-r text-center'>{filteredActions?.length ?? 0}</TableCell>
           <TableCell className='border-r text-center'>
-            {filteredActions?.length ?? 0}
-          </TableCell>
-          <TableCell className='border-r text-center'>
-            {filteredActions?.filter((action) => action.value === 'SUCCESSFUL').length ?? 0}
+            {filteredActions?.filter(action => action.value === 'SUCCESSFUL').length ?? 0}
           </TableCell>
         </Fragment>
       )
@@ -84,8 +100,13 @@ export const GeneralStats: FC<GeneralStatsProps> = ({ players }) => {
     <>
       <div className='my-8'>
         <div className='mb-4'>Time</div>
-        <Slider value={timeRange} min={0} max={90} step={1}
-          minStepsBetweenThumbs={1} onValueChange={(value) => setTimeRange(value)}
+        <Slider
+          value={timeRange}
+          min={0}
+          max={90}
+          step={1}
+          minStepsBetweenThumbs={1}
+          onValueChange={value => setTimeRange(value)}
         />
       </div>
       <div className='my-2'>
@@ -97,10 +118,18 @@ export const GeneralStats: FC<GeneralStatsProps> = ({ players }) => {
               <TableHead className='border-r'>Pos.</TableHead>
               <TableHead className='border-r'>Mins.</TableHead>
               <TableHead className='border-r'>Name</TableHead>
-              <TableHead colSpan={2} className='border-r text-center'>Passes</TableHead>
-              <TableHead colSpan={2} className='border-r text-center'>Tackles</TableHead>
-              <TableHead colSpan={2} className='border-r text-center'>Shooting</TableHead>
-              <TableHead colSpan={2} className='border-r text-center'>Aerial Duels</TableHead>
+              <TableHead colSpan={2} className='border-r text-center'>
+                Passes
+              </TableHead>
+              <TableHead colSpan={2} className='border-r text-center'>
+                Tackles
+              </TableHead>
+              <TableHead colSpan={2} className='border-r text-center'>
+                Shooting
+              </TableHead>
+              <TableHead colSpan={2} className='border-r text-center'>
+                Aerial Duels
+              </TableHead>
               <TableHead className='border-r'>Goals</TableHead>
               <TableHead className='border-r'>Assists</TableHead>
             </TableRow>
@@ -109,14 +138,30 @@ export const GeneralStats: FC<GeneralStatsProps> = ({ players }) => {
               <TableHead className='border-r'></TableHead>
               <TableHead className='border-r'></TableHead>
               <TableHead className='border-r'></TableHead>
-              <TableHead className='border-r text-center' title='Attempted Passes'>ATT</TableHead>
-              <TableHead className='border-r text-center' title='Completed Passes'>CMP</TableHead>
-              <TableHead className='border-r text-center' title='Attempted Tackles'>ATT</TableHead>
-              <TableHead className='border-r text-center' title='Completed Tackles'>CMP</TableHead>
-              <TableHead className='border-r text-center' title='On Target'>ON</TableHead>
-              <TableHead className='border-r text-center' title='Off Target'>OFF</TableHead>
-              <TableHead className='border-r text-center' title='Attempted Duels'>ATT</TableHead>
-              <TableHead className='border-r text-center' title='Completed Duels'>CMP</TableHead>
+              <TableHead className='border-r text-center' title='Attempted Passes'>
+                ATT
+              </TableHead>
+              <TableHead className='border-r text-center' title='Completed Passes'>
+                CMP
+              </TableHead>
+              <TableHead className='border-r text-center' title='Attempted Tackles'>
+                ATT
+              </TableHead>
+              <TableHead className='border-r text-center' title='Completed Tackles'>
+                CMP
+              </TableHead>
+              <TableHead className='border-r text-center' title='On Target'>
+                ON
+              </TableHead>
+              <TableHead className='border-r text-center' title='Off Target'>
+                OFF
+              </TableHead>
+              <TableHead className='border-r text-center' title='Attempted Duels'>
+                ATT
+              </TableHead>
+              <TableHead className='border-r text-center' title='Completed Duels'>
+                CMP
+              </TableHead>
               <TableHead className='border-r'></TableHead>
               <TableHead className='border-r'></TableHead>
             </TableRow>
@@ -128,10 +173,11 @@ export const GeneralStats: FC<GeneralStatsProps> = ({ players }) => {
                 <TableRow key={`${player.firstName}-${player.id}`}>
                   <TableCell className='border-r'>{player.uniformNumber}</TableCell>
                   <TableCell className='border-r'>{player.position}</TableCell>
-                  <TableCell className='border-r'>{matchData?.minutePlayed}
-                  </TableCell>
+                  <TableCell className='border-r'>{matchData?.minutePlayed}</TableCell>
                   <TableCell className='border-r'>
-                    <Link to={`player/${player.id}`}>{`${player.firstName} ${player.lastName}`}</Link>
+                    <Link
+                      to={`player/${player.id}`}
+                    >{`${player.firstName} ${player.lastName}`}</Link>
                   </TableCell>
                   {renderPlayerActions(matchData?.actions)}
                 </TableRow>
@@ -139,7 +185,6 @@ export const GeneralStats: FC<GeneralStatsProps> = ({ players }) => {
             })}
           </TableBody>
         </Table>
-
       </div>
     </>
   )

@@ -1,4 +1,5 @@
 import { ReactNode } from 'react'
+
 import { Control, FieldPath, FieldValues } from 'react-hook-form'
 
 import { Checkbox } from '@/components/ui/checkbox.tsx'
@@ -8,22 +9,17 @@ interface SingleCheckboxFormFieldProps<
   TName extends FieldPath<TFieldValues>,
   TFieldValues extends FieldValues = FieldValues,
 > {
-  control: Control<TFieldValues> | Control<TFieldValues, never>;
-  name: TName;
-  className?: string;
-  disabled?: boolean;
-  children?: ReactNode;
+  control: Control<TFieldValues> | Control<TFieldValues, never>
+  name: TName
+  className?: string
+  disabled?: boolean
+  children?: ReactNode
 }
 
 export default function SingleCheckboxFormField<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
->({
-  control,
-  name,
-  disabled,
-  children,
-}: SingleCheckboxFormFieldProps<TName, TFieldValues>) {
+>({ control, name, disabled, children }: SingleCheckboxFormFieldProps<TName, TFieldValues>) {
   return (
     <FormField
       control={control as Control<TFieldValues>}
@@ -32,7 +28,7 @@ export default function SingleCheckboxFormField<
         <FormItem>
           <div className='flex items-start gap-2'>
             <Checkbox
-              onCheckedChange={(e) => field.onChange(e)}
+              onCheckedChange={e => field.onChange(e)}
               checked={field.value || false}
               disabled={disabled}
             />

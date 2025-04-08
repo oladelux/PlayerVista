@@ -6,5 +6,11 @@ export const CustomFormikTimePicker = ({ ...props }) => {
   const [field] = useField(props.field)
   const { setFieldValue } = useFormikContext()
 
-  return <MobileTimePicker {...props} value={dayjs(field.value)} onChange={(val) => setFieldValue(field.name, val)} />
+  return (
+    <MobileTimePicker
+      {...props}
+      value={dayjs(field.value)}
+      onChange={val => setFieldValue(field.name, val)}
+    />
+  )
 }

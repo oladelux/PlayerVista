@@ -1,5 +1,6 @@
+import { FC } from 'react'
+
 import classnames from 'classnames'
-import React, { FC } from 'react'
 
 import SpinnerIcon from '../../assets/images/icons/spinner-icon.svg'
 

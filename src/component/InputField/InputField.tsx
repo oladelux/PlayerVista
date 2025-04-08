@@ -1,5 +1,6 @@
+import { ChangeEvent, FC } from 'react'
+
 import cl from 'classnames'
-import React, { ChangeEvent, FC } from 'react'
 
 import './InputField.scss'
 

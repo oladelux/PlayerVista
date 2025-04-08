@@ -11,7 +11,7 @@ export const toLocalSession = async (session: Partial<LocalSessionType>) => {
 
 export const getLocalSession = async () => {
   const session = localStorage.getItem('localSession')
-  if(!session) return undefined
+  if (!session) return undefined
   const localSession: LocalSessionType = JSON.parse(session)
   SessionInstance.setInstance(localSession)
   return localSession

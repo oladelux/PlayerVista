@@ -46,10 +46,10 @@ export class PlayerService {
     }
     from(getPlayerById(playerId))
       .pipe(
-        map((xResponse) => {
+        map(xResponse => {
           this.updateState({ player: xResponse, loading: false })
         }),
-        catchError((e) => {
+        catchError(e => {
           this.updateState({ player: null, loading: false, error: e.message })
           return []
         }),
@@ -65,10 +65,10 @@ export class PlayerService {
     }
     from(getPlayersByTeamId(teamId))
       .pipe(
-        map((xResponse) => {
+        map(xResponse => {
           this.updateState({ players: xResponse.data, loading: false })
         }),
-        catchError((e) => {
+        catchError(e => {
           this.updateState({ players: [], loading: false, error: e.message })
           return []
         }),
@@ -84,10 +84,10 @@ export class PlayerService {
     }
     from(getPlayersByUserId(userId))
       .pipe(
-        map((xResponse) => {
+        map(xResponse => {
           this.updateState({ allUserPlayers: xResponse.data, loading: false })
         }),
-        catchError((e) => {
+        catchError(e => {
           this.updateState({ allUserPlayers: [], loading: false, error: e.message })
           return []
         }),
@@ -103,7 +103,7 @@ export class PlayerService {
           this.updateState({ loading: false })
           this.getPlayers(teamId)
         }),
-        catchError((e) => {
+        catchError(e => {
           this.updateState({ loading: false, error: e.message })
           return []
         }),
@@ -119,7 +119,7 @@ export class PlayerService {
           this.updateState({ loading: false })
           this.getPlayer(playerId)
         }),
-        catchError((e) => {
+        catchError(e => {
           this.updateState({ loading: false, error: e.message })
           return []
         }),

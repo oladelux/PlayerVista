@@ -1,4 +1,5 @@
-import React, { FC, useState } from 'react'
+import { FC, useState } from 'react'
+
 import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa'
 
 import './PasswordInputField.scss'

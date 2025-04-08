@@ -1,6 +1,7 @@
-import { zodResolver } from '@hookform/resolvers/zod'
-import bcrypt from 'bcryptjs'
 import { useState } from 'react'
+
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as bcrypt from 'bcryptjs'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -11,14 +12,16 @@ import { Form } from '@/components/ui/form.tsx'
 import { useToast } from '@/hooks/use-toast'
 import { useUser } from '@/hooks/useUser.ts'
 
-const changePasswordSchema = z.object({
-  currentPassword: z.string(),
-  newPassword: z.string(),
-  confirmPassword: z.string(),
-}).refine(data => data.newPassword === data.confirmPassword, {
-  message: 'New passwords do not match',
-  path: ['confirmPassword'],
-})
+const changePasswordSchema = z
+  .object({
+    currentPassword: z.string(),
+    newPassword: z.string(),
+    confirmPassword: z.string(),
+  })
+  .refine(data => data.newPassword === data.confirmPassword, {
+    message: 'New passwords do not match',
+    path: ['confirmPassword'],
+  })
 
 type ChangePasswordFormProps = {
   user: AuthenticatedUserData
@@ -46,12 +49,12 @@ export default function ChangePasswordForm({ user }: ChangePasswordFormProps) {
     setLoading(true)
     try {
       const hashNewPassword = await bcrypt.hash(values.newPassword, 10)
-      const updatePasswordData= {
+      const updatePasswordData = {
         oldPassword: values.currentPassword,
         password: hashNewPassword,
       }
       const isMatch = await bcrypt.compare(values.currentPassword, user.password)
-      if(!isMatch){
+      if (!isMatch) {
         console.error('Current password does not match input')
         toast({
           variant: 'error',
@@ -108,11 +111,7 @@ export default function ChangePasswordForm({ user }: ChangePasswordFormProps) {
             />
           </div>
           <div className='my-5'>
-            <LoadingButton
-              isLoading={loading}
-              type='submit'
-              className='bg-dark-purple text-white'
-            >
+            <LoadingButton isLoading={loading} type='submit' className='bg-dark-purple text-white'>
               Update Password
             </LoadingButton>
           </div>

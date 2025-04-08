@@ -13,13 +13,13 @@ export default function ProfileTeamImage({ playerId, teamId }: ProfileTeamImageP
   const team = teams.find(team => team.id === teamId)
   const { player } = usePlayer(playerId)
 
-  if(!team || !player) {
+  if (!team || !player) {
     return null
   }
   return (
     <div className='grid grid-cols-2 gap-3'>
       <div className='grid size-28 items-center justify-center overflow-hidden rounded-full bg-gray-200 p-2'>
-        <img className='h-auto max-w-full' src={player.imageSrc} alt={player.firstName}/>
+        <img className='h-auto max-w-full' src={player.imageSrc} alt={player.firstName} />
       </div>
       <div className='flex flex-col justify-center'>
         <p className='text-[20px] leading-4'>{player.firstName}</p>

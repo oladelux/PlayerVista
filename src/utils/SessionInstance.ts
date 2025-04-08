@@ -10,7 +10,7 @@ export class SessionInstance {
   }
 
   public static getTeamId(): string | undefined {
-    if(!this.instance.currentTeamId) {
+    if (!this.instance.currentTeamId) {
       return undefined
     }
     return this.instance.currentTeamId
