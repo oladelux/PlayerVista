@@ -1,7 +1,10 @@
+import { FC, useState } from 'react'
+
 import classnames from 'classnames'
-import React, { FC, useState } from 'react'
-import { FaAngleRight, FaAngleDown } from 'react-icons/fa'
+import { FaAngleDown, FaAngleRight } from 'react-icons/fa'
 import { Link, useLocation } from 'react-router-dom'
+
+import useAuth from '@/useAuth.ts'
 
 import DashboardActiveIcon from '../../assets/images/icons/dashboard-active.svg'
 import DashboardIcon from '../../assets/images/icons/dashboard.svg'
@@ -18,13 +21,12 @@ import TeamsIcon from '../../assets/images/icons/teams.svg'
 import UserManagementActiveIcon from '../../assets/images/icons/user-management-active.svg'
 import UserManagementIcon from '../../assets/images/icons/user-management.svg'
 import './SidebarMenu.scss'
-import useAuth from '@/useAuth.ts'
 
 type SidebarMenuProps = {
-  menu: SideBarTabsType;
-  onClick: () => void;
-  isActive: boolean;
-};
+  menu: SideBarTabsType
+  onClick: () => void
+  isActive: boolean
+}
 
 type TabType =
   | 'DASHBOARD'
@@ -34,7 +36,7 @@ type TabType =
   | 'CALENDER'
   | 'STATISTICS'
   | 'MESSAGE'
-  | 'REPORTERS';
+  | 'REPORTERS'
 const sidebarMenu = [
   'DASHBOARD',
   'TEAMS',
@@ -50,29 +52,29 @@ export type SideBarTabsType = {
   /**
    * The display name of the tab
    */
-  tabName: string;
+  tabName: string
   /**
    * The type of the tab, using the predefined types
    */
-  tabType: TabType;
+  tabType: TabType
   /**
    * The image associated with the tab, assumed to be a PNG element
    */
-  image: string;
-  activeImage: string;
-  link?: string;
+  image: string
+  activeImage: string
+  link?: string
   subMenu?: {
-    text: string;
-    link: string;
-  }[];
-};
+    text: string
+    link: string
+  }[]
+}
 
-const SidebarMenu: FC<SidebarMenuProps> = (props) => {
+const SidebarMenu: FC<SidebarMenuProps> = props => {
   const [isSubMenuOpen, setIsSubMenuOpen] = useState(false)
 
   const openSubMenu = () => {
     if (props.menu.subMenu) {
-      setIsSubMenuOpen((prev) => !prev)
+      setIsSubMenuOpen(prev => !prev)
     }
     props.onClick()
   }
@@ -84,11 +86,7 @@ const SidebarMenu: FC<SidebarMenuProps> = (props) => {
       })}
     >
       {props.menu.link && (
-        <Link
-          to={props.menu.link}
-          onClick={openSubMenu}
-          className='Sidebar__item-menu'
-        >
+        <Link to={props.menu.link} onClick={openSubMenu} className='Sidebar__item-menu'>
           <div className='Sidebar__item-menu-content'>
             <div
               className={classnames('Sidebar__item-menu-content-media', {
@@ -102,9 +100,7 @@ const SidebarMenu: FC<SidebarMenuProps> = (props) => {
                 alt='menu-icon'
               />
             </div>
-            <div className='Sidebar__item-menu-content-link'>
-              {props.menu.tabName}
-            </div>
+            <div className='Sidebar__item-menu-content-link'>{props.menu.tabName}</div>
           </div>
           {props.menu.subMenu && (
             <div className='Sidebar__item-arrow'>
@@ -115,7 +111,7 @@ const SidebarMenu: FC<SidebarMenuProps> = (props) => {
       )}
       {isSubMenuOpen && (
         <ul className='Sidebar__item-submenu'>
-          {props.menu.subMenu?.map((menu) => (
+          {props.menu.subMenu?.map(menu => (
             <li key={menu.text} className='Sidebar__item-submenu--item'>
               <Link className='Sidebar__item-submenu--item-link' to={menu.link}>
                 {menu.text}
@@ -129,26 +125,18 @@ const SidebarMenu: FC<SidebarMenuProps> = (props) => {
 }
 
 type SidebarFooterMenuProps = {
-  onClick: () => void;
-};
+  onClick: () => void
+}
 
-const SidebarFooterMenu: FC<SidebarFooterMenuProps> = (props) => {
+const SidebarFooterMenu: FC<SidebarFooterMenuProps> = props => {
   return (
     <div className='Sidebar-footer-menu'>
       <Link to={'/settings'} className='Sidebar-footer-menu__nav'>
-        <img
-          className='Sidebar-footer-menu__nav-image'
-          alt='settings-icon'
-          src={SettingsIcon}
-        />
+        <img className='Sidebar-footer-menu__nav-image' alt='settings-icon' src={SettingsIcon} />
         <span className='Sidebar-footer-menu__nav-title'>Settings</span>
       </Link>
       <div className='Sidebar-footer-menu__nav' onClick={props.onClick}>
-        <img
-          className='Sidebar-footer-menu__nav-image'
-          alt='logout-icon'
-          src={LogoutIcon}
-        />
+        <img className='Sidebar-footer-menu__nav-image' alt='logout-icon' src={LogoutIcon} />
         <span className='Sidebar-footer-menu__nav-title'>Log out</span>
       </div>
     </div>
@@ -233,8 +221,7 @@ export const Sidebar: FC = () => {
   const basePath = getBasePath(pathname)
 
   const browserActiveTab = sideBarTabs.find(
-    (item) =>
-      item.link === basePath || item.subMenu?.some((l) => l.link === basePath),
+    item => item.link === basePath || item.subMenu?.some(l => l.link === basePath),
   )
 
   const activeSidebarMenu = activeTab
@@ -246,7 +233,7 @@ export const Sidebar: FC = () => {
   return (
     <div className='Sidebar'>
       <div className='Sidebar__nav'>
-        {sideBarTabs.map((item) => (
+        {sideBarTabs.map(item => (
           <SidebarMenu
             key={item.tabName}
             menu={item}

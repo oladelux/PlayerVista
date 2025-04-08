@@ -1,8 +1,7 @@
 import { Loader2 } from 'lucide-react'
 
-
 export interface LoadingPageProps {
-  message?: string;
+  message?: string
 }
 
 export function LoadingPage({ message }: LoadingPageProps) {

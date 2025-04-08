@@ -1,5 +1,14 @@
 import { useEffect } from 'react'
+
 import { useDispatch, useSelector } from 'react-redux'
+
+import { appService } from '@/singletons'
+import {
+  getPlayersByTeamIdThunk,
+  getPlayersByUserIdThunk,
+  playersSelector,
+} from '@/store/slices/PlayersSlice.ts'
+import { getUserDataThunk } from '@/store/slices/UserSlice.ts'
 
 import { useAppLoading } from './useAppLoading'
 import { useEvents } from './useEvents.ts'
@@ -12,18 +21,17 @@ import {
   getApplicationLogsThunk,
   getRolesByGroupIdThunk,
   setActiveTeamId,
-  settingsSelector, setUserId, setUserRole,
+  settingsSelector,
+  setUserId,
+  setUserRole,
 } from '../store/slices/SettingsSlice.ts'
 import { getStaffsThunk, staffSelector } from '../store/slices/StaffSlice.ts'
 import { getTeamsThunk, getTeamThunk, teamSelector } from '../store/slices/TeamSlice'
 import { AppDispatch } from '../store/types'
-import { appService } from '@/singletons'
-import { getPlayersByTeamIdThunk, getPlayersByUserIdThunk, playersSelector } from '@/store/slices/PlayersSlice.ts'
-import { getUserDataThunk } from '@/store/slices/UserSlice.ts'
 
 let didInit = false
 
-export function useAppController () {
+export function useAppController() {
   const dispatch = useDispatch<AppDispatch>()
   const { teams } = useSelector(teamSelector)
   const { team: singleTeam } = useSelector(teamSelector)
@@ -41,7 +49,8 @@ export function useAppController () {
   useEffect(() => {
     if (!didInit) {
       didInit = true
-      user.initializeApp()
+      user
+        .initializeApp()
         .then(async data => {
           if (data) {
             appService.setUserId(data.id)

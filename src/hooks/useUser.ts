@@ -1,12 +1,13 @@
 import { useState } from 'react'
 
-import * as api from '../api'
-import { isAccessToken } from '../services/helper'
 import { RegistrationDetails } from '@/api'
 import { useToast } from '@/hooks/use-toast.ts'
 import { removeCookie } from '@/services/cookies.ts'
 import { LocalSessionType } from '@/utils/LocalSessionType.ts'
 import { clearLocalStorage } from '@/utils/localStorage.ts'
+
+import * as api from '../api'
+import { isAccessToken } from '../services/helper'
 
 export type UserHook = ReturnType<typeof useUser>
 
@@ -31,7 +32,6 @@ export function useUser() {
       }
       return undefined
     }
-
   }
 
   async function getSubscriptionData(): Promise<api.Subscription | undefined> {
@@ -54,8 +54,10 @@ export function useUser() {
   }
 
   async function updateUserData(
-    data: Partial<RegistrationDetails>): Promise<api.AuthenticatedUserData | undefined> {
-    return api.updateUser(data)
+    data: Partial<RegistrationDetails>,
+  ): Promise<api.AuthenticatedUserData | undefined> {
+    return api
+      .updateUser(data)
       .then(user => {
         setData(user)
         toast({
@@ -74,12 +76,12 @@ export function useUser() {
       })
   }
 
-  async function initializeApp (): Promise<api.AuthenticatedUserData | undefined> {
+  async function initializeApp(): Promise<api.AuthenticatedUserData | undefined> {
     console.debug('Initially loading user data')
-    if(isAccessToken()) {
+    if (isAccessToken()) {
       const user = await refreshUserData()
       if (user) {
-        console.log('User is logged in' )
+        console.log('User is logged in')
       }
       console.debug('Initial user data loaded')
       return user

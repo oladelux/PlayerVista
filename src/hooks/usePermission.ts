@@ -6,9 +6,9 @@ export const usePermission = () => {
   const { localSession } = useAuth()
   const role = localSession?.role
   const { roles } = useRole(localSession?.groupId)
-  const userRole = roles.find((r) => r.name === role)
+  const userRole = roles.find(r => r.name === role)
 
-  if(!userRole)
+  if (!userRole)
     return {
       canCreateTeam: false,
       canCreateEvent: false,
@@ -45,5 +45,4 @@ export const usePermission = () => {
     canManagePlayer,
     canManageRole,
   }
-
 }

@@ -1,5 +1,7 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit'
 
+import { userReducer } from '@/store/slices/UserSlice.ts'
+
 import { eventsReducer } from './slices/EventsSlice.ts'
 import { playerPerformanceReducer } from './slices/PlayerPerformanceSlice.ts'
 import { playersReducer } from './slices/PlayersSlice'
@@ -7,7 +9,6 @@ import { reporterReducer } from './slices/ReporterSlice.ts'
 import { settingsReducer } from './slices/SettingsSlice'
 import { staffReducer } from './slices/StaffSlice.ts'
 import { teamReducer } from './slices/TeamSlice'
-import { userReducer } from '@/store/slices/UserSlice.ts'
 
 export const rootReducer = combineReducers({
   players: playersReducer,
@@ -22,7 +23,7 @@ export const rootReducer = combineReducers({
 
 export const setupStore = configureStore({
   reducer: rootReducer,
-  middleware: (getDefaultMiddleware) =>
+  middleware: getDefaultMiddleware =>
     getDefaultMiddleware({
       serializableCheck: {},
     }),

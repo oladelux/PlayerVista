@@ -1,5 +1,6 @@
+import { FC, useEffect } from 'react'
+
 import cl from 'classnames'
-import React, { FC, useEffect } from 'react'
 
 import './Popup.scss'
 
@@ -23,7 +24,6 @@ type PopupProps = {
 }
 
 export const Popup: FC<PopupProps> = props => {
-
   /**
    * Handles the 'keydown' event, typically for closing a popup on the 'Escape' key press.
    * @param event - The keyboard event object.
@@ -56,13 +56,15 @@ export const Popup: FC<PopupProps> = props => {
 
   return (
     <div className={cl('popup', props.className)}>
-      <button type='button' onClick={onDocumentClose}
+      <button
+        type='button'
+        onClick={onDocumentClose}
         disabled={props.isCloseFunctionDisabled}
-        className={cl('popup__overlay',
-          { 'popup__overlay--disabled': props.isCloseFunctionDisabled })} />
-      <div className='popup__container'>
-        {props.children}
-      </div>
+        className={cl('popup__overlay', {
+          'popup__overlay--disabled': props.isCloseFunctionDisabled,
+        })}
+      />
+      <div className='popup__container'>{props.children}</div>
     </div>
   )
 }

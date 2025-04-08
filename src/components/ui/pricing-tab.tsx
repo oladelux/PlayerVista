@@ -1,5 +1,6 @@
-import { motion } from 'framer-motion'
 import * as React from 'react'
+
+import { motion } from 'framer-motion'
 
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
@@ -11,12 +12,7 @@ interface TabProps {
   discount?: boolean
 }
 
-export function Tab({
-  text,
-  selected,
-  setSelected,
-  discount = false,
-}: TabProps) {
+export function Tab({ text, selected, setSelected, discount = false }: TabProps) {
   return (
     <button
       onClick={() => setSelected(text)}
@@ -37,10 +33,7 @@ export function Tab({
       {discount && (
         <Badge
           variant='secondary'
-          className={cn(
-            'relative z-10 whitespace-nowrap shadow-none',
-            selected && 'bg-muted',
-          )}
+          className={cn('relative z-10 whitespace-nowrap shadow-none', selected && 'bg-muted')}
         >
           Save 10%
         </Badge>

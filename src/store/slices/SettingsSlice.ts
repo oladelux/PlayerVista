@@ -1,6 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-import { AsyncThunkLoading, RootState } from '../types'
 import {
   getLogs,
   LogType,
@@ -9,14 +8,18 @@ import {
   getRolesAndPermissions,
   ClientError,
   Roles,
-  updateRolePermissions, RoleFormData, createRole,
+  updateRolePermissions,
+  RoleFormData,
+  createRole,
 } from '@/api'
 
+import { AsyncThunkLoading, RootState } from '../types'
+
 type InitialSettingsState = {
-  activeTeamId: string,
-  userRole: string,
-  userId: string,
-  logs: LogType[],
+  activeTeamId: string
+  userRole: string
+  userId: string
+  logs: LogType[]
   roles: Roles[]
   /**
    * The loading state of getting logs
@@ -49,40 +52,40 @@ export const getApplicationLogsThunk = createAsyncThunk<
   return await getLogs(groupId)
 })
 
-export const createRoleThunk = createAsyncThunk<
-  unknown,
-  { data: RoleFormData }
->('settings/create-role', ({ data }) => {
-  try {
-    return createRole(data)
-  } catch (e) {
-    if (e instanceof ClientError) {
-      return e.message
+export const createRoleThunk = createAsyncThunk<unknown, { data: RoleFormData }>(
+  'settings/create-role',
+  ({ data }) => {
+    try {
+      return createRole(data)
+    } catch (e) {
+      if (e instanceof ClientError) {
+        return e.message
+      }
+      return 'Unexpected error in creating a new role'
     }
-    return 'Unexpected error in creating a new role'
-  }
-})
+  },
+)
 
 /**
  * Gets all roles for a group
  */
-export const getRolesByGroupIdThunk = createAsyncThunk<
-  RolesResponse,
-  { groupId: string }
->('settings/get-roles-by-groupId', async ({ groupId }, { rejectWithValue }) => {
-  try {
-    return await getRolesAndPermissions(groupId)
-  } catch (e) {
-    if (e instanceof ClientError) {
-      return rejectWithValue(e.message)
+export const getRolesByGroupIdThunk = createAsyncThunk<RolesResponse, { groupId: string }>(
+  'settings/get-roles-by-groupId',
+  async ({ groupId }, { rejectWithValue }) => {
+    try {
+      return await getRolesAndPermissions(groupId)
+    } catch (e) {
+      if (e instanceof ClientError) {
+        return rejectWithValue(e.message)
+      }
+      return rejectWithValue('Unexpected error in getting roles')
     }
-    return rejectWithValue('Unexpected error in getting roles')
-  }
-})
+  },
+)
 
 export const updateRolePermissionsThunk = createAsyncThunk<
   unknown,
-  { roleId: string, updatedPermissions: string[] }
+  { roleId: string; updatedPermissions: string[] }
 >('settings/update-role', ({ roleId, updatedPermissions }) => {
   try {
     return updateRolePermissions(roleId, updatedPermissions)
@@ -98,30 +101,19 @@ export const settingsSlice = createSlice({
   name: 'settings',
   initialState,
   reducers: {
-    setActiveTeamId: (
-      state,
-      action: PayloadAction<{ teamId: string }>,
-    ) => {
+    setActiveTeamId: (state, action: PayloadAction<{ teamId: string }>) => {
       const { teamId } = action.payload
       state.activeTeamId = teamId
     },
-    setUserRole: (
-      state,
-      action: PayloadAction<{ role: string }>,
-    ) => {
+    setUserRole: (state, action: PayloadAction<{ role: string }>) => {
       const { role } = action.payload
       state.userRole = role
     },
-    setUserId: (
-      state,
-      action: PayloadAction<{ id: string }>,
-    ) => {
+    setUserId: (state, action: PayloadAction<{ id: string }>) => {
       const { id } = action.payload
       state.userId = id
     },
-    clearSettingsState: (
-      state,
-    ) => {
+    clearSettingsState: state => {
       state.logs = []
       state.activeTeamId = ''
       state.userRole = ''
@@ -129,15 +121,13 @@ export const settingsSlice = createSlice({
       state.loadingGettingLogs = 'idle'
     },
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
       .addCase(getApplicationLogsThunk.pending, state => {
         state.loadingGettingLogs = 'pending'
       })
       .addCase(getApplicationLogsThunk.fulfilled, (state, action) => {
-        if (
-          state.loadingGettingLogs === 'pending'
-        ) {
+        if (state.loadingGettingLogs === 'pending') {
           state.loadingGettingLogs = 'succeeded'
           if (action.payload) {
             state.logs = action.payload.data
@@ -145,9 +135,7 @@ export const settingsSlice = createSlice({
         }
       })
       .addCase(getApplicationLogsThunk.rejected, (state, action) => {
-        if (
-          state.loadingGettingLogs === 'pending'
-        ) {
+        if (state.loadingGettingLogs === 'pending') {
           state.loadingGettingLogs = 'failed'
           console.error('Error getting logs', action.error)
         }
@@ -159,9 +147,7 @@ export const settingsSlice = createSlice({
         state.loadingCreatingRoleStatus = 'succeeded'
       })
       .addCase(createRoleThunk.rejected, (state, action) => {
-        if (
-          state.loadingCreatingRoleStatus === 'pending'
-        ) {
+        if (state.loadingCreatingRoleStatus === 'pending') {
           state.loadingCreatingRoleStatus = 'failed'
           console.error('Error creating new role', action.error)
         }
@@ -177,9 +163,7 @@ export const settingsSlice = createSlice({
         }
       })
       .addCase(getRolesByGroupIdThunk.rejected, (state, action) => {
-        if (
-          state.loadingGettingRoles === 'pending'
-        ) {
+        if (state.loadingGettingRoles === 'pending') {
           state.loadingGettingRoles = 'failed'
           console.error('Error getting roles', action.error)
         }
@@ -191,9 +175,7 @@ export const settingsSlice = createSlice({
         state.loadingUpdatingRolePermissions = 'succeeded'
       })
       .addCase(updateRolePermissionsThunk.rejected, (state, action) => {
-        if (
-          state.loadingUpdatingRolePermissions === 'pending'
-        ) {
+        if (state.loadingUpdatingRolePermissions === 'pending') {
           state.loadingUpdatingRolePermissions = 'failed'
           console.error('Error updating role permissions', action.error)
         }
@@ -201,12 +183,7 @@ export const settingsSlice = createSlice({
   },
 })
 
-export const {
-  setActiveTeamId,
-  setUserRole,
-  setUserId,
-  clearSettingsState,
-} = settingsSlice.actions
+export const { setActiveTeamId, setUserRole, setUserId, clearSettingsState } = settingsSlice.actions
 
 export const settingsSelector = (state: RootState) => state.settings
 export const settingsReducer = settingsSlice.reducer

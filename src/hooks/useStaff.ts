@@ -35,7 +35,7 @@ export const useStaff = (staffId?: string) => {
       setError(state.error)
     })
     staffService.getStaffs(userGroupId)
-    if (staffId){
+    if (staffId) {
       staffService.getStaff(staffId)
     }
 

@@ -1,4 +1,5 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
+
 import { Link } from 'react-router-dom'
 
 import DashboardIcon from '../../assets/images/icons/dashboard.svg'
@@ -22,7 +23,7 @@ export const MobileNav: FC = () => {
 
   return (
     <div className='MobileNav'>
-      {sideBarTabs.map((item) => (
+      {sideBarTabs.map(item => (
         <Link key={item.tabName} to={item.link} className='MobileNav__item'>
           <img src={item.icon} alt={`${item.tabName} icon`} className='MobileNav__item-icon' />
           <span className='MobileNav__item-label'>{item.tabName}</span>

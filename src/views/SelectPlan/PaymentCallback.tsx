@@ -1,11 +1,17 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+
 import { useNavigate } from 'react-router-dom'
 
 import { confirmTransaction, SubscriptionStatus } from '@/api'
 import { routes } from '@/constants/routes.ts'
 import { getEventsByTeamThunk } from '@/store/slices/EventsSlice.ts'
 import { getPlayersByTeamIdThunk } from '@/store/slices/PlayersSlice.ts'
-import { getRolesByGroupIdThunk, setActiveTeamId, setUserId, setUserRole } from '@/store/slices/SettingsSlice.ts'
+import {
+  getRolesByGroupIdThunk,
+  setActiveTeamId,
+  setUserId,
+  setUserRole,
+} from '@/store/slices/SettingsSlice.ts'
 import { getStaffsThunk } from '@/store/slices/StaffSlice.ts'
 import { getTeamThunk } from '@/store/slices/TeamSlice.ts'
 import { useAppDispatch } from '@/store/types.ts'
@@ -18,7 +24,6 @@ export default function PaymentCallback() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-
   const confirmTransactionCallback = useCallback(
     async (reference: string) => {
       setLoading(true)
@@ -29,7 +34,7 @@ export default function PaymentCallback() {
           userId: userData.id,
         })
         if (response.status === SubscriptionStatus.ACTIVE) {
-          if(userData.role === 'admin') {
+          if (userData.role === 'admin') {
             navigate(routes.teams)
           } else {
             setCurrentTeam(userData.teamId)
@@ -53,7 +58,9 @@ export default function PaymentCallback() {
       } finally {
         setLoading(false)
       }
-    }, [navigate, dispatch])
+    },
+    [navigate, dispatch],
+  )
 
   useEffect(() => {
     if (!didInit) {

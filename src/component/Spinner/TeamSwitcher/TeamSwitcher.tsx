@@ -1,24 +1,23 @@
-import { Check, ChevronsUpDown, PlusCircle } from 'lucide-react'
 import * as React from 'react'
 import { useCallback } from 'react'
+
+import { Check, ChevronsUpDown, PlusCircle } from 'lucide-react'
 import { useDispatch } from 'react-redux'
 import { Link } from 'react-router-dom'
 
 import { TeamResponse } from '@/api'
-import { Avatar,
-  AvatarFallback,
-  AvatarImage } from '@/components/ui/avatar.tsx'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar.tsx'
 import { Button } from '@/components/ui/button.tsx'
-import { Command,
+import {
+  Command,
   CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
   CommandList,
-  CommandSeparator } from '@/components/ui/command.tsx'
-import { Popover,
-  PopoverContent,
-  PopoverTrigger } from '@/components/ui/popover'
+  CommandSeparator,
+} from '@/components/ui/command.tsx'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { routes } from '@/constants/routes.ts'
 import { cn } from '@/lib/utils'
 import { appService } from '@/singletons'
@@ -40,26 +39,29 @@ interface TeamSwitcherProps extends PopoverTriggerProps {
 export default function TeamSwitcher({ className, teams }: TeamSwitcherProps) {
   const [open, setOpen] = React.useState(false)
   const activeTeamId = SessionInstance.getTeamId()
-  const activeTeam = teams.find((team) => team.id === activeTeamId)
+  const activeTeam = teams.find(team => team.id === activeTeamId)
   const [selectedTeam, setSelectedTeam] = React.useState<TeamResponse | undefined>(activeTeam)
   const dispatch = useDispatch<AppDispatch>()
   const userData = appService.getUserData()
 
-  const handleTeamChange = useCallback( async (team: TeamResponse) => {
-    toLocalSession({ currentTeamId: team.id })
-      .then(() => {
-        setSelectedTeam(team)
-        setOpen(false)
-        window.location.reload()
-      })
-      .catch(e => console.error('Error setting current team id:', e))
-    appService.setActiveTeam(team.id)
-    setCurrentTeam(team.id)
-    dispatch(setActiveTeamId({ teamId: team.id }))
-    dispatch(getPlayersByTeamIdThunk({ teamId: team.id }))
-    dispatch(getEventsByTeamThunk({ teamId: team.id }))
-    userData && dispatch(getStaffsThunk({ groupId: userData.groupId }))
-  }, [dispatch, userData])
+  const handleTeamChange = useCallback(
+    async (team: TeamResponse) => {
+      toLocalSession({ currentTeamId: team.id })
+        .then(() => {
+          setSelectedTeam(team)
+          setOpen(false)
+          window.location.reload()
+        })
+        .catch(e => console.error('Error setting current team id:', e))
+      appService.setActiveTeam(team.id)
+      setCurrentTeam(team.id)
+      dispatch(setActiveTeamId({ teamId: team.id }))
+      dispatch(getPlayersByTeamIdThunk({ teamId: team.id }))
+      dispatch(getEventsByTeamThunk({ teamId: team.id }))
+      userData && dispatch(getStaffsThunk({ groupId: userData.groupId }))
+    },
+    [dispatch, userData],
+  )
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -89,7 +91,7 @@ export default function TeamSwitcher({ className, teams }: TeamSwitcherProps) {
           <CommandList>
             <CommandEmpty>No team found.</CommandEmpty>
             <CommandGroup heading='Teams' />
-            {teams.map((team) => (
+            {teams.map(team => (
               <CommandItem
                 key={team.id}
                 onSelect={() => {
@@ -98,20 +100,14 @@ export default function TeamSwitcher({ className, teams }: TeamSwitcherProps) {
                 className='text-sm'
               >
                 <Avatar className='mr-2 size-5'>
-                  <AvatarImage
-                    src={team.logo}
-                    alt={team.teamName}
-                    className='grayscale'
-                  />
+                  <AvatarImage src={team.logo} alt={team.teamName} className='grayscale' />
                   <AvatarFallback>{team?.teamName.charAt(0)}</AvatarFallback>
                 </Avatar>
                 {team.teamName}
                 <Check
                   className={cn(
                     'ml-auto',
-                    selectedTeam?.teamName === team.teamName
-                      ? 'opacity-100'
-                      : 'opacity-0',
+                    selectedTeam?.teamName === team.teamName ? 'opacity-100' : 'opacity-0',
                   )}
                 />
               </CommandItem>

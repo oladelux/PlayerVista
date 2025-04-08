@@ -1,9 +1,11 @@
-import { TrashIcon } from 'lucide-react'
 import { useState } from 'react'
+
+import { TrashIcon } from 'lucide-react'
 
 import { Button } from '@/components/ui/button.tsx'
 import {
-  Dialog, DialogClose,
+  Dialog,
+  DialogClose,
   DialogContent,
   DialogHeader,
   DialogTitle,
@@ -20,7 +22,9 @@ export function ConfirmStaffDeletion({ onDeleted }: { onDeleted: () => void }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <div className='table-link cursor-pointer border-l border-l-border-line px-2 text-red-500'><TrashIcon width={16}/></div>
+        <div className='table-link cursor-pointer border-l border-l-border-line px-2 text-red-500'>
+          <TrashIcon width={16} />
+        </div>
       </DialogTrigger>
       <DialogContent className='sm:max-w-md'>
         <DialogHeader>
@@ -32,9 +36,7 @@ export function ConfirmStaffDeletion({ onDeleted }: { onDeleted: () => void }) {
               Delete
             </Button>
             <DialogClose asChild>
-              <Button type='button'>
-                close
-              </Button>
+              <Button type='button'>close</Button>
             </DialogClose>
           </div>
         </div>

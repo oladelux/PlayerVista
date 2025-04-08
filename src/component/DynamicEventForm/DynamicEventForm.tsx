@@ -20,15 +20,14 @@ export const DynamicEventForm = () => {
 
   return (
     <div className='Dynamic-event-form'>
-      { values.type === 'training' && <TrainingForm /> }
-      { values.type === 'match' && <MatchForm /> }
-      { values.type === undefined && <p>Please select an event type first.</p>}
+      {values.type === 'training' && <TrainingForm />}
+      {values.type === 'match' && <MatchForm />}
+      {values.type === undefined && <p>Please select an event type first.</p>}
     </div>
   )
 }
 
 const TrainingForm = () => {
-
   return (
     <div className='Training-form'>
       <div className='Training-form__title'>Add training details</div>
@@ -70,11 +69,7 @@ const TrainingForm = () => {
         </div>
         <div className='Training-form__layout--form-group'>
           <div className='Training-form__layout--form-group-label'>Additional Information</div>
-          <Field
-            className='Training-form__layout--form-group-field'
-            as='textarea'
-            name='info'
-          />
+          <Field className='Training-form__layout--form-group-field' as='textarea' name='info' />
         </div>
       </div>
     </div>
@@ -87,11 +82,21 @@ const MatchForm = () => {
       <div className='Match-form__title'>Add match details</div>
       <div className='Match-form__radio-group' role='group' aria-labelledby='my-radio-group'>
         <label className='Match-form__radio-group-label'>
-          <Field className='Match-form__radio-group-label--field' type='radio' name='location' value='Home' />
+          <Field
+            className='Match-form__radio-group-label--field'
+            type='radio'
+            name='location'
+            value='Home'
+          />
           Home
         </label>
         <label className='Match-form__radio-group-label'>
-          <Field className='Match-form__radio-group-label--field' type='radio' name='location' value='Away' />
+          <Field
+            className='Match-form__radio-group-label--field'
+            type='radio'
+            name='location'
+            value='Away'
+          />
           Away
         </label>
       </div>
@@ -133,19 +138,11 @@ const MatchForm = () => {
         </div>
         <div className='Match-form__layout--form-group'>
           <div className='Match-form__layout--form-group-label'>Opponent Name</div>
-          <Field
-            className='Match-form__layout--form-group-field'
-            type='text'
-            name='opponent'
-          />
+          <Field className='Match-form__layout--form-group-field' type='text' name='opponent' />
         </div>
         <div className='Match-form__layout--form-group'>
           <div className='Match-form__layout--form-group-label'>Additional Information</div>
-          <Field
-            className='Match-form__layout--form-group-field'
-            as='textarea'
-            name='info'
-          />
+          <Field className='Match-form__layout--form-group-field' as='textarea' name='info' />
         </div>
       </div>
     </div>

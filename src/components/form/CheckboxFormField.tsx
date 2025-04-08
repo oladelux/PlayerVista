@@ -1,4 +1,5 @@
 import { ReactNode } from 'react'
+
 import { Control, FieldPath, FieldValues } from 'react-hook-form'
 
 import { Checkbox } from '@/components/ui/checkbox.tsx'
@@ -8,25 +9,19 @@ interface CheckboxFormFieldProps<
   TName extends FieldPath<TFieldValues>,
   TFieldValues extends FieldValues = FieldValues,
 > {
-  control: Control<TFieldValues> | Control<TFieldValues, never>;
-  name: TName;
-  className?: string;
-  disabled?: boolean;
-  children?: ReactNode;
-  value?: string;
-  defaultChecked?: boolean;
+  control: Control<TFieldValues> | Control<TFieldValues, never>
+  name: TName
+  className?: string
+  disabled?: boolean
+  children?: ReactNode
+  value?: string
+  defaultChecked?: boolean
 }
 
 export default function CheckboxFormField<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
->({
-  control,
-  name,
-  disabled,
-  children,
-  value,
-}: CheckboxFormFieldProps<TName, TFieldValues>) {
+>({ control, name, disabled, children, value }: CheckboxFormFieldProps<TName, TFieldValues>) {
   return (
     <FormField
       control={control as Control<TFieldValues>}
@@ -52,7 +47,7 @@ export default function CheckboxFormField<
               />
               <div className='text-sm'>{children}</div>
             </div>
-            <FormMessage/>
+            <FormMessage />
           </FormItem>
         )
       }}

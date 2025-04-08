@@ -5,25 +5,29 @@ import { Control, FieldPath, FieldValues } from 'react-hook-form'
 
 import { Button } from '@/components/ui/button.tsx'
 import { Calendar } from '@/components/ui/calendar.tsx'
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form.tsx'
+import {
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form.tsx'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover.tsx'
-
-
-
 
 export interface DatePickerFieldProps<
   TName extends FieldPath<TFieldValues>,
   TFieldValues extends FieldValues = FieldValues,
 > {
-  control: Control<TFieldValues> | Control<TFieldValues, never>;
-  name: TName;
-  label?: string;
-  placeholder?: string;
-  description?: string;
-  className?: string;
-  inputClassName?: string;
-  disabled?: boolean;
-  onChange?: (value: string) => void;
+  control: Control<TFieldValues> | Control<TFieldValues, never>
+  name: TName
+  label?: string
+  placeholder?: string
+  description?: string
+  className?: string
+  inputClassName?: string
+  disabled?: boolean
+  onChange?: (value: string) => void
 }
 
 export default function DatePickerField<
@@ -52,7 +56,8 @@ export default function DatePickerField<
                     variant={'outline'}
                     className={classnames(
                       'h-10 w-64 justify-start text-left font-normal',
-                      !field.value && 'text-muted-foreground', inputClassName,
+                      !field.value && 'text-muted-foreground',
+                      inputClassName,
                     )}
                   >
                     <CalendarIcon />

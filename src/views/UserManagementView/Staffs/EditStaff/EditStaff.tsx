@@ -1,5 +1,6 @@
-import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useMemo, useState } from 'react'
+
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
@@ -15,9 +16,11 @@ import { settingsSelector } from '@/store/slices/SettingsSlice.ts'
 import { getStaffThunk, staffSelector } from '@/store/slices/StaffSlice.ts'
 import { AppDispatch } from '@/store/types.ts'
 import { getStaffDefaultValues } from '@/views/UserManagementView/Staffs/EditStaff/staffDefaultValues.ts'
-import { staffSchema, StaffSchemaIn, StaffSchemaOut } from '@/views/UserManagementView/Staffs/EditStaff/staffSchema.ts'
-
-
+import {
+  staffSchema,
+  StaffSchemaIn,
+  StaffSchemaOut,
+} from '@/views/UserManagementView/Staffs/EditStaff/staffSchema.ts'
 
 export function EditStaff() {
   const dispatch = useDispatch<AppDispatch>()
@@ -40,7 +43,7 @@ export function EditStaff() {
   const Roles = roles.map(role => ({ label: role.name, value: role.name }))
 
   async function onSubmit(values: StaffSchemaOut) {
-    if(!staff) return
+    if (!staff) return
     setLoading(true)
     try {
       const data: Partial<StaffData> = {
@@ -120,7 +123,7 @@ export function EditStaff() {
                 type='submit'
                 className='bg-dark-purple text-white'
               >
-                  Update
+                Update
               </LoadingButton>
             </div>
           </form>
@@ -128,5 +131,4 @@ export function EditStaff() {
       </div>
     </div>
   )
-
 }

@@ -34,7 +34,7 @@ type DefensiveProps = {
   defensiveData: DefensiveData[]
 }
 
-export const Defensive:FC<DefensiveProps> = ({ defensiveData }) => {
+export const Defensive: FC<DefensiveProps> = ({ defensiveData }) => {
   return (
     <div className='Defensive'>
       <Table columns={defensiveColumns} data={defensiveData} />

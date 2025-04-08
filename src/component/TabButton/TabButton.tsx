@@ -1,5 +1,6 @@
-import classnames from 'classnames'
 import { FC, PropsWithChildren } from 'react'
+
+import classnames from 'classnames'
 
 import './TabButton.scss'
 
@@ -9,11 +10,13 @@ type TabButtonProps = {
   className?: string
 }
 export const TabButton: FC<PropsWithChildren<TabButtonProps>> = props => {
-  return(
+  return (
     <button
       type='button'
       onClick={props.onClick}
-      className={classnames('Tab-button', props.className, { 'Tab-button--active': props.isActive })}
+      className={classnames('Tab-button', props.className, {
+        'Tab-button--active': props.isActive,
+      })}
     >
       {props.children}
     </button>

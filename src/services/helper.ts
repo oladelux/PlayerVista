@@ -49,8 +49,10 @@ export function calculateAge(birthDate: Date): number {
   // Calculate the difference in years
   let age = today.getFullYear() - birthDateObj.getFullYear()
   // Adjust for months and days if the current date is before the birthday of the current year
-  if (today.getMonth() < birthDateObj.getMonth()
-    || (today.getMonth() === birthDateObj.getMonth() && today.getDate() < birthDateObj.getDate())) {
+  if (
+    today.getMonth() < birthDateObj.getMonth() ||
+    (today.getMonth() === birthDateObj.getMonth() && today.getDate() < birthDateObj.getDate())
+  ) {
     age--
   }
   return age
@@ -74,7 +76,7 @@ export const combinedDate = (date: Date, time: string) => {
 }
 
 export function convertToCalenderDate(dateStr: Date) {
-// Extract year, month, and day from the parsed date
+  // Extract year, month, and day from the parsed date
   const year = new Date(dateStr).getUTCFullYear()
   const month = new Date(dateStr).getUTCMonth()
   const day = new Date(dateStr).getUTCDate()

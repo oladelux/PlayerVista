@@ -12,6 +12,23 @@ import { useEvents } from '@/hooks/useEvents'
 import { TeamMatchStats } from '@/views/TeamStats/TeamMatchStats'
 import { TeamPerformanceStats } from '@/views/TeamStats/TeamPerformanceStats'
 
+export type TeamType = {
+  id: string | undefined
+  stats: {
+    played: number
+    won: number
+    drawn: number
+    lost: number
+    goalsFor: number
+    goalsAgainst: number
+    cleanSheets: number
+    possession: number
+    passAccuracy: number
+    shotsPerGame: number
+    tacklesPerGame: number
+  }
+}
+
 export function TeamStats() {
   const { teamId } = useParams()
   const { teams } = useOutletContext<DashboardLayoutOutletContext>()
@@ -45,7 +62,7 @@ export function TeamStats() {
     return isHome ? match.homeScore === 0 : match.awayScore === 0
   }).length
 
-  const teamData = {
+  const teamData: TeamType = {
     id: teamId,
     stats: {
       played: pastMatches.length,

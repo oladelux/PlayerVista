@@ -1,7 +1,8 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-import { AsyncThunkLoading, RootState } from '../types'
 import { AuthenticatedUserData, getAuthenticatedUser } from '@/api'
+
+import { AsyncThunkLoading, RootState } from '../types'
 
 type InitialSettingsState = {
   user: Omit<AuthenticatedUserData, 'password'> | null
@@ -10,7 +11,7 @@ type InitialSettingsState = {
 
 // src/utils/omitPassword.ts
 export function omitPassword(user: AuthenticatedUserData): Omit<AuthenticatedUserData, 'password'> {
-  const { password, ...rest } = user
+  const { ...rest } = user
   return rest
 }
 
@@ -19,12 +20,12 @@ const initialState: InitialSettingsState = {
   loadingUserData: 'idle',
 }
 
-export const getUserDataThunk = createAsyncThunk<
-  AuthenticatedUserData,
-  void
->('user/get-data', async () => {
-  return await getAuthenticatedUser()
-})
+export const getUserDataThunk = createAsyncThunk<AuthenticatedUserData, void>(
+  'user/get-data',
+  async () => {
+    return await getAuthenticatedUser()
+  },
+)
 
 const UserSlice = createSlice({
   name: 'user',
@@ -40,9 +41,7 @@ const UserSlice = createSlice({
         state.loadingUserData = 'pending'
       })
       .addCase(getUserDataThunk.fulfilled, (state, action) => {
-        if (
-          state.loadingUserData === 'pending'
-        ) {
+        if (state.loadingUserData === 'pending') {
           state.loadingUserData = 'succeeded'
           if (action.payload) {
             state.user = omitPassword(action.payload)
@@ -50,9 +49,7 @@ const UserSlice = createSlice({
         }
       })
       .addCase(getUserDataThunk.rejected, state => {
-        if (
-          state.loadingUserData === 'pending'
-        ) {
+        if (state.loadingUserData === 'pending') {
           state.loadingUserData = 'failed'
         }
       })

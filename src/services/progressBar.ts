@@ -22,14 +22,13 @@ export const ColorLibConnector = styled(StepConnector)(({ theme }) => ({
   [`& .${stepConnectorClasses.line}`]: {
     height: 3,
     border: 0,
-    backgroundColor:
-      theme.palette.mode === 'dark' ? theme.palette.grey[800] : '#eaeaf0',
+    backgroundColor: theme.palette.mode === 'dark' ? theme.palette.grey[800] : '#eaeaf0',
     borderRadius: 1,
   },
 }))
 
 export const ColorLibStepIconRoot = styled('div')<{
-  ownerState: { completed?: boolean; active?: boolean };
+  ownerState: { completed?: boolean; active?: boolean }
 }>(({ ownerState }) => ({
   backgroundColor: 'rgba(170, 172, 175, 0.14)',
   zIndex: 1,

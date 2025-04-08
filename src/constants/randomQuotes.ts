@@ -4,11 +4,13 @@ const RandomQuotes = [
     author: 'John Motson',
   },
   {
-    quote: 'Guess who\'s there? Close your eyes and he never went away! Cristiano Ronaldo has stolen back the show!',
+    quote:
+      "Guess who's there? Close your eyes and he never went away! Cristiano Ronaldo has stolen back the show!",
     author: 'Peter Drury',
   },
   {
-    quote: 'The Theatre lives its Dream! Its fantasy hero retreads the boards! A phenomenon! Hello again, Stretford End: here I am!',
+    quote:
+      'The Theatre lives its Dream! Its fantasy hero retreads the boards! A phenomenon! Hello again, Stretford End: here I am!',
     author: 'Peter Drury',
   },
   {

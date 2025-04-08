@@ -1,14 +1,11 @@
 import { BehaviorSubject, from } from 'rxjs'
-import { map, catchError } from 'rxjs/operators'
+import { catchError, map } from 'rxjs/operators'
 
 import {
-  addPlayer,
   createRole,
   getRolesAndPermissions,
-  PlayerFormData,
   RoleFormData,
   Roles,
-  updatePlayer,
   updateRolePermissions,
 } from '@/api'
 
@@ -43,10 +40,10 @@ export class RoleService {
     }
     from(getRolesAndPermissions(groupId))
       .pipe(
-        map((xResponse) => {
+        map(xResponse => {
           this.updateState({ roles: xResponse.data, loading: false })
         }),
-        catchError((e) => {
+        catchError(e => {
           this.updateState({ roles: [], loading: false, error: e.message })
           return []
         }),
@@ -62,7 +59,7 @@ export class RoleService {
           this.updateState({ loading: false })
           this.getRolesByGroupId(data.groupId)
         }),
-        catchError((e) => {
+        catchError(e => {
           this.updateState({ loading: false, error: e.message })
           return []
         }),
@@ -78,7 +75,7 @@ export class RoleService {
           this.updateState({ loading: false })
           this.getRolesByGroupId(groupId)
         }),
-        catchError((e) => {
+        catchError(e => {
           this.updateState({ loading: false, error: e.message })
           return []
         }),

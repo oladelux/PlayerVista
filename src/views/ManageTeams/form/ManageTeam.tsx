@@ -1,6 +1,7 @@
+import { ChangeEvent, useEffect, useMemo, useState } from 'react'
+
 import { zodResolver } from '@hookform/resolvers/zod'
 import CenterFocusWeakIcon from '@mui/icons-material/CenterFocusWeak'
-import { ChangeEvent, useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useOutletContext, useParams } from 'react-router-dom'
 
@@ -40,8 +41,11 @@ export function ManageTeam() {
   const [file, setFile] = useState<string>('')
   const [isUploading, setIsUploading] = useState(false)
   const [formLoading, setFormLoading] = useState(false)
-  const { teams, teamsError: error, teamsLoading: loading } =
-    useOutletContext<DashboardLayoutOutletContext>()
+  const {
+    teams,
+    teamsError: error,
+    teamsLoading: loading,
+  } = useOutletContext<DashboardLayoutOutletContext>()
   const team = teams.find(team => team.id === selectedTeamId)
 
   const [selectedImage, setSelectedImage] = useState<string>(team?.logo || '')
@@ -68,20 +72,22 @@ export function ManageTeam() {
           file: reader.result as string,
           cloud_name: cloudName,
           upload_preset: cloudUploadPresets,
-        }).then(res => {
-          setIsUploading(false)
-          setFile(res.url)
-        }).catch(err => {
-          console.error('Error uploading image:', err)
-          setIsUploading(false)
         })
+          .then(res => {
+            setIsUploading(false)
+            setFile(res.url)
+          })
+          .catch(err => {
+            console.error('Error uploading image:', err)
+            setIsUploading(false)
+          })
       }
       reader.readAsDataURL(imgFile[0])
     }
   }
 
   async function onSubmit(values: TeamSchemaOut) {
-    if(!team) return
+    if (!team) return
     setFormLoading(true)
     try {
       const data: TeamFormData = {
@@ -150,15 +156,18 @@ export function ManageTeam() {
               />
               <label htmlFor='teamImage' className='Multi-step__team-image--label'>
                 <div className='Multi-step__team-image--label-preview'>
-                  {selectedImage ?
-                    <img alt='preview' className='Multi-step__team-image--label-preview-img' src={selectedImage}/>
-                    : <CenterFocusWeakIcon className='Multi-step__team-image--label-preview-icon'/>
-                  }
+                  {selectedImage ? (
+                    <img
+                      alt='preview'
+                      className='Multi-step__team-image--label-preview-img'
+                      src={selectedImage}
+                    />
+                  ) : (
+                    <CenterFocusWeakIcon className='Multi-step__team-image--label-preview-icon' />
+                  )}
                 </div>
               </label>
-              <div className='Multi-step__team-image--title'>
-                  Choose your team logo
-              </div>
+              <div className='Multi-step__team-image--title'>Choose your team logo</div>
             </div>
             <div className='mb-5 grid grid-cols-2 gap-5 sm:grid-cols-1 md:grid-cols-2'>
               <InputFormField
@@ -346,12 +355,11 @@ export function ManageTeam() {
               type='submit'
               className='t-10 mb-3 bg-dark-purple text-white'
             >
-                Save
+              Save
             </LoadingButton>
           </form>
         </Form>
       </div>
     </div>
   )
-
 }

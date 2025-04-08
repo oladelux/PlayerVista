@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { Fragment, useState } from 'react'
 
 import {
   BarChart3,
@@ -41,8 +41,10 @@ import {
 } from '@/components/ui/table'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
+import { TeamType } from './TeamStats'
+
 type TeamMatchStatsProps = {
-  teamData: any
+  teamData: TeamType
   matchesData: Array<{
     id: number
     opponent: string
@@ -326,7 +328,7 @@ export function TeamMatchStats({ teamData, matchesData }: TeamMatchStatsProps) {
                 </TableHeader>
                 <TableBody>
                   {sortedMatches.map(match => (
-                    <React.Fragment key={match.id}>
+                    <Fragment key={match.id}>
                       <TableRow
                         className={`cursor-pointer hover:bg-muted/50 ${match.id === selectedMatch ? 'bg-primary/5' : ''}`}
                         onClick={() => handleMatchClick(match.id)}
@@ -757,7 +759,7 @@ export function TeamMatchStats({ teamData, matchesData }: TeamMatchStatsProps) {
                           </TableCell>
                         </TableRow>
                       )}
-                    </React.Fragment>
+                    </Fragment>
                   ))}
                 </TableBody>
               </Table>
