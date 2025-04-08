@@ -1,8 +1,7 @@
 import { FC, useEffect, useState } from 'react'
+
 import { Link } from 'react-router-dom'
 
-import AwayIcon from '../../assets/images/icons/away.svg'
-import HomeIcon from '../../assets/images/icons/home.svg'
 import { Event } from '@/api'
 import {
   Select,
@@ -11,11 +10,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-
-import './StatisticsView.scss'
 import { useEvents } from '@/hooks/useEvents.ts'
 import { formatSingleEventDate } from '@/utils/date'
 import { SessionInstance } from '@/utils/SessionInstance.ts'
+
+import AwayIcon from '../../assets/images/icons/away.svg'
+import HomeIcon from '../../assets/images/icons/home.svg'
+import './StatisticsView.scss'
 
 const currentYearValue = new Date().getFullYear()
 
@@ -45,24 +46,21 @@ export function StatisticsView() {
 
   return (
     <div className='Statistics-view'>
-      <Select
-        onValueChange={handleYearChange}
-        defaultValue={currentSelectedYear.toString()}
-      >
+      <Select onValueChange={handleYearChange} defaultValue={currentSelectedYear.toString()}>
         <SelectTrigger className='w-[180px]'>
           <SelectValue placeholder='Year' />
         </SelectTrigger>
         <SelectContent>
-          {years.map((year) => (
-            <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
+          {years.map(year => (
+            <SelectItem key={year} value={year.toString()}>
+              {year}
+            </SelectItem>
           ))}
         </SelectContent>
       </Select>
       <div className='mt-5 flex flex-col gap-5'>
         {sortedEvents.length > 0 ? (
-          sortedEvents.map((event) =>
-            teamId && (<EventCard key={event.id} event={event} />),
-          )
+          sortedEvents.map(event => teamId && <EventCard key={event.id} event={event} />)
         ) : (
           <p>No events found for this year.</p>
         )}
@@ -72,27 +70,22 @@ export function StatisticsView() {
 }
 
 interface EventCardProps {
-  event: Event;
+  event: Event
 }
 
 const EventCard: FC<EventCardProps> = ({ event }) => {
   return (
     <div className='Event-card flex h-20 items-center justify-between rounded-lg border px-2 md:px-5'>
-      <div className='w-1/5 text-sm'>
-        {formatSingleEventDate(event.startDate)}
-      </div>
+      <div className='w-1/5 text-sm'>{formatSingleEventDate(event.startDate)}</div>
       <div className='w-1/4 font-medium'>vs. {event.opponent}</div>
       <div className='rounded-lg bg-[#37003c] p-2 ' title={event.location.toUpperCase()}>
         {event.location === 'home' ? (
-          <img src={HomeIcon} width={20} alt='home-icon'/>
+          <img src={HomeIcon} width={20} alt='home-icon' />
         ) : (
           <img src={AwayIcon} width={20} alt='awayicon' />
         )}
       </div>
-      <Link
-        className='border-b border-[#37003c] text-sm'
-        to={`/statistics/${event.id}`}
-      >
+      <Link className='border-b border-[#37003c] text-sm' to={`/statistics/${event.id}`}>
         View Stats
       </Link>
     </div>

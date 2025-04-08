@@ -23,7 +23,11 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group.tsx'
 import { Label } from '@/components/ui/label.tsx'
 import InputFormField from '@/components/form/InputFormField.tsx'
 import { Button } from '@/components/ui/button.tsx'
-import { eventSchema, EventSchemaIn, EventSchemaOut } from '@/component/EventFormModal/eventFormSchema.ts'
+import {
+  eventSchema,
+  EventSchemaIn,
+  EventSchemaOut,
+} from '@/component/EventFormModal/eventFormSchema.ts'
 
 import { zodResolver } from '@hookform/resolvers/zod'
 
@@ -51,7 +55,7 @@ const SelectedEvent: FC<SelectedEventProps> = props => {
   const { toast } = useToast()
 
   const defaultValues = useMemo(() => {
-    if(!props.selectedEvent) return
+    if (!props.selectedEvent) return
     return {
       date: new Date(props.selectedEvent.startDate).toLocaleDateString('en-CA'),
       startTime: new Date(props.selectedEvent.startDate).toLocaleTimeString(),
@@ -73,7 +77,7 @@ const SelectedEvent: FC<SelectedEventProps> = props => {
   }, [defaultValues, form])
 
   async function onSubmit(values: EventSchemaOut) {
-    if(!props.selectedEvent) return
+    if (!props.selectedEvent) return
     const data = {
       type: 'match',
       startDate: combinedDate(new Date(values.date), values.startTime),
@@ -109,7 +113,9 @@ const SelectedEvent: FC<SelectedEventProps> = props => {
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <div>
               <div className='text-lg font-bold'>Match Information</div>
-              <div className='text-sm text-gray-500'>Fill in the information below to create an event</div>
+              <div className='text-sm text-gray-500'>
+                Fill in the information below to create an event
+              </div>
             </div>
             <div className='my-5'>
               <FormField
@@ -118,19 +124,22 @@ const SelectedEvent: FC<SelectedEventProps> = props => {
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      {props.selectedEvent &&
-                        <RadioGroup onValueChange={field.onChange}
+                      {props.selectedEvent && (
+                        <RadioGroup
+                          onValueChange={field.onChange}
                           defaultValue={props.selectedEvent.location}
-                          className='flex gap-10'>
+                          className='flex gap-10'
+                        >
                           <div className='flex items-center space-x-2'>
-                            <RadioGroupItem value='home' id='home'/>
+                            <RadioGroupItem value='home' id='home' />
                             <Label htmlFor='home'>Home</Label>
                           </div>
                           <div className='flex items-center space-x-2'>
-                            <RadioGroupItem value='away' id='away'/>
+                            <RadioGroupItem value='away' id='away' />
                             <Label htmlFor='away'>Away</Label>
                           </div>
-                        </RadioGroup>}
+                        </RadioGroup>
+                      )}
                     </FormControl>
                   </FormItem>
                 )}
@@ -185,7 +194,9 @@ const SelectedEvent: FC<SelectedEventProps> = props => {
               />
             </div>
             <div className='my-5'>
-              <Button type='submit' className='bg-dark-purple text-white'>Update</Button>
+              <Button type='submit' className='bg-dark-purple text-white'>
+                Update
+              </Button>
             </div>
           </form>
         </Form>
@@ -204,10 +215,7 @@ export const SelectedEventModal: FC<SelectedEventModal> = ({ onClose, id }) => {
   }, [])
 
   return ReactDOM.createPortal(
-    <SelectedEvent
-      onClose={onClose}
-      selectedEvent={selectedEvent}
-      eventId={id}
-    />,
-    container)
+    <SelectedEvent onClose={onClose} selectedEvent={selectedEvent} eventId={id} />,
+    container,
+  )
 }

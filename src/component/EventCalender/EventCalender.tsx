@@ -1,18 +1,18 @@
-import dayjs from 'dayjs'
-import React, { FC, useCallback, useEffect, useState } from 'react'
-import { Calendar, dayjsLocalizer, Views } from 'react-big-calendar'
-import { useSelector } from 'react-redux'
-import { useNavigate, useParams } from 'react-router-dom'
+import { FC, useCallback, useEffect, useState } from 'react'
 
-import { EventFormModalPortal } from '../EventFormModal/EventFormModal.tsx'
-import { SelectedEventModal } from '../SelectedEventModal/SelectedEventModal.tsx'
+import dayjs from 'dayjs'
+import { Calendar, dayjsLocalizer, Views } from 'react-big-calendar'
+import { useNavigate } from 'react-router-dom'
+
 import { Event } from '@/api'
 import { CalenderEvents } from '@/constants/events.ts'
 import { usePermission } from '@/hooks/usePermission.ts'
 import { UseUpdates } from '@/hooks/useUpdates.ts'
 import { convertToCalenderDate } from '@/services/helper.ts'
 import './EventCalender.scss'
-import { SessionInstance } from '@/utils/SessionInstance.ts'
+
+import { EventFormModalPortal } from '../EventFormModal/EventFormModal.tsx'
+import { SelectedEventModal } from '../SelectedEventModal/SelectedEventModal.tsx'
 
 type NewEvent = {
   start: Date
@@ -26,7 +26,7 @@ type EventCalenderProps = {
   logger: UseUpdates
 }
 
-export const EventCalender:FC<EventCalenderProps> = props => {
+export const EventCalender: FC<EventCalenderProps> = props => {
   const navigate = useNavigate()
   const { canCreateEvent } = usePermission()
   const [isEventFormModal, setIsEventFormModal] = useState(false)
@@ -43,19 +43,22 @@ export const EventCalender:FC<EventCalenderProps> = props => {
   const openSelectedEventModal = () => setIsSelectedEventModal(true)
   const closeSelectedEventModal = () => setIsSelectedEventModal(false)
 
-  const handleCalenderSlot = useCallback(({ start, end }: NewEvent) => {
-    if(canCreateEvent){
-      setEventStartDate(start)
-      setEventEndDate(end)
-      openEventFormModal()
-    }
-  }, [canCreateEvent])
+  const handleCalenderSlot = useCallback(
+    ({ start, end }: NewEvent) => {
+      if (canCreateEvent) {
+        setEventStartDate(start)
+        setEventEndDate(end)
+        openEventFormModal()
+      }
+    },
+    [canCreateEvent],
+  )
 
   const handleSelectSlot = useCallback(
-    ({ id, start }: { id: string, start: Date } ) => {
+    ({ id, start }: { id: string; start: Date }) => {
       const now = new Date()
       setSelectedEvent(id)
-      if(now > start) {
+      if (now > start) {
         navigate(`/events/${id}`)
       } else {
         openSelectedEventModal()
@@ -65,8 +68,8 @@ export const EventCalender:FC<EventCalenderProps> = props => {
   )
 
   useEffect(() => {
-    if(props.events) {
-      const newEvents = props.events.map((item) => {
+    if (props.events) {
+      const newEvents = props.events.map(item => {
         return {
           id: item.id,
           title: item.type,
@@ -90,19 +93,16 @@ export const EventCalender:FC<EventCalenderProps> = props => {
         style={{ height: 500 }}
         className='Event-calender'
       />
-      {isEventFormModal && eventStartDate && eventEndDate &&
+      {isEventFormModal && eventStartDate && eventEndDate && (
         <EventFormModalPortal
           onClose={closeEventFormModal}
           startDate={eventStartDate}
           logger={props.logger}
         />
-      }
-      {isSelectedEventModal &&
-        <SelectedEventModal
-          onClose={closeSelectedEventModal}
-          id={selectedEvent}
-        />
-      }
+      )}
+      {isSelectedEventModal && (
+        <SelectedEventModal onClose={closeSelectedEventModal} id={selectedEvent} />
+      )}
     </>
   )
 }

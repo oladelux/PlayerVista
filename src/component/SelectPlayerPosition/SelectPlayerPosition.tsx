@@ -1,11 +1,12 @@
-import { Field } from 'formik'
 import { ChangeEvent, FC } from 'react'
+
+import { Field } from 'formik'
 
 type SelectPlayerPositionProps = {
   /**
    * The className for information block
    */
-  className?: string,
+  className?: string
   /**
    * The name of this select box
    */
@@ -18,7 +19,7 @@ type SelectPlayerPositionProps = {
   disabled?: boolean
 }
 
-export const SelectPlayerPosition:FC<SelectPlayerPositionProps> = props => {
+export const SelectPlayerPosition: FC<SelectPlayerPositionProps> = props => {
   return (
     <select
       className={props.className}
@@ -47,14 +48,9 @@ export const SelectPlayerPosition:FC<SelectPlayerPositionProps> = props => {
   )
 }
 
-export const SelectPlayerPositionWithFormik:FC<SelectPlayerPositionProps> = props => {
+export const SelectPlayerPositionWithFormik: FC<SelectPlayerPositionProps> = props => {
   return (
-    <Field
-      className={props.className}
-      as='select'
-      name={props.name}
-
-    >
+    <Field className={props.className} as='select' name={props.name}>
       <option>Select Position</option>
       <option value='GK'>GK</option>
       <option value='CB'>CB</option>

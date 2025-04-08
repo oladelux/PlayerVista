@@ -1,9 +1,9 @@
-import { PlayerActions, PlayerPerformance } from '@/api'
+import { PlayerActionPeriod, PlayerActions, PlayerPerformance } from '@/api'
 
 export type PhaseActions = {
-  name: keyof PlayerActions;
-  label: string;
-  tailwindColor: string;
+  name: keyof PlayerActions
+  label: string
+  tailwindColor: string
 }
 
 export enum HalfType {
@@ -142,7 +142,7 @@ export const groupActionsByCategory = (actions: PlayerActions, metrics: PhaseAct
 }
 
 export const getHalfData = (performance: PlayerPerformance | null, half: HalfType) => {
-  if(!performance) return null
+  if (!performance) return null
   const { actions } = performance
   const defaultActions: PlayerActions = {
     shots: [],
@@ -176,15 +176,18 @@ export const getHalfData = (performance: PlayerPerformance | null, half: HalfTyp
   }
 
   // Filter actions based on the half timestamp range
-  return Object.keys(defaultActions).reduce((acc, key) => {
-    const actionList = actions[key as keyof PlayerActions] || []
-    acc[key as keyof PlayerActions] = actionList.filter(action => {
-      if (half === 'firstHalf') return action.timestamp <= 45
-      if (half === 'secondHalf') return action.timestamp > 45
-      return true
-    })
-    return acc
-  }, { ...defaultActions })
+  return Object.keys(defaultActions).reduce(
+    (acc, key) => {
+      const actionList = actions[key as keyof PlayerActions] || []
+      acc[key as keyof PlayerActions] = actionList.filter(action => {
+        if (half === 'firstHalf') return action.period === PlayerActionPeriod.FirstHalf
+        if (half === 'secondHalf') return action.period === PlayerActionPeriod.SecondHalf
+        return true
+      })
+      return acc
+    },
+    { ...defaultActions },
+  )
 }
 
 export function aggregatePlayerActions(performanceData: PlayerPerformance[]): PlayerActions {

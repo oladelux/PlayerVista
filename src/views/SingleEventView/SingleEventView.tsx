@@ -1,47 +1,44 @@
 import { FC, useMemo } from 'react'
+
 import { useOutletContext, useParams } from 'react-router-dom'
 
-import ClubLogo from '../../assets/images/club.png'
-import { TeamResponse, Event } from '@/api'
+import { Event, TeamResponse } from '@/api'
 import { DashboardLayoutOutletContext } from '@/component/DashboardLayout/DashboardLayout.tsx'
 import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
 import { useEvents } from '@/hooks/useEvents.ts'
 import { formatDate } from '@/services/helper.ts'
 import { appService } from '@/singletons'
-import {
-  formatSingleEventDate,
-  formatSingleEventTime,
-} from '@/utils/date.ts'
+import { formatSingleEventDate, formatSingleEventTime } from '@/utils/date.ts'
+import { SessionInstance } from '@/utils/SessionInstance.ts'
+
+import ClubLogo from '../../assets/images/club.png'
 
 import './SingleEventView.scss'
-import { SessionInstance } from '@/utils/SessionInstance.ts'
+
 const now = new Date()
 
 export function SingleEventView() {
   const { events } = useEvents()
   const { eventId } = useParams()
   const teamId = SessionInstance.getTeamId()
-  const { teams, teamsError: error, teamsLoading: loading } =
-    useOutletContext<DashboardLayoutOutletContext>()
+  const {
+    teams,
+    teamsError: error,
+    teamsLoading: loading,
+  } = useOutletContext<DashboardLayoutOutletContext>()
   const team = teams.find(team => team.id === teamId)
   const userData = appService.getUserData()
 
   const isEvent = useMemo(() => {
     if (teamId) {
-      return (
-        events &&
-        events.find((event) => event.id === eventId)
-      )
+      return events && events.find(event => event.id === eventId)
     }
   }, [teamId, events, eventId])
 
   const isMatches = useMemo(() => {
     if (teamId) {
       return (
-        events &&
-        events.filter(
-          (event) => event.type === 'match' && new Date(event.startDate) > now,
-        )
+        events && events.filter(event => event.type === 'match' && new Date(event.startDate) > now)
       )
     }
   }, [teamId, events])
@@ -50,10 +47,7 @@ export function SingleEventView() {
     if (teamId) {
       return (
         events &&
-        events.filter(
-          (event) =>
-            event.type === 'training' && new Date(event.startDate) > now,
-        )
+        events.filter(event => event.type === 'training' && new Date(event.startDate) > now)
       )
     }
   }, [teamId, events])
@@ -68,38 +62,28 @@ export function SingleEventView() {
         <div className='Single-event__header-title'>Event Updates</div>
       </div>
       {isEvent && team && isTraining && isEvent.type === 'training' && (
-        <SingleTraining
-          isEvent={isEvent}
-          isTeam={team}
-          isTraining={isTraining}
-        />
+        <SingleTraining isEvent={isEvent} isTeam={team} isTraining={isTraining} />
       )}
       {isEvent && team && isMatches && isEvent.type === 'match' && (
-        <SingleMatch
-          isEvent={isEvent}
-          isTeam={team}
-          isMatches={isMatches}
-        />
+        <SingleMatch isEvent={isEvent} isTeam={team} isMatches={isMatches} />
       )}
     </div>
   )
 }
 
 type SingleTrainingProps = {
-  isEvent: Event;
-  isTeam: TeamResponse;
-  isTraining: Event[];
-};
+  isEvent: Event
+  isTeam: TeamResponse
+  isTraining: Event[]
+}
 
-const SingleTraining: FC<SingleTrainingProps> = (props) => {
+const SingleTraining: FC<SingleTrainingProps> = props => {
   const { isEvent, isTeam, isTraining } = props
   return (
     <div className='Single-event__wrapper'>
       <div className='Single-event__wrapper-content'>
         <div className='Single-event__wrapper-content-header'>
-          <div className='Single-event__wrapper-content-header-nav'>
-            Training
-          </div>
+          <div className='Single-event__wrapper-content-header-nav'>Training</div>
         </div>
         <div className='Single-event__wrapper-content-match'>
           <div className='Single-event__wrapper-content-match-info'>
@@ -121,11 +105,9 @@ const SingleTraining: FC<SingleTrainingProps> = (props) => {
         </div>
       </div>
       <div className='Single-event__wrapper-similar'>
-        <div className='Single-event__wrapper-similar-title'>
-          Scheduled Trainings
-        </div>
+        <div className='Single-event__wrapper-similar-title'>Scheduled Trainings</div>
         <div className='Single-event__wrapper-similar-list'>
-          {isTraining.map((training) => (
+          {isTraining.map(training => (
             <div
               key={training.id}
               className='Single-event__wrapper-similar-list__item
@@ -151,12 +133,12 @@ const SingleTraining: FC<SingleTrainingProps> = (props) => {
 }
 
 type SingleMatchProps = {
-  isEvent: Event;
-  isTeam: TeamResponse;
-  isMatches: Event[];
-};
+  isEvent: Event
+  isTeam: TeamResponse
+  isMatches: Event[]
+}
 
-const SingleMatch: FC<SingleMatchProps> = (props) => {
+const SingleMatch: FC<SingleMatchProps> = props => {
   const { isEvent, isTeam, isMatches } = props
 
   return (
@@ -178,9 +160,7 @@ const SingleMatch: FC<SingleMatchProps> = (props) => {
                 {isTeam.teamName}
               </div>
             </div>
-            <div className='Single-event__wrapper-content-match-board__score'>
-              vs
-            </div>
+            <div className='Single-event__wrapper-content-match-board__score'>vs</div>
             <div className='Single-event__wrapper-content-match-board__away'>
               <div className='Single-event__wrapper-content-match-board__away--media'>
                 <img src={ClubLogo} alt='club-logo' />
@@ -195,11 +175,9 @@ const SingleMatch: FC<SingleMatchProps> = (props) => {
         </div>
       </div>
       <div className='Single-event__wrapper-similar'>
-        <div className='Single-event__wrapper-similar-title'>
-          Scheduled match
-        </div>
+        <div className='Single-event__wrapper-similar-title'>Scheduled match</div>
         <div className='Single-event__wrapper-similar-list'>
-          {isMatches.map((match) => (
+          {isMatches.map(match => (
             <div
               key={match.id}
               className={`Single-event__wrapper-similar-list__item 

@@ -1,10 +1,16 @@
 import { useState } from 'react'
+
 import { useOutletContext, useParams } from 'react-router-dom'
 
-import ClubLogo from '../../../assets/images/club.png'
 import { DashboardLayoutOutletContext } from '@/component/DashboardLayout/DashboardLayout.tsx'
 import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.tsx'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select.tsx'
 import { useEvents } from '@/hooks/useEvents.ts'
 import { usePlayer } from '@/hooks/usePlayer.ts'
 import { SessionInstance } from '@/utils/SessionInstance.ts'
@@ -14,14 +20,19 @@ import { GeneralStats } from '@/views/SingleEventView/EventSummary/stats/General
 import { GoalKeeperStats } from '@/views/SingleEventView/EventSummary/stats/GoalKeeperStats.tsx'
 import { OtherStats } from '@/views/SingleEventView/EventSummary/stats/OtherStats.tsx'
 
+import ClubLogo from '../../../assets/images/club.png'
+
 import './EventSummary.scss'
 
 export function EventSummary() {
   const [value, setValue] = useState('general')
   const { eventId } = useParams()
   const teamId = SessionInstance.getTeamId()
-  const { teams, teamsError: error, teamsLoading: loading } =
-    useOutletContext<DashboardLayoutOutletContext>()
+  const {
+    teams,
+    teamsError: error,
+    teamsLoading: loading,
+  } = useOutletContext<DashboardLayoutOutletContext>()
   const team = teams.find(team => team.id === teamId)
   const { event, error: eventError, loading: eventLoading } = useEvents(undefined, eventId)
   const { players, loading: playerLoading, error: playerError } = usePlayer(undefined, teamId)
@@ -37,19 +48,13 @@ export function EventSummary() {
           <div className='Event-summary__header-home--media'>
             <img src={team?.logo} width={64} alt='club-logo' />
           </div>
-          <div className='Event-summary__header-home--name'>
-            {team?.teamName}
-          </div>
+          <div className='Event-summary__header-home--name'>{team?.teamName}</div>
         </div>
-        <div className='Event-summary__header-score'>
-            vs
-        </div>
+        <div className='Event-summary__header-score'>vs</div>
         <div className='Event-summary__header-away'>
-          <div className='Event-summary__header-away--name'>
-            {event?.opponent}
-          </div>
+          <div className='Event-summary__header-away--name'>{event?.opponent}</div>
           <div className='Event-summary__header-away--media'>
-            <img src={ClubLogo} alt='club-logo'/>
+            <img src={ClubLogo} alt='club-logo' />
           </div>
         </div>
       </div>

@@ -1,5 +1,6 @@
-import { getCookie } from '../services/cookies'
 import { PlayerPositionType } from '@/views/PlayersView/form/PlayerPosition.ts'
+
+import { getCookie } from '../services/cookies'
 
 const apiURI = import.meta.env.VITE_API_URI
 const cloudinaryAPI = import.meta.env.VITE_CLOUDINARY_API
@@ -8,16 +9,22 @@ const cloudName = import.meta.env.VITE_CLOUD_NAME
 type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
 
 export class UnauthorizedError extends Error {
-  constructor (url: string, status: number, public responseBody: Record<string, unknown>) {
+  constructor(
+    url: string,
+    status: number,
+    public responseBody: Record<string, unknown>,
+  ) {
     super(`Unauthorized request to endpoint ${url}, status ${status}, code ${responseBody.code}`)
   }
 }
 
 export class ApiError extends Error {
-  constructor(url: string, status: number, public responseBody: string) {
-    super(
-      `bad request to endpoint ${url}, status ${status}, response body ${responseBody}`,
-    )
+  constructor(
+    url: string,
+    status: number,
+    public responseBody: string,
+  ) {
+    super(`bad request to endpoint ${url}, status ${status}, response body ${responseBody}`)
   }
 }
 
@@ -25,7 +32,11 @@ export class ApiError extends Error {
  * Error class for API requests resulting in a 4xx status code.
  */
 export class ClientError extends Error {
-  constructor (url: string, status: number, public responseBody: Record<string, never>) {
+  constructor(
+    url: string,
+    status: number,
+    public responseBody: Record<string, never>,
+  ) {
     super(`Erroneous request to endpoint ${url}, status ${status}, code ${responseBody}`)
   }
 }
@@ -86,7 +97,7 @@ const senRequestToCloudinary = async (endpoint: string, data: object = {}): Prom
 }
 
 export type AuthenticationCredentials = {
-  email: string,
+  email: string
   password: string
 }
 
@@ -186,6 +197,10 @@ export type Player = {
   country: string
   birthDate: Date
   position: string
+  preferredFoot: string
+  height: number
+  weight: number
+  nationality: string
   contactPersonFirstName: string
   contactPersonLastName: string
   contactPersonPhoneNumber: string
@@ -203,9 +218,9 @@ export type TeamDataResponse = BaseApiResponse & TeamApiResponse
 export type PlayerDataResponse = BaseApiResponse & PlayersApiResponse
 
 export type EventFormData = {
-  teamId: string,
-  userId: string,
-  type: string,
+  teamId: string
+  userId: string
+  type: string
   startDate: Date
   eventLocation?: string
   location?: string
@@ -222,6 +237,8 @@ export type Event = {
   eventLocation: string
   location: string
   opponent: string
+  homeScore: number
+  awayScore: number
   info: string
 }
 
@@ -245,31 +262,31 @@ export type RoleFormData = {
 }
 
 export type TeamResponse = {
-  id: string,
-  userId: string,
-  teamName: string,
-  creationYear: string,
-  teamGender: string,
-  logo: string,
-  ageGroup: string,
-  headCoach: string,
-  headCoachContact: string,
-  assistantCoach: string,
-  assistantCoachContact: string,
-  medicalPersonnel: string,
-  medicalPersonnelContact: string,
-  kitManager: string,
-  kitManagerContact: string,
-  mediaManager: string,
-  mediaManagerContact: string,
-  logisticsCoordinator: string,
-  logisticsCoordinatorContact: string,
-  stadiumName: string,
-  street: string,
-  postcode: string,
-  city: string,
-  country: string,
-  createdAt: string,
+  id: string
+  userId: string
+  teamName: string
+  creationYear: string
+  teamGender: string
+  logo: string
+  ageGroup: string
+  headCoach: string
+  headCoachContact: string
+  assistantCoach: string
+  assistantCoachContact: string
+  medicalPersonnel: string
+  medicalPersonnelContact: string
+  kitManager: string
+  kitManagerContact: string
+  mediaManager: string
+  mediaManagerContact: string
+  logisticsCoordinator: string
+  logisticsCoordinatorContact: string
+  stadiumName: string
+  street: string
+  postcode: string
+  city: string
+  country: string
+  createdAt: string
   updatedAt: string
 }
 
@@ -314,6 +331,10 @@ export type PlayerFormData = {
   postCode?: string
   country?: string
   birthDate: string
+  height: number
+  weight: number
+  nationality: string
+  preferredFoot: string
   position: PlayerPositionType
   contactPersonFirstName?: string
   contactPersonLastName?: string
@@ -390,7 +411,8 @@ export async function register(data: SignUpFormData): Promise<Response> {
 }
 
 export async function updateUser(
-  data: Partial<RegistrationDetails>): Promise<AuthenticatedUserData> {
+  data: Partial<RegistrationDetails>,
+): Promise<AuthenticatedUserData> {
   const res = await apiRequest('/auth/me', 'PATCH', data)
   return await res.json()
 }
@@ -405,7 +427,9 @@ export async function getStaffs(groupId: string): Promise<StaffDataResponse> {
 }
 
 export async function updateStaff(
-  id: string, data: Partial<StaffData>): Promise<StaffDataResponse> {
+  id: string,
+  data: Partial<StaffData>,
+): Promise<StaffDataResponse> {
   const res = await apiRequest(`/users/${id}`, 'PATCH', data)
   return await res.json()
 }
@@ -425,19 +449,24 @@ export async function getReporters(teamId: string): Promise<Reporter[]> {
 }
 
 export async function assignReporter(
-  data: { eventId: string }, reporterId: string): Promise<Reporter> {
+  data: { eventId: string },
+  reporterId: string,
+): Promise<Reporter> {
   const res = await apiRequest(`/v1/reporter/id/assign/${reporterId}`, 'PATCH', data)
   return await res.json()
 }
 
 export async function retractReporter(
-  data: { eventId: string }, reporterId: string): Promise<Reporter> {
+  data: { eventId: string },
+  reporterId: string,
+): Promise<Reporter> {
   const res = await apiRequest(`/v1/reporter/id/retract/${reporterId}`, 'PATCH', data)
   return await res.json()
 }
 
-export async function loginAuthentication(data: AuthenticationCredentials):
-  Promise<AuthenticationResult> {
+export async function loginAuthentication(
+  data: AuthenticationCredentials,
+): Promise<AuthenticationResult> {
   const res = await apiRequest('/auth/email/login', 'POST', data)
   return await res.json()
 }
@@ -509,9 +538,10 @@ export async function getRolesAndPermissions(groupId: string): Promise<RolesResp
 }
 
 export async function updateRolePermissions(
-  roleId: string, updatedPermissions: string[]): Promise<Response> {
-  const res = await apiRequest(`/roles/${roleId}/permissions`, 'PATCH', { updatedPermissions,
-  })
+  roleId: string,
+  updatedPermissions: string[],
+): Promise<Response> {
+  const res = await apiRequest(`/roles/${roleId}/permissions`, 'PATCH', { updatedPermissions })
   return await res.json()
 }
 
@@ -561,7 +591,9 @@ export async function getPlayerById(id: string): Promise<Player> {
 }
 
 export async function updatePlayer(
-  data: Partial<PlayerFormData>, playerId: string): Promise<Response> {
+  data: Partial<PlayerFormData>,
+  playerId: string,
+): Promise<Response> {
   const res = await apiRequest(`/players/${playerId}`, 'PATCH', data)
   return await res.json()
 }
@@ -641,15 +673,17 @@ export async function getLogs(groupId: string): Promise<LogsResponse> {
   return await res.json()
 }
 
-export type Action = {
-  type?: string
-  x: number
-  y: number
-  value?: string
-  timestamp: number
+export enum PlayerActionPeriod {
+  FirstHalf = 'first_half',
+  SecondHalf = 'second_half',
 }
 
-type HeatmapEntry = {
+export type Action = {
+  period: PlayerActionPeriod
+  successful: boolean
+}
+
+export type HeatmapEntry = {
   x: number
   y: number
   timestamp: number
@@ -703,7 +737,9 @@ export async function getPerformanceByEvent(eventId: string): Promise<PlayerPerf
 }
 
 export async function getPerformanceByEventAndPlayer(
-  eventId: string, playerId: string): Promise<PlayerPerformance> {
+  eventId: string,
+  playerId: string,
+): Promise<PlayerPerformance> {
   const res = await apiRequest(`/performance/event/${eventId}/player/${playerId}`, 'GET')
   return await res.json()
 }
@@ -715,12 +751,13 @@ type PlayerPerformanceApiResponse = {
 export type PlayerPerformanceResponse = BaseApiResponse & PlayerPerformanceApiResponse
 
 export async function getPerformancesForPlayer(
-  playerId: string): Promise<PlayerPerformanceResponse> {
+  playerId: string,
+): Promise<PlayerPerformanceResponse> {
   const res = await apiRequest(`/performance/player/${playerId}`, 'GET')
   return await res.json()
 }
 
-export async function generatePDF(data: { html: string}): Promise<Response> {
+export async function generatePDF(data: { html: string }): Promise<Response> {
   return await apiRequest('/pdf-rendering/generate', 'POST', data)
 }
 
@@ -778,21 +815,20 @@ export enum SubscriptionStatus {
 }
 
 export interface TeamSubscription {
-  id: string;
-  parentTeamId: string;
-  userId: string;
-  subscriptionPlan: SubscriptionPlanType;
-  subscriptionType: SubscriptionType;
-  status: SubscriptionStatus;
-  paystackCustomerId: string;
-  subscriptionId: string;
-  trialStart: Date | null;
-  trialEnd: Date | null;
-  subscriptionEnd: Date | null;
-  createdAt: Date;
-  updatedAt: Date;
+  id: string
+  parentTeamId: string
+  userId: string
+  subscriptionPlan: SubscriptionPlanType
+  subscriptionType: SubscriptionType
+  status: SubscriptionStatus
+  paystackCustomerId: string
+  subscriptionId: string
+  trialStart: Date | null
+  trialEnd: Date | null
+  subscriptionEnd: Date | null
+  createdAt: Date
+  updatedAt: Date
 }
-
 
 export async function confirmTransaction(
   data: SubscriptionVerification,
