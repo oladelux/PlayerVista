@@ -176,6 +176,8 @@ export function AddPlayer() {
       teamCaptain: false,
       uniformNumber: parseInt(data.uniformNumber),
       birthDate: data.birthDate.toISOString(),
+      height: parseInt(data.height),
+      weight: parseInt(data.weight),
       position: data.position as PlayerPositionType,
     }
 
