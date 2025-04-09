@@ -1,5 +1,5 @@
 import { BehaviorSubject, from } from 'rxjs'
-import { map, catchError } from 'rxjs/operators'
+import { catchError, map } from 'rxjs/operators'
 
 import {
   addPlayer,
@@ -63,17 +63,33 @@ export class PlayerService {
       this.updateState({ players: [], loading: false, error: 'No active team' })
       return
     }
-    from(getPlayersByTeamId(teamId))
-      .pipe(
-        map(xResponse => {
-          this.updateState({ players: xResponse.data, loading: false })
-        }),
-        catchError(e => {
-          this.updateState({ players: [], loading: false, error: e.message })
-          return []
-        }),
-      )
-      .subscribe()
+    const allPlayers: Player[] = []
+    const fetchPage = (currentPage: number = 1, limit: number = 10) => {
+      from(getPlayersByTeamId(teamId, currentPage, limit))
+        .pipe(
+          map(response => {
+            allPlayers.push(...response.data)
+            if (response.hasNextPage) {
+              fetchPage(currentPage + 1, limit)
+            } else {
+              this.updateState({
+                players: allPlayers,
+                loading: false,
+              })
+            }
+          }),
+          catchError(e => {
+            this.updateState({
+              players: allPlayers,
+              loading: false,
+              error: e.message,
+            })
+            return []
+          }),
+        )
+        .subscribe()
+    }
+    fetchPage(1)
   }
 
   public getAllPlayers(userId: string | null | undefined) {
