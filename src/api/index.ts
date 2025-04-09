@@ -575,8 +575,12 @@ export async function addPlayer(data: PlayerFormData): Promise<Response> {
   return await res.json()
 }
 
-export async function getPlayersByTeamId(teamId: string): Promise<PlayerDataResponse> {
-  const res = await apiRequest(`/players/team/${teamId}`, 'GET')
+export async function getPlayersByTeamId(
+  teamId: string,
+  page: number = 1,
+  limit: number = 10,
+): Promise<PlayerDataResponse> {
+  const res = await apiRequest(`/players/team/${teamId}?page=${page}&limit=${limit}`, 'GET')
   return await res.json()
 }
 
