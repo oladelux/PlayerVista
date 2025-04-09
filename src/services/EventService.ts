@@ -1,7 +1,14 @@
 import { BehaviorSubject, from } from 'rxjs'
 import { catchError, map } from 'rxjs/operators'
 
-import { Event, SingleEventType, getEventsByTeamId, getSingleEvent } from '@/api'
+import {
+  Event,
+  EventFormData,
+  SingleEventType,
+  addEvent,
+  getEventsByTeamId,
+  getSingleEvent,
+} from '@/api'
 
 type EventState = {
   events: Event[]
@@ -57,6 +64,22 @@ export class EventService {
       .pipe(
         map(xResponse => {
           this.updateState({ event: xResponse, loading: false })
+        }),
+        catchError(e => {
+          this.updateState({ event: null, loading: false, error: e.message })
+          return []
+        }),
+      )
+      .subscribe()
+  }
+
+  public async insert(event: EventFormData, teamId: string) {
+    this.updateState({ loading: true, error: undefined })
+    from(addEvent(event))
+      .pipe(
+        map(() => {
+          this.updateState({ loading: false })
+          this.getEventsByTeamId(teamId)
         }),
         catchError(e => {
           this.updateState({ event: null, loading: false, error: e.message })

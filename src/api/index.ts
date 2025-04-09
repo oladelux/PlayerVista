@@ -221,8 +221,9 @@ export type EventFormData = {
   teamId: string
   userId: string
   type: string
-  startDate: Date
-  eventLocation?: string
+  date: Date
+  time: string
+  matchType?: string
   location?: string
   opponent?: string
   info?: string
@@ -232,14 +233,14 @@ export type Event = {
   id: string
   team: string
   type: string
-  startDate: Date
-  endDate: Date
-  eventLocation: string
-  location: string
-  opponent: string
-  homeScore: number
-  awayScore: number
-  info: string
+  date: Date
+  time: string
+  matchType?: string
+  location?: string
+  opponent?: string
+  info?: string
+  homeScore?: number
+  awayScore?: number
 }
 
 type EventsApiResponse = {

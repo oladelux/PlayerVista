@@ -93,7 +93,7 @@ export const EditPlayer: FC = () => {
       userId: user.id,
       imageSrc: photo || player.imageSrc,
       phoneNumber: values.phoneNumber!,
-      teamCaptain: values.isTeamCaptain,
+      teamCaptain: values.teamCaptain,
       uniformNumber: parseInt(values.uniformNumber),
       birthDate: values.birthDate.toISOString(),
       height: parseInt(values.height),
@@ -659,7 +659,7 @@ export const EditPlayer: FC = () => {
 
                   <FormField
                     control={form.control as Control<PlayerSchemaOut>}
-                    name='isTeamCaptain'
+                    name='teamCaptain'
                     render={({ field }) => (
                       <FormItem className='flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4'>
                         <FormControl>
