@@ -15,6 +15,7 @@ import {
 import { useEvents } from '@/hooks/useEvents'
 import { cn } from '@/lib/utils'
 import { formatSingleEventDate, formatSingleEventTime } from '@/utils/date'
+import { combineDateAndTime } from '@/utils/dateObject'
 import { SessionInstance } from '@/utils/SessionInstance'
 
 // Get current time in UTC for comparison
@@ -24,8 +25,16 @@ const now = new Date().toISOString()
 function findUpcomingFixtures(events: Event[] | undefined, limit: number = 3) {
   if (events) {
     return events
-      .filter(event => event.type === 'match' && new Date(event.startDate) > new Date(now))
-      .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())
+      .filter(
+        event =>
+          event.type === 'match' &&
+          new Date(combineDateAndTime(event.date, event.time)) > new Date(now),
+      )
+      .sort(
+        (a, b) =>
+          new Date(combineDateAndTime(a.date, a.time)).getTime() -
+          new Date(combineDateAndTime(b.date, b.time)).getTime(),
+      )
       .slice(0, limit)
   }
   return []
@@ -72,7 +81,9 @@ export function UpcomingMatches({ team }: UpcomingMatchesProps) {
             {upcomingFixtures.map(match => {
               // Determine if match is within 48 hours (important)
               const isImportant =
-                new Date(match.startDate).getTime() - new Date().getTime() < 48 * 60 * 60 * 1000
+                new Date(combineDateAndTime(match.date, match.time)).getTime() -
+                  new Date().getTime() <
+                48 * 60 * 60 * 1000
 
               return (
                 <div
@@ -84,8 +95,8 @@ export function UpcomingMatches({ team }: UpcomingMatchesProps) {
                 >
                   <div className='mb-2 flex items-center justify-between'>
                     <time className='text-xs font-medium text-muted-foreground'>
-                      {formatSingleEventDate(match.startDate)} •{' '}
-                      {formatSingleEventTime(match.startDate)}
+                      {formatSingleEventDate(combineDateAndTime(match.date, match.time))} •{' '}
+                      {formatSingleEventTime(combineDateAndTime(match.date, match.time))}
                     </time>
                     {isImportant && (
                       <span className='text-xs font-medium text-primary'>Important match</span>
@@ -108,13 +119,15 @@ export function UpcomingMatches({ team }: UpcomingMatchesProps) {
                       <span className='text-sm font-medium'>{match.opponent}</span>
                       <Avatar className='size-8'>
                         <AvatarFallback className='bg-secondary text-xs text-secondary-foreground'>
-                          {getAvatarText(match.opponent)}
+                          {getAvatarText(match.opponent || '')}
                         </AvatarFallback>
                       </Avatar>
                     </div>
                   </div>
 
-                  <div className='mt-2 text-xs text-muted-foreground'>{match.eventLocation}</div>
+                  <div className='mt-2 text-xs capitalize text-muted-foreground'>
+                    {match.matchType}
+                  </div>
                 </div>
               )
             })}

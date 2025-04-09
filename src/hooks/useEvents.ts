@@ -17,12 +17,12 @@ export const useEvents = (teamId?: string, eventId?: string) => {
 
   const matches = events.filter(event => event.type === 'match')
   const scheduledMatches = matches.filter(match => {
-    const matchTimestamp = new Date(match.startDate).getTime()
+    const matchTimestamp = new Date(match.date).getTime()
     return matchTimestamp > currentTimestamp
   })
 
   function getTeamEvent(year: number) {
-    return events.filter(event => new Date(event.startDate).getFullYear() === year)
+    return events.filter(event => new Date(event.date).getFullYear() === year)
   }
 
   useEffect(() => {

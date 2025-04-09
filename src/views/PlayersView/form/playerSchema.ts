@@ -13,7 +13,7 @@ export const playerSchema = z.object({
   height: z.string().min(1, { message: 'Please enter a valid height.' }),
   weight: z.string().min(1, { message: 'Please enter a valid weight.' }),
   nationality: z.string().min(1, { message: 'Please enter a valid nationality.' }),
-  isTeamCaptain: z.boolean().default(false),
+  teamCaptain: z.boolean().default(false),
 
   // Address
   street: z.string().min(2, { message: 'Street is required.' }),

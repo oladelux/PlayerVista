@@ -116,7 +116,7 @@ export function AddPlayer() {
       contactPersonCity: '',
       contactPersonPostCode: '',
       contactPersonCountry: '',
-      isTeamCaptain: false,
+      teamCaptain: false,
       nationality: '',
       preferredFoot: '',
       height: '',
@@ -166,7 +166,6 @@ export function AddPlayer() {
     console.log('teamId:', teamId)
     console.log('user:', user)
     if (!teamId || !user) return
-    // Simulate API call
 
     const playerData = {
       ...data,
@@ -516,7 +515,7 @@ export function AddPlayer() {
 
                     <FormField
                       control={form.control}
-                      name='isTeamCaptain'
+                      name='teamCaptain'
                       render={({ field }) => (
                         <FormItem className='flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4'>
                           <FormControl>

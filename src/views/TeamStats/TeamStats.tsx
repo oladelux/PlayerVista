@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { useEvents } from '@/hooks/useEvents'
+import { combineDateAndTime } from '@/utils/dateObject'
 import { TeamMatchStats } from '@/views/TeamStats/TeamMatchStats'
 import { TeamPerformanceStats } from '@/views/TeamStats/TeamPerformanceStats'
 
@@ -34,32 +35,45 @@ export function TeamStats() {
   const { teams } = useOutletContext<DashboardLayoutOutletContext>()
   const team = teams.find(team => team.id === teamId)
   const { events } = useEvents(teamId, undefined)
-  const pastMatches = events.filter(match => new Date(match.endDate) < new Date())
+  const pastMatches = events.filter(
+    match => new Date(combineDateAndTime(match.date, match.time)) < new Date(),
+  )
 
   const [view, setView] = useState<'overview' | 'matches'>('overview')
+
   const matchesWon = pastMatches.filter(match => {
-    const isHome = match.eventLocation === 'home'
+    const isHome = match.matchType === 'home'
+    if (match.homeScore === undefined || match.awayScore === undefined) return false
     return isHome ? match.homeScore > match.awayScore : match.awayScore > match.homeScore
   }).length
+
   const matchesDrawn = pastMatches.filter(match => {
-    const isHome = match.eventLocation === 'home'
-    return isHome ? match.homeScore === match.awayScore : match.awayScore === match.homeScore
+    if (match.homeScore === undefined || match.awayScore === undefined) return false
+    return match.homeScore === match.awayScore
   }).length
+
   const matchesLost = pastMatches.filter(match => {
-    const isHome = match.eventLocation === 'home'
+    const isHome = match.matchType === 'home'
+    if (match.homeScore === undefined || match.awayScore === undefined) return false
     return isHome ? match.homeScore < match.awayScore : match.awayScore < match.homeScore
   }).length
+
   const goalsFor = pastMatches.reduce((acc, match) => {
-    const isHome = match.eventLocation === 'home'
-    return isHome ? acc + match.homeScore : acc + match.awayScore
+    const isHome = match.matchType === 'home'
+    const score = isHome ? (match.homeScore ?? 0) : (match.awayScore ?? 0)
+    return acc + score
   }, 0)
+
   const goalsAgainst = pastMatches.reduce((acc, match) => {
-    const isHome = match.eventLocation === 'home'
-    return isHome ? acc + match.awayScore : acc + match.homeScore
+    const isHome = match.matchType === 'home'
+    const score = isHome ? (match.awayScore ?? 0) : (match.homeScore ?? 0)
+    return acc + score
   }, 0)
+
   const cleanSheets = pastMatches.filter(match => {
-    const isHome = match.eventLocation === 'home'
-    return isHome ? match.homeScore === 0 : match.awayScore === 0
+    const isHome = match.matchType === 'home'
+    const opposingScore = isHome ? match.awayScore : match.homeScore
+    return opposingScore === 0
   }).length
 
   const teamData: TeamType = {
