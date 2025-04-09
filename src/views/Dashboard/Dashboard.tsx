@@ -29,7 +29,7 @@ export function Dashboard() {
   const teamId = SessionInstance.getTeamId()
   const userData = appService.getUserData()
   const { allUserPlayers, loading: playersLoading, error: playersError } = usePlayer()
-  const { events, loading: eventsLoading, error: eventsError } = useEvents()
+  const { events } = useEvents(teamId, undefined)
   const {
     teams,
     teamsError: error,
@@ -77,7 +77,6 @@ export function Dashboard() {
   const matches = events.filter(event => event.type === 'match')
   const currentTimestamp = new Date().getTime()
   const thirtyDaysFromNow = currentTimestamp + 30 * 24 * 60 * 60 * 1000
-  console.log(matches)
 
   const upcomingMatches = matches.filter(match => {
     const matchTimestamp = new Date(combineDateAndTime(match.date, match.time)).getTime()
@@ -97,9 +96,9 @@ export function Dashboard() {
     }
   }, [])
 
-  if (loading || logsLoading || playersLoading || eventsLoading) return <LoadingPage />
+  if (loading || logsLoading || playersLoading) return <LoadingPage />
   //TODO: Create Error Page
-  if (error || logsError || playersError || eventsError || !userData) return 'This is an error page'
+  if (error || logsError || playersError || !userData) return 'This is an error page'
 
   return (
     <Fragment>
