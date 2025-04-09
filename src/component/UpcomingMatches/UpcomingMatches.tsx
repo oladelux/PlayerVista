@@ -125,7 +125,7 @@ export function UpcomingMatches({ team }: UpcomingMatchesProps) {
                     </div>
                   </div>
 
-                  <div className='mt-2 text-xs text-muted-foreground capitalize'>
+                  <div className='mt-2 text-xs capitalize text-muted-foreground'>
                     {match.matchType}
                   </div>
                 </div>

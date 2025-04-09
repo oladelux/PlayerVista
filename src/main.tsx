@@ -24,8 +24,6 @@ import { PlayersView } from '@/views/PlayersView/PlayersView.tsx'
 import SelectPlan from '@/views/SelectPlan/SelectPlan.tsx'
 import { SettingsView } from '@/views/SettingsView/SettingsView.tsx'
 import { SignUp } from '@/views/SignUp/SignUp.tsx'
-import { SingleEventView } from '@/views/SingleEventView/SingleEventView.tsx'
-import { StatisticsView } from '@/views/StatisticsView/StatisticsView.tsx'
 import { CreateTeam } from '@/views/TeamView/CreateTeam/CreateTeam.tsx'
 import { DashboardCreateTeam } from '@/views/TeamView/CreateTeam/DashboardCreateTeam.tsx'
 import { TeamView } from '@/views/TeamView/TeamView.tsx'
@@ -85,8 +83,6 @@ const router = createBrowserRouter([
       { path: routes.playerStats, element: <PlayerStats /> },
       { path: routes.teamStats, element: <TeamStats /> },
       { path: routes.events, element: <EventsView /> },
-      { path: routes.singleEvent, element: <SingleEventView /> },
-      { path: routes.statistics, element: <StatisticsView /> },
       { path: routes.staffs, element: <Staffs /> },
       { path: routes.manageStaff, element: <EditStaff /> },
       { path: routes.settings, element: <SettingsView /> },

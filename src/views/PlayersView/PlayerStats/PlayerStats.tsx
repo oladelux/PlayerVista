@@ -23,6 +23,7 @@ import { useEvents } from '@/hooks/useEvents'
 import { usePerformance } from '@/hooks/usePerformance'
 import { usePlayer } from '@/hooks/usePlayer'
 import { calculateAge } from '@/services/helper'
+import { combineDateAndTime } from '@/utils/dateObject'
 import {
   aggregatePlayerActions,
   DefensiveMetrics,
@@ -86,7 +87,7 @@ export function PlayerStats() {
     const event = events.find(event => event.id === performance.eventId)
     return {
       ...performance,
-      eventDate: event?.startDate,
+      eventDate: event?.date,
       opponent: event?.opponent,
     }
   })
@@ -120,7 +121,7 @@ export function PlayerStats() {
     const event = events.find(event => event.id === performance.eventId)
     if (!event) return false
 
-    const eventStartDate = new Date(event.startDate)
+    const eventStartDate = new Date(combineDateAndTime(event?.date, event?.time))
 
     // Filter by year if a specific year is selected
     if (year && year !== 'All') {
@@ -158,7 +159,10 @@ export function PlayerStats() {
     const eventA = events.find(event => event.id === a.eventId)
     const eventB = events.find(event => event.id === b.eventId)
     if (!eventA || !eventB) return 0
-    return new Date(eventA.startDate).getTime() - new Date(eventB.startDate).getTime()
+    return (
+      new Date(combineDateAndTime(eventA.date, eventA.time)).getTime() -
+      new Date(combineDateAndTime(eventB.date, eventB.time)).getTime()
+    )
   })
 
   // Aggregate player data for stats
