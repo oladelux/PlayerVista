@@ -700,6 +700,8 @@ export type PlayerActions = {
   tackles: Action[]
   goals: Action[]
   passes: Action[]
+  shortPass: Action[]
+  longPass: Action[]
   assists: Action[]
   interceptions: Action[]
   clearances: Action[]
