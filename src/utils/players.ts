@@ -872,12 +872,17 @@ export function calculatePlayerRating(
   playerActions: PlayerActions,
   position: PlayerPositionType | undefined,
 ) {
-  // Base score everyone starts with
   const baseScore = 5.0
 
   // Calculate success rates for key actions
-  const passesTotal = playerActions.passes?.length || 0
-  const passesSuccessful = playerActions.passes?.filter(p => p.successful).length || 0
+  const passesTotal =
+    (playerActions.passes?.length || 0) +
+    (playerActions.shortPass?.length || 0) +
+    (playerActions.longPass?.length || 0)
+  const passesSuccessful =
+    (playerActions.passes?.filter(p => p.successful).length || 0) +
+    (playerActions.shortPass?.filter(p => p.successful).length || 0) +
+    (playerActions.longPass?.filter(p => p.successful).length || 0)
   const passSuccess = passesTotal > 0 ? passesSuccessful / passesTotal : 0
 
   const tacklesTotal = playerActions.tackles?.length || 0
@@ -891,6 +896,10 @@ export function calculatePlayerRating(
   const aerialDuelsTotal = playerActions.aerialDuels?.length || 0
   const aerialDuelsSuccessful = playerActions.aerialDuels?.filter(a => a.successful).length || 0
   const aerialDuelSuccess = aerialDuelsTotal > 0 ? aerialDuelsSuccessful / aerialDuelsTotal : 0
+
+  const duelsTotal = playerActions.aerialDuels?.length || 0
+  const duelsSuccessful = playerActions.aerialDuels?.filter(d => d.successful).length || 0
+  const duelSuccess = duelsTotal > 0 ? duelsSuccessful / duelsTotal : 0
 
   const crossesTotal = playerActions.crosses?.length || 0
   const crossesSuccessful = playerActions.crosses?.filter(c => c.successful).length || 0
@@ -920,44 +929,44 @@ export function calculatePlayerRating(
   // Start with base rating
   let rating = baseScore
 
-  // Common contributions for all positions
+  // Common contributions for all positions (reduced multipliers)
 
   // Attacking contributions
-  rating += goals * 1.2
-  rating += assists * 0.8
-  rating += shotsOnTarget * 0.3
-  rating += penalties * 0.5
-  rating += shotAccuracy * 0.5
+  rating += goals * 0.7 // Reduced from 1.2
+  rating += assists * 0.5 // Reduced from 0.8
+  rating += shotsOnTarget * 0.2 // Reduced from 0.3
+  rating += shotAccuracy * 0.3 // New metric
+  rating += penalties * 0.3 // Reduced from 0.5
 
   // Possession contributions
-  rating += passSuccess * 1.0
-  rating += dribbleSuccess * 0.8
+  rating += passSuccess * 0.6 // Reduced from 1.0
+  rating += dribbleSuccess * 0.5 // Reduced from 0.8
 
-  // Defensive contributions
-  rating += tackleSuccess * 0.7
-  rating += interceptions * 0.3
-  rating += clearances * 0.2
-  rating += blocks * 0.3
-  rating += blockedShots * 0.4
-  rating += recoveries * 0.2
-  rating += aerialDuelSuccess * 0.6
+  // Defensive contributions (slightly reduced)
+  rating += tackleSuccess * 0.4 // Reduced from 0.7
+  rating += duelSuccess * 0.3 // Added for general duels
+  rating += interceptions * 0.2 // Reduced from 0.3
+  rating += clearances * 0.15 // Reduced from 0.2
+  rating += blocks * 0.2 // Reduced from 0.3
+  rating += blockedShots * 0.25 // Reduced from 0.4
+  rating += recoveries * 0.15 // Reduced from 0.2
+  rating += aerialDuelSuccess * 0.4 // Reduced from 0.6
 
   // Negative factors
-  rating -= fouls * 0.2
-  rating -= yellowCards * 0.5
-  rating -= redCards * 1.5
+  rating -= fouls * 0.1 // Reduced from 0.2
+  rating -= yellowCards * 0.3 // Reduced from 0.5
+  rating -= redCards * 1.0 // Reduced from 1.5
 
   // Position-specific adjustments
   switch (position) {
     case 'GK':
       // Goalkeeper-specific metrics
-      rating += saves * 0.4
-      rating += penaltySaves * 1.0
-      rating += freekickSaves * 0.7
-      rating += oneVOneSaves * 0.8
-      rating -= goalsConceded * 0.4
-      // Pass success is more valuable for modern keepers
-      rating += passSuccess * 0.5
+      rating += saves * 0.3
+      rating += penaltySaves * 0.7
+      rating += freekickSaves * 0.5
+      rating += oneVOneSaves * 0.6
+      rating -= goalsConceded * 0.3
+      rating += passSuccess * 0.3
       break
 
     case 'LB':
@@ -968,15 +977,14 @@ export function calculatePlayerRating(
     case 'LWB':
     case 'RWB':
       // Defenders prioritize defensive actions
-      rating += tackleSuccess * 0.5
-      rating += interceptions * 0.4
-      rating += clearances * 0.3
-      rating += blocks * 0.4
-      rating += blockedShots * 0.5
-      rating += aerialDuelSuccess * 0.5
-      // Goals and assists are extra valuable for defenders
-      rating += goals * 0.5
-      rating += assists * 0.3
+      rating += tackleSuccess * 0.3
+      rating += interceptions * 0.25
+      rating += clearances * 0.2
+      rating += blocks * 0.25
+      rating += blockedShots * 0.3
+      rating += aerialDuelSuccess * 0.3
+      rating += goals * 0.4
+      rating += assists * 0.2
       break
 
     case 'CM':
@@ -987,37 +995,58 @@ export function calculatePlayerRating(
     case 'LCM':
     case 'RCM':
       // Midfielders are balanced between offense and defense
-      rating += passSuccess * 0.7
-      rating += dribbleSuccess * 0.5
-      rating += recoveries * 0.4
-      rating += interceptions * 0.3
-      rating += assists * 0.3
-      rating += crossSuccess * 0.4
+      rating += passSuccess * 0.4
+      rating += dribbleSuccess * 0.3
+      rating += recoveries * 0.25
+      rating += interceptions * 0.2
+      rating += assists * 0.2
+      rating += crossSuccess * 0.25
       break
 
     case 'ST':
     case 'CF':
       // Forwards prioritize offensive contributions
-      rating += goals * 0.8
-      rating += assists * 0.5
-      rating += shotsOnTarget * 0.3
-      rating += dribbleSuccess * 0.4
-      rating += crossSuccess * 0.3
-      // Defensive contributions from forwards are bonus value
-      rating += recoveries * 0.3
-      rating += interceptions * 0.2
+      rating += goals * 0.5
+      rating += assists * 0.3
+      rating += shotsOnTarget * 0.2
+      rating += shotAccuracy * 0.4
+      rating += dribbleSuccess * 0.3
+      rating += crossSuccess * 0.2
+      rating += recoveries * 0.2 // Bonus for forwards
       break
   }
 
-  // Activity level adjustment - players should be involved in the game
+  // Activity level adjustment with more granularity
   const totalActions = Object.values(playerActions).reduce(
     (sum, actions) => sum + (Array.isArray(actions) ? actions.length : 0),
     0,
   )
 
-  // Adjust slightly based on involvement (avoid super high ratings for minimal involvement)
+  // Scale rating based on involvement
   if (totalActions < 5) {
-    rating = Math.min(rating, 7.0) // Cap rating for very uninvolved players
+    rating = Math.min(rating, 6.0) // Very low involvement
+  } else if (totalActions < 10) {
+    rating = Math.min(rating, 7.0) // Low involvement
+  } else if (totalActions > 30) {
+    // Small bonus for high involvement, but capped
+    rating += Math.min(0.5, (totalActions - 30) * 0.02)
+  }
+
+  // Add a small scaling factor to spread ratings more evenly
+  rating = 5 + (rating - 5) * 0.8
+
+  // Exceptional performance bonus - only if multiple key metrics are excellent
+  let exceptionalMetrics = 0
+  if (goals > 1) exceptionalMetrics++
+  if (assists > 1) exceptionalMetrics++
+  if (tacklesTotal > 3 && tackleSuccess > 0.7) exceptionalMetrics++
+  if (interceptions > 3) exceptionalMetrics++
+  if (clearances > 4) exceptionalMetrics++
+  if (passesTotal > 30 && passSuccess > 0.85) exceptionalMetrics++
+
+  // Only truly exceptional performances should approach 9+
+  if (exceptionalMetrics >= 3) {
+    rating += 0.5 // Bonus for exceptional all-around performance
   }
 
   // Normalize rating to 1-10 scale
