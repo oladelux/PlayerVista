@@ -196,7 +196,7 @@ export type Player = {
   postCode: string
   country: string
   birthDate: Date
-  position: string
+  position: PlayerPositionType
   preferredFoot: string
   height: number
   weight: number

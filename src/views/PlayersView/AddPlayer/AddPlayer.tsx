@@ -162,9 +162,6 @@ export function AddPlayer() {
   }
 
   async function onSubmit(data: PlayerFormValues) {
-    console.log('Form data:', data)
-    console.log('teamId:', teamId)
-    console.log('user:', user)
     if (!teamId || !user) return
 
     const playerData = {
@@ -202,8 +199,6 @@ export function AddPlayer() {
         title: 'Player added',
         description: `${data.firstName} ${data.lastName} has been added successfully`,
       })
-
-      console.log('Form data:', data)
 
       // Redirect to players page
       navigate('/players')

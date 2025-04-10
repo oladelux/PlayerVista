@@ -814,13 +814,17 @@ export type PlayerMatch = {
   xA: number
 }
 
-export function getPlayerMatches(playerEvents: PlayerEvent[]): PlayerMatch[] {
+export function getPlayerMatches(
+  playerEvents: PlayerEvent[],
+  position: PlayerPositionType | undefined,
+): PlayerMatch[] {
   const playerMatches: PlayerMatch[] = []
   playerEvents.forEach(event => {
     if (!event.eventDate) {
       return
     }
     const eventDate = new Date(event.eventDate)
+    const rating = calculatePlayerRating(event.actions, position)
     const offensivePerformance = getOffensiveData(event.actions)
     const defensivePerformance = getDefensiveData(event.actions)
     const possessionPerformance = getPossessionData(event.actions)
@@ -833,7 +837,7 @@ export function getPlayerMatches(playerEvents: PlayerEvent[]): PlayerMatch[] {
       result: event.result || '',
       goals: offensivePerformance.totalGoals,
       assists: offensivePerformance.totalAssists,
-      rating: 0,
+      rating: rating,
       minutesPlayed: event.minutePlayed,
       touches: possessionPerformance.totalTouches,
       shots: offensivePerformance.totalShots,
@@ -862,4 +866,163 @@ export function getPlayerMatches(playerEvents: PlayerEvent[]): PlayerMatch[] {
     })
   })
   return playerMatches
+}
+
+export function calculatePlayerRating(
+  playerActions: PlayerActions,
+  position: PlayerPositionType | undefined,
+) {
+  // Base score everyone starts with
+  const baseScore = 5.0
+
+  // Calculate success rates for key actions
+  const passesTotal = playerActions.passes?.length || 0
+  const passesSuccessful = playerActions.passes?.filter(p => p.successful).length || 0
+  const passSuccess = passesTotal > 0 ? passesSuccessful / passesTotal : 0
+
+  const tacklesTotal = playerActions.tackles?.length || 0
+  const tacklesSuccessful = playerActions.tackles?.filter(t => t.successful).length || 0
+  const tackleSuccess = tacklesTotal > 0 ? tacklesSuccessful / tacklesTotal : 0
+
+  const dribblesTotal = playerActions.dribbles?.length || 0
+  const dribblesSuccessful = playerActions.dribbles?.filter(d => d.successful).length || 0
+  const dribbleSuccess = dribblesTotal > 0 ? dribblesSuccessful / dribblesTotal : 0
+
+  const aerialDuelsTotal = playerActions.aerialDuels?.length || 0
+  const aerialDuelsSuccessful = playerActions.aerialDuels?.filter(a => a.successful).length || 0
+  const aerialDuelSuccess = aerialDuelsTotal > 0 ? aerialDuelsSuccessful / aerialDuelsTotal : 0
+
+  const crossesTotal = playerActions.crosses?.length || 0
+  const crossesSuccessful = playerActions.crosses?.filter(c => c.successful).length || 0
+  const crossSuccess = crossesTotal > 0 ? crossesSuccessful / crossesTotal : 0
+
+  // Get action counts
+  const goals = playerActions.goals?.length || 0
+  const assists = playerActions.assists?.length || 0
+  const shots = playerActions.shots?.length || 0
+  const shotsOnTarget = playerActions.shots?.filter(s => s.successful).length || 0
+  const shotAccuracy = shots > 0 ? shotsOnTarget / shots : 0
+  const interceptions = playerActions.interceptions?.filter(i => i.successful).length || 0
+  const clearances = playerActions.clearances?.filter(c => c.successful).length || 0
+  const blocks = playerActions.blocks?.filter(b => b.successful).length || 0
+  const blockedShots = playerActions.blockedShots?.filter(bs => bs.successful).length || 0
+  const recoveries = playerActions.recoveries?.filter(r => r.successful).length || 0
+  const fouls = playerActions.fouls?.length || 0
+  const saves = playerActions.saves?.filter(s => s.successful).length || 0
+  const penaltySaves = playerActions.penaltySaves?.filter(ps => ps.successful).length || 0
+  const freekickSaves = playerActions.freekickSaves?.filter(fs => fs.successful).length || 0
+  const oneVOneSaves = playerActions.OneVOneSaves?.filter(os => os.successful).length || 0
+  const goalsConceded = playerActions.goalConceded?.length || 0
+  const yellowCards = playerActions.yellowCard?.length || 0
+  const redCards = playerActions.redCard?.length || 0
+  const penalties = playerActions.penalty?.filter(p => p.successful).length || 0
+
+  // Start with base rating
+  let rating = baseScore
+
+  // Common contributions for all positions
+
+  // Attacking contributions
+  rating += goals * 1.2
+  rating += assists * 0.8
+  rating += shotsOnTarget * 0.3
+  rating += penalties * 0.5
+  rating += shotAccuracy * 0.5
+
+  // Possession contributions
+  rating += passSuccess * 1.0
+  rating += dribbleSuccess * 0.8
+
+  // Defensive contributions
+  rating += tackleSuccess * 0.7
+  rating += interceptions * 0.3
+  rating += clearances * 0.2
+  rating += blocks * 0.3
+  rating += blockedShots * 0.4
+  rating += recoveries * 0.2
+  rating += aerialDuelSuccess * 0.6
+
+  // Negative factors
+  rating -= fouls * 0.2
+  rating -= yellowCards * 0.5
+  rating -= redCards * 1.5
+
+  // Position-specific adjustments
+  switch (position) {
+    case 'GK':
+      // Goalkeeper-specific metrics
+      rating += saves * 0.4
+      rating += penaltySaves * 1.0
+      rating += freekickSaves * 0.7
+      rating += oneVOneSaves * 0.8
+      rating -= goalsConceded * 0.4
+      // Pass success is more valuable for modern keepers
+      rating += passSuccess * 0.5
+      break
+
+    case 'LB':
+    case 'CB':
+    case 'RB':
+    case 'LCB':
+    case 'RCB':
+    case 'LWB':
+    case 'RWB':
+      // Defenders prioritize defensive actions
+      rating += tackleSuccess * 0.5
+      rating += interceptions * 0.4
+      rating += clearances * 0.3
+      rating += blocks * 0.4
+      rating += blockedShots * 0.5
+      rating += aerialDuelSuccess * 0.5
+      // Goals and assists are extra valuable for defenders
+      rating += goals * 0.5
+      rating += assists * 0.3
+      break
+
+    case 'CM':
+    case 'CDM':
+    case 'CAM':
+    case 'LM':
+    case 'RM':
+    case 'LCM':
+    case 'RCM':
+      // Midfielders are balanced between offense and defense
+      rating += passSuccess * 0.7
+      rating += dribbleSuccess * 0.5
+      rating += recoveries * 0.4
+      rating += interceptions * 0.3
+      rating += assists * 0.3
+      rating += crossSuccess * 0.4
+      break
+
+    case 'ST':
+    case 'CF':
+      // Forwards prioritize offensive contributions
+      rating += goals * 0.8
+      rating += assists * 0.5
+      rating += shotsOnTarget * 0.3
+      rating += dribbleSuccess * 0.4
+      rating += crossSuccess * 0.3
+      // Defensive contributions from forwards are bonus value
+      rating += recoveries * 0.3
+      rating += interceptions * 0.2
+      break
+  }
+
+  // Activity level adjustment - players should be involved in the game
+  const totalActions = Object.values(playerActions).reduce(
+    (sum, actions) => sum + (Array.isArray(actions) ? actions.length : 0),
+    0,
+  )
+
+  // Adjust slightly based on involvement (avoid super high ratings for minimal involvement)
+  if (totalActions < 5) {
+    rating = Math.min(rating, 7.0) // Cap rating for very uninvolved players
+  }
+
+  // Normalize rating to 1-10 scale
+  rating = Math.max(1, Math.min(10, rating))
+
+  // Round to 1 decimal place
+  return Math.round(rating * 10) / 10
 }

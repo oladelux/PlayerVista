@@ -99,7 +99,6 @@ export const EditPlayer: FC = () => {
       height: parseInt(values.height),
       weight: parseInt(values.weight),
     }
-    console.log('data', data)
     await playerService.patch(player.id, data)
     try {
       setLoading(false)
@@ -167,7 +166,6 @@ export const EditPlayer: FC = () => {
   if (loadingPlayer) return <LoadingPage />
   //TODO: Create Error Page
   if (error) {
-    console.log(error)
     return 'This is an error page'
   }
 
