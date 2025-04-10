@@ -91,9 +91,8 @@ export function PlayerStats() {
       opponent: event?.opponent,
     }
   })
-  console.log('playerEvents', playerEvents)
   const playerPerformanceData = getPlayerPerformanceData(playerEvents)
-  const playerMatches = getPlayerMatches(playerEvents)
+  const playerMatches = getPlayerMatches(playerEvents, player?.position)
 
   // Setup form for filters
   const defaultValues: playerStatsSchemaIn = {
