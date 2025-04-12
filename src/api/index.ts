@@ -229,11 +229,18 @@ export type EventFormData = {
   info?: string
 }
 
+export enum MatchStatus {
+  NOT_STARTED = 'not_started',
+  IN_PROGRESS = 'in_progress',
+  FINISHED = 'finished',
+}
+
 export type Event = {
   id: string
   team: string
   type: string
   date: Date
+  status: MatchStatus
   time: string
   matchType?: string
   location?: string
@@ -585,8 +592,12 @@ export async function getPlayersByTeamId(
   return await res.json()
 }
 
-export async function getPlayersByUserId(userId: string): Promise<PlayerDataResponse> {
-  const res = await apiRequest(`/players/user/${userId}`, 'GET')
+export async function getPlayersByUserId(
+  userId: string,
+  page: number = 1,
+  limit: number = 10,
+): Promise<PlayerDataResponse> {
+  const res = await apiRequest(`/players/user/${userId}?page=${page}&limit=${limit}`, 'GET')
   return await res.json()
 }
 
@@ -748,6 +759,19 @@ export async function getPerformanceByEventAndPlayer(
   playerId: string,
 ): Promise<PlayerPerformance> {
   const res = await apiRequest(`/performance/event/${eventId}/player/${playerId}`, 'GET')
+  return await res.json()
+}
+
+export type PerformanceDataResponse = BaseApiResponse & {
+  data: PlayerPerformance[]
+}
+
+export async function getPerformancesByTeamId(
+  teamId: string,
+  page: number = 1,
+  limit: number = 10,
+): Promise<PerformanceDataResponse> {
+  const res = await apiRequest(`/performance/team/${teamId}?page=${page}&limit=${limit}`, 'GET')
   return await res.json()
 }
 

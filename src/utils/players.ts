@@ -5,6 +5,8 @@ import {
   PlayerActionPeriod,
   PlayerActions,
   PlayerPerformance,
+  Event,
+  MatchStatus,
 } from '@/api'
 import { getHalfData, HalfType } from '@/utils/phaseMetrics.ts'
 import { PlayerPositionType } from '@/views/PlayersView/form/PlayerPosition.ts'
@@ -749,7 +751,10 @@ export type PlayerEvent = {
   updatedAt: Date
 }
 
-export function getPlayerPerformanceData(playerEvents: PlayerEvent[]): PlayerPerformanceData[] {
+export function getPlayerPerformanceData(
+  playerEvents: PlayerEvent[],
+  position: PlayerPositionType | undefined,
+): PlayerPerformanceData[] {
   const performanceData: PlayerPerformanceData[] = []
   playerEvents.forEach(event => {
     if (!event.eventDate) {
@@ -757,6 +762,7 @@ export function getPlayerPerformanceData(playerEvents: PlayerEvent[]): PlayerPer
     }
     const eventDate = new Date(event.eventDate)
     const performance = getOffensiveData(event.actions)
+    const rating = calculatePlayerRating(event.actions, position)
     performanceData.push({
       month: eventDate.toLocaleString('default', { month: 'short' }) as
         | 'Jan'
@@ -771,7 +777,7 @@ export function getPlayerPerformanceData(playerEvents: PlayerEvent[]): PlayerPer
         | 'Oct'
         | 'Nov'
         | 'Dec',
-      rating: 0,
+      rating: rating,
       goals: performance.totalGoals,
       assists: performance.totalAssists,
     })
@@ -1054,4 +1060,219 @@ export function calculatePlayerRating(
 
   // Round to 1 decimal place
   return Math.round(rating * 10) / 10
+}
+
+type PerformanceData = {
+  month: string
+  goals: number
+  assists: number
+  minutes: number
+  passes: number
+  tackles: number
+  shots: number
+  accuracy: number
+}
+
+/**
+ * Generates real player performance data sets from player events
+ * @param playerEvents Array of player events containing performance data
+ * @param playerId Player ID to generate data for
+ * @returns A properly formatted array of PerformanceData objects
+ */
+export function generatePlayerDataSet(playerEvents: PlayerEvent[]): PerformanceData[] {
+  // Sort events by date to ensure chronological order
+  const sortedEvents = [...playerEvents]
+    .filter(event => event.eventDate)
+    .sort((a, b) => {
+      if (!a.eventDate || !b.eventDate) return 0
+      return new Date(a.eventDate).getTime() - new Date(b.eventDate).getTime()
+    })
+
+  return sortedEvents.map(event => {
+    const eventDate = event.eventDate ? new Date(event.eventDate) : new Date()
+    const month = eventDate.toLocaleString('default', { month: 'short' })
+
+    // Get performance data using the existing utility functions
+    const offensiveData = getOffensiveData(event.actions)
+    const defensiveData = getDefensiveData(event.actions)
+
+    // Convert to the expected PerformanceData format
+    return {
+      month: month.substring(0, 3), // Ensure 3-letter month format
+      goals: offensiveData.totalGoals,
+      assists: offensiveData.totalAssists,
+      minutes: event.minutePlayed,
+      passes: offensiveData.totalPasses,
+      tackles: defensiveData.totalTackles,
+      shots: offensiveData.totalShots,
+      accuracy: offensiveData.shotsAccuracy,
+    }
+  })
+}
+
+/**
+ * Generates a complete playerDataSets object for multiple players
+ * @param players Array of players with their IDs and names
+ * @param events Array of player events with performance data
+ * @returns A Record mapping player IDs to arrays of PerformanceData
+ */
+export function generatePlayerDataSets(
+  players: { id: number | string; name: string; position: string }[],
+  allPlayerEvents: PlayerEvent[],
+): Record<number, PerformanceData[]> {
+  const result: Record<number, PerformanceData[]> = {}
+
+  // Generate team average first (ID 0)
+  const teamAverageData = generateTeamAverageData(allPlayerEvents)
+  result[0] = teamAverageData
+
+  // Generate individual player data
+  players.forEach((player, index) => {
+    const playerEventsFiltered = allPlayerEvents.filter(
+      event => event.playerId === player.id.toString(),
+    )
+
+    result[index + 1] = generatePlayerDataSet(playerEventsFiltered)
+  })
+  console.log('result', result)
+
+  return result
+}
+
+/**
+ * Generates team average performance data
+ * @param allEvents All player events
+ * @returns Team average performance data
+ */
+function generateTeamAverageData(allEvents: PlayerEvent[]): PerformanceData[] {
+  // Group events by month
+  const eventsByMonth: Record<string, PlayerEvent[]> = {}
+
+  allEvents.forEach(event => {
+    if (!event.eventDate) return
+
+    const date = new Date(event.eventDate)
+    const month = date.toLocaleString('default', { month: 'short' }).substring(0, 3)
+
+    if (!eventsByMonth[month]) {
+      eventsByMonth[month] = []
+    }
+
+    eventsByMonth[month].push(event)
+  })
+
+  // Calculate averages for each month
+  return Object.entries(eventsByMonth).map(([month, events]) => {
+    const totalEvents = events.length
+
+    // Initialize with zeros
+    let totalGoals = 0
+    let totalAssists = 0
+    let totalMinutes = 0
+    let totalPasses = 0
+    let totalTackles = 0
+    let totalShots = 0
+    let totalShotsAccuracy = 0
+
+    // Sum up values
+    events.forEach(event => {
+      const offensiveData = getOffensiveData(event.actions)
+      const defensiveData = getDefensiveData(event.actions)
+
+      totalGoals += offensiveData.totalGoals
+      totalAssists += offensiveData.totalAssists
+      totalMinutes += event.minutePlayed
+      totalPasses += offensiveData.totalPasses
+      totalTackles += defensiveData.totalTackles
+      totalShots += offensiveData.totalShots
+      totalShotsAccuracy += offensiveData.shotsAccuracy
+    })
+
+    // Calculate averages
+    return {
+      month,
+      goals: Math.round(totalGoals / totalEvents),
+      assists: Math.round(totalAssists / totalEvents),
+      minutes: Math.round(totalMinutes / totalEvents),
+      passes: Math.round(totalPasses / totalEvents),
+      tackles: Math.round(totalTackles / totalEvents),
+      shots: Math.round(totalShots / totalEvents),
+      accuracy: Math.round(totalShotsAccuracy / totalEvents),
+    }
+  })
+}
+
+/**
+ * Determines if a match was won, lost, or drawn
+ */
+export const getMatchOutcome = (match: Event): 'win' | 'loss' | 'draw' => {
+  if (
+    match.status !== MatchStatus.FINISHED ||
+    match.homeScore === undefined ||
+    match.awayScore === undefined
+  ) {
+    return 'draw'
+  }
+
+  // If we're the home team
+  if (match.matchType === 'home') {
+    if (match.homeScore > match.awayScore) return 'win'
+    if (match.homeScore < match.awayScore) return 'loss'
+    return 'draw'
+  }
+  // If we're the away team
+  else {
+    if (match.homeScore < match.awayScore) return 'win'
+    if (match.homeScore > match.awayScore) return 'loss'
+    return 'draw'
+  }
+}
+
+/**
+ * Calculates win rate and other statistics from match data
+ */
+export const calculateMatchStatistics = (matches: Event[]) => {
+  const finishedMatches = matches.filter(match => match.status === MatchStatus.FINISHED)
+
+  if (finishedMatches.length === 0) {
+    return {
+      winRate: 0,
+      totalMatches: 0,
+      wins: 0,
+      losses: 0,
+      draws: 0,
+      trend: 0,
+    }
+  }
+
+  // Count wins, losses, and draws
+  const outcomes = finishedMatches.map(match => getMatchOutcome(match))
+  const wins = outcomes.filter(outcome => outcome === 'win').length
+  const losses = outcomes.filter(outcome => outcome === 'loss').length
+  const draws = outcomes.filter(outcome => outcome === 'draw').length
+
+  // Calculate win rate (as a percentage)
+  const winRate = Math.round((wins / finishedMatches.length) * 100)
+
+  // Calculate trend (compare recent matches to overall performance)
+  // For simplicity, let's compare the most recent 2 matches to the overall rate
+  const recentMatches = [...finishedMatches]
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .slice(0, 2)
+
+  const recentOutcomes = recentMatches.map(match => getMatchOutcome(match))
+  const recentWins = recentOutcomes.filter(outcome => outcome === 'win').length
+  const recentWinRate = recentMatches.length > 0 ? (recentWins / recentMatches.length) * 100 : 0
+
+  // Trend is positive if recent win rate is higher than overall
+  const trend = recentWinRate - winRate
+
+  return {
+    winRate,
+    totalMatches: finishedMatches.length,
+    wins,
+    losses,
+    draws,
+    trend,
+  }
 }

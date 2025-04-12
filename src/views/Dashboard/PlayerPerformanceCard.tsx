@@ -1,4 +1,6 @@
-import { AreaChart, ArrowRight, BarChart, UserCheck } from 'lucide-react'
+import { useState } from 'react'
+
+import { AreaChart, ArrowRight, BarChart, UserCheck, Users } from 'lucide-react'
 import {
   Area,
   Bar,
@@ -12,6 +14,7 @@ import {
   YAxis,
 } from 'recharts'
 
+import { Event, Player } from '@/api'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -21,88 +24,16 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-
-type PerformanceData = {
-  month: string
-  goals: number
-  assists: number
-  minutes: number
-  passes: number
-  tackles: number
-  shots: number
-  accuracy: number
-  distance: number
-}
-
-const performanceData: PerformanceData[] = [
-  {
-    month: 'Jan',
-    goals: 3,
-    assists: 2,
-    minutes: 450,
-    passes: 320,
-    tackles: 18,
-    shots: 12,
-    accuracy: 72,
-    distance: 38.2,
-  },
-  {
-    month: 'Feb',
-    goals: 2,
-    assists: 4,
-    minutes: 520,
-    passes: 345,
-    tackles: 22,
-    shots: 9,
-    accuracy: 68,
-    distance: 42.1,
-  },
-  {
-    month: 'Mar',
-    goals: 5,
-    assists: 1,
-    minutes: 580,
-    passes: 410,
-    tackles: 25,
-    shots: 18,
-    accuracy: 79,
-    distance: 46.5,
-  },
-  {
-    month: 'Apr',
-    goals: 4,
-    assists: 2,
-    minutes: 430,
-    passes: 290,
-    tackles: 16,
-    shots: 14,
-    accuracy: 74,
-    distance: 35.8,
-  },
-  {
-    month: 'May',
-    goals: 2,
-    assists: 3,
-    minutes: 490,
-    passes: 325,
-    tackles: 20,
-    shots: 10,
-    accuracy: 70,
-    distance: 41.3,
-  },
-  {
-    month: 'Jun',
-    goals: 1,
-    assists: 5,
-    minutes: 540,
-    passes: 380,
-    tackles: 27,
-    shots: 11,
-    accuracy: 65,
-    distance: 44.7,
-  },
-]
+import { usePerformance } from '@/hooks/usePerformance'
+import { generatePlayerDataSets } from '@/utils/players'
 
 const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
   if (active && payload && payload.length) {
@@ -125,15 +56,64 @@ const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>)
   return null
 }
 
-export function PlayerPerformanceCard() {
+export function PlayerPerformanceCard({
+  players,
+  teamId,
+  events,
+}: {
+  players: Player[]
+  teamId: string | undefined
+  events: Event[]
+}) {
+  const [selectedPlayer, setSelectedPlayer] = useState<string>('0')
+  const { performanceByTeam } = usePerformance(undefined, undefined, teamId)
+  const topPlayers = players.map(player => ({
+    id: player.id,
+    name: player.firstName + ' ' + player.lastName,
+    position: player.position,
+  }))
+  const playerEvents = performanceByTeam.map(performance => {
+    const event = events.find(event => event.id === performance.eventId)
+    return {
+      ...performance,
+      eventDate: event?.date,
+      opponent: event?.opponent,
+    }
+  })
+  // Get data based on selected player or team average
+  const playerDataSets = generatePlayerDataSets(topPlayers, playerEvents)
+  const performanceData = playerDataSets[parseInt(selectedPlayer)]
   return (
     <Card className='h-full'>
       <CardHeader className='pb-3'>
-        <CardTitle className='flex items-center gap-2'>
-          <UserCheck size={18} className='text-muted-foreground' />
-          Player Performance
-        </CardTitle>
-        <CardDescription>Key player stats over time</CardDescription>
+        <div className='flex items-center justify-between'>
+          <CardTitle className='flex items-center gap-2'>
+            {selectedPlayer === '0' ? (
+              <Users size={18} className='text-muted-foreground' />
+            ) : (
+              <UserCheck size={18} className='text-muted-foreground' />
+            )}
+            {selectedPlayer === '0' ? 'Team Performance' : 'Player Performance'}
+          </CardTitle>
+          <Select value={selectedPlayer} onValueChange={setSelectedPlayer}>
+            <SelectTrigger className='h-8 w-[180px]'>
+              <SelectValue placeholder='Select player' />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value='0'>Team Average</SelectItem>
+              {topPlayers.map(player => (
+                <SelectItem key={player.id} value={player.id.toString()}>
+                  {player.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <CardDescription>
+          {selectedPlayer === '0'
+            ? 'Team player stats over time'
+            : `Stats for ${topPlayers.find(p => p.id.toString() === selectedPlayer)?.name || 'player'}`}
+        </CardDescription>
       </CardHeader>
       <CardContent className='pb-1'>
         <Tabs defaultValue='goals' className='space-y-4'>

@@ -82,7 +82,7 @@ export function PlayerStats() {
   const { player } = usePlayer(playerId, teamId)
   const team = teams.find(team => team.id === teamId)
   const { events } = useEvents(teamId, undefined)
-  const { performanceByPlayer, loading, error } = usePerformance(playerId, undefined)
+  const { performanceByPlayer, loading, error } = usePerformance(playerId, undefined, undefined)
   const playerEvents = performanceByPlayer.map(performance => {
     const event = events.find(event => event.id === performance.eventId)
     return {
@@ -91,7 +91,7 @@ export function PlayerStats() {
       opponent: event?.opponent,
     }
   })
-  const playerPerformanceData = getPlayerPerformanceData(playerEvents)
+  const playerPerformanceData = getPlayerPerformanceData(playerEvents, player?.position)
   const playerMatches = getPlayerMatches(playerEvents, player?.position)
 
   // Setup form for filters

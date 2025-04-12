@@ -4,6 +4,7 @@ import { catchError, map } from 'rxjs/operators'
 import {
   getPerformanceByEvent,
   getPerformanceByEventAndPlayer,
+  getPerformancesByTeamId,
   getPerformancesForPlayer,
   PlayerPerformance,
 } from '@/api'
@@ -12,6 +13,7 @@ type PerformanceState = {
   performanceByPlayer: PlayerPerformance[]
   performanceByEventAndPlayer: PlayerPerformance | null
   performanceByEvent: PlayerPerformance[]
+  performanceByTeam: PlayerPerformance[]
   loading: boolean
   error: string | undefined
 }
@@ -21,6 +23,7 @@ export class PerformanceService {
     performanceByPlayer: [],
     performanceByEventAndPlayer: null,
     performanceByEvent: [],
+    performanceByTeam: [],
     loading: false,
     error: undefined,
   })
@@ -94,5 +97,33 @@ export class PerformanceService {
         }),
       )
       .subscribe()
+  }
+
+  public getAllPerformanceByTeam(teamId: string | null | undefined) {
+    this.updateState({ loading: true, error: undefined })
+    if (!teamId) {
+      this.updateState({ performanceByTeam: [], loading: false, error: 'No active user' })
+      return
+    }
+    const allPerformance: PlayerPerformance[] = []
+    const fetchPage = (currentPage: number = 1, limit: number = 10) => {
+      from(getPerformancesByTeamId(teamId, currentPage, limit))
+        .pipe(
+          map(xResponse => {
+            allPerformance.push(...xResponse.data)
+            if (xResponse.hasNextPage) {
+              fetchPage(currentPage + 1, limit)
+            } else {
+              this.updateState({ performanceByTeam: allPerformance, loading: false })
+            }
+          }),
+          catchError(e => {
+            this.updateState({ performanceByTeam: [], loading: false, error: e.message })
+            return []
+          }),
+        )
+        .subscribe()
+    }
+    fetchPage(1)
   }
 }

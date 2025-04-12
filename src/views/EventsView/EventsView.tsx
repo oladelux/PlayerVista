@@ -1,12 +1,13 @@
 import { useState } from 'react'
 
 import {
+  addDays,
   addMonths,
-  eachDayOfInterval,
-  endOfMonth,
   format,
   isSameDay,
+  isSameMonth,
   startOfMonth,
+  startOfWeek,
   subMonths,
 } from 'date-fns'
 import {
@@ -16,12 +17,15 @@ import {
   ChevronLeft,
   ChevronRight,
   Clock,
+  Home,
   MapPin,
+  Plane,
   PlusCircle,
 } from 'lucide-react'
 
-import { Event } from '@/api'
+import { Event, MatchStatus } from '@/api'
 import { CreateMatchForm } from '@/component/CreateMatchForm/CreateMatchForm'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -37,6 +41,16 @@ import { useEvents } from '@/hooks/useEvents'
 import { combineDateAndTime } from '@/utils/dateObject'
 import { SessionInstance } from '@/utils/SessionInstance'
 
+const getMatchOutcome = (match: Event): 'win' | 'loss' | 'draw' | undefined => {
+  if (match.status !== MatchStatus.FINISHED || !match.homeScore || !match.awayScore)
+    return undefined
+
+  if (match.matchType === 'home' && match.homeScore > match.awayScore) return 'win'
+  if (match.matchType === 'away' && match.homeScore < match.awayScore) return 'win'
+  if (match.homeScore === match.awayScore) return 'draw'
+  return 'loss'
+}
+
 export function EventsView() {
   const teamId = SessionInstance.getTeamId()
   const { events } = useEvents(teamId, undefined)
@@ -50,12 +64,10 @@ export function EventsView() {
     if (selectedTab === 'all') {
       return events
     } else if (selectedTab === 'upcoming') {
-      return events.filter(
-        match => new Date(combineDateAndTime(match.date, match.time)) > new Date(),
-      )
+      return events.filter(match => match.status === MatchStatus.NOT_STARTED)
     } else if (selectedTab === 'completed') {
       return events.filter(
-        match => new Date(combineDateAndTime(match.date, match.time)) <= new Date(),
+        match => match.status === MatchStatus.FINISHED || match.status === MatchStatus.IN_PROGRESS,
       )
     }
     return events
@@ -77,11 +89,9 @@ export function EventsView() {
   // Count stats
   const totalMatches = events.length
   const playedMatches = events.filter(
-    match => new Date(combineDateAndTime(match.date, match.time)) < new Date(),
+    match => match.status === MatchStatus.FINISHED || match.status === MatchStatus.IN_PROGRESS,
   )
-  const upcomingMatches = events.filter(
-    match => new Date(combineDateAndTime(match.date, match.time)) > new Date(),
-  )
+  const upcomingMatches = events.filter(match => match.status === MatchStatus.NOT_STARTED)
 
   // Navigate to previous month
   const handlePrevMonth = () => {
@@ -98,12 +108,9 @@ export function EventsView() {
     setSelectedDate(day)
   }
 
-  // Get days in current month view
   const monthStart = startOfMonth(currentDate)
-  const monthEnd = endOfMonth(currentDate)
-  const daysInMonth = eachDayOfInterval({ start: monthStart, end: monthEnd })
-
-  // Get day name headers (Sun, Mon, etc.)
+  const calendarStart = startOfWeek(monthStart)
+  const daysToDisplay = Array.from({ length: 42 }, (_, i) => addDays(calendarStart, i))
   const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
   return (
@@ -211,18 +218,20 @@ export function EventsView() {
                   ))}
 
                   {/* Day cells */}
-                  {daysInMonth.map(day => {
+                  {daysToDisplay.map(day => {
                     const dayMatches = getMatchesForDay(day)
                     const isSelected = selectedDate && isSameDay(day, selectedDate)
+                    const isCurrentMonth = isSameMonth(day, currentDate)
 
                     return (
                       <div
                         key={day.toISOString()}
                         onClick={() => handleDayClick(day)}
                         className={`
-                            h-24 cursor-pointer rounded border p-1 transition-colors
-                            ${isSelected ? 'border-primary bg-primary/5' : 'hover:bg-accent'}
-                          `}
+                          h-24 cursor-pointer rounded border p-1 transition-colors
+                          ${isSelected ? 'border-primary bg-primary/5' : 'hover:bg-accent'}
+                          ${!isCurrentMonth ? 'opacity-40' : ''}
+                        `}
                       >
                         <div className='p-1 text-right'>
                           <span
@@ -242,7 +251,7 @@ export function EventsView() {
                               key={match.id}
                               className={`
                                   truncate rounded p-1 text-xs
-                                  ${new Date(combineDateAndTime(match.date, match.time)) <= new Date() ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}
+                                  ${match.status === MatchStatus.FINISHED || match.status === MatchStatus.IN_PROGRESS ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}
                                 `}
                             >
                               {format(combineDateAndTime(match.date, match.time), 'HH:mm')}{' '}
@@ -269,43 +278,79 @@ export function EventsView() {
                   </h3>
                   <div className='space-y-2'>
                     {getMatchesForDay(selectedDate).length > 0 ? (
-                      getMatchesForDay(selectedDate).map(match => (
-                        <Card
-                          key={match.id}
-                          className='cursor-pointer hover:bg-accent/50'
-                          onClick={() => handleSelectMatch(match)}
-                        >
-                          <CardContent className='p-4'>
-                            <div className='flex items-center justify-between'>
-                              <div className='flex items-center gap-2'>
-                                <div
-                                  className={`h-8 w-2 rounded-sm ${new Date(combineDateAndTime(match.date, match.time)) <= new Date() ? 'bg-green-500' : 'bg-blue-500'}`}
-                                ></div>
-                                <div>
-                                  <h4 className='font-medium'>{match.opponent}</h4>
-                                  <div className='flex items-center gap-1 text-sm text-muted-foreground'>
-                                    <Clock className='size-3' />
-                                    {format(combineDateAndTime(match.date, match.time), 'HH:mm')}
-                                    <span className='mx-1'>•</span>
-                                    <MapPin className='size-3' />
-                                    <span className='capitalize'>{match.location}</span>
+                      getMatchesForDay(selectedDate).map(match => {
+                        const outcome = getMatchOutcome(match)
+                        return (
+                          <Card
+                            key={match.id}
+                            className='cursor-pointer hover:bg-accent/50'
+                            onClick={() => handleSelectMatch(match)}
+                          >
+                            <CardContent className='p-4'>
+                              <div className='flex items-center justify-between'>
+                                <div className='flex items-center gap-2'>
+                                  <div
+                                    className={`h-8 w-2 rounded-sm ${match.status === MatchStatus.FINISHED || match.status === MatchStatus.IN_PROGRESS ? 'bg-green-500' : 'bg-blue-500'}`}
+                                  ></div>
+                                  <div>
+                                    <div className='flex items-center gap-2 font-medium'>
+                                      <h4 className='font-medium'>{match.opponent}</h4>
+                                      <Badge
+                                        variant={match.matchType === 'home' ? 'default' : 'outline'}
+                                        className='text-xs'
+                                      >
+                                        {match.matchType === 'home' ? (
+                                          <>
+                                            <Home className='mr-1 size-3' /> Home
+                                          </>
+                                        ) : (
+                                          <>
+                                            <Plane className='mr-1 size-3' /> Away
+                                          </>
+                                        )}
+                                      </Badge>
+                                    </div>
+                                    <div className='flex items-center gap-1 text-sm text-muted-foreground'>
+                                      <Clock className='size-3' />
+                                      {format(combineDateAndTime(match.date, match.time), 'HH:mm')}
+                                      <span className='mx-1'>•</span>
+                                      <MapPin className='size-3' />
+                                      <span className='capitalize'>{match.location}</span>
+                                    </div>
                                   </div>
                                 </div>
+                                {match.status === MatchStatus.FINISHED &&
+                                  match.homeScore &&
+                                  match.awayScore && (
+                                    <div className='flex items-center gap-1.5'>
+                                      <Badge
+                                        variant={
+                                          outcome === 'win'
+                                            ? 'default'
+                                            : outcome === 'loss'
+                                              ? 'destructive'
+                                              : 'secondary'
+                                        }
+                                        className={
+                                          outcome === 'win' ? 'bg-green-500 hover:bg-green-600' : ''
+                                        }
+                                      >
+                                        {outcome === 'win'
+                                          ? 'Win'
+                                          : outcome === 'loss'
+                                            ? 'Loss'
+                                            : 'Draw'}
+                                      </Badge>
+                                      <span className='font-medium'>
+                                        {match.homeScore} - {match.awayScore}
+                                      </span>
+                                    </div>
+                                  )}
                               </div>
-                              {new Date(combineDateAndTime(match.date, match.time)) <= new Date() &&
-                                match.homeScore &&
-                                match.awayScore && (
-                                  <div className='flex items-center gap-1.5'>
-                                    <CheckCircle2 size={16} className='text-green-600' />
-                                    <span className='font-medium'>
-                                      {match.homeScore} - {match.awayScore}
-                                    </span>
-                                  </div>
-                                )}
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))
+                            </CardContent>
+                          </Card>
+                        )
+                      })
                     ) : (
                       <div className='py-6 text-center text-muted-foreground'>
                         No matches on this day.
@@ -358,18 +403,20 @@ export function EventsView() {
                   ))}
 
                   {/* Day cells */}
-                  {daysInMonth.map(day => {
+                  {daysToDisplay.map(day => {
                     const dayMatches = getMatchesForDay(day)
                     const isSelected = selectedDate && isSameDay(day, selectedDate)
+                    const isCurrentMonth = isSameMonth(day, currentDate)
 
                     return (
                       <div
                         key={day.toISOString()}
                         onClick={() => handleDayClick(day)}
                         className={`
-                            h-24 cursor-pointer rounded border p-1 transition-colors
-                            ${isSelected ? 'border-primary bg-primary/5' : 'hover:bg-accent'}
-                          `}
+                          h-24 cursor-pointer rounded border p-1 transition-colors
+                          ${isSelected ? 'border-primary bg-primary/5' : 'hover:bg-accent'}
+                          ${!isCurrentMonth ? 'opacity-40' : ''}
+                        `}
                       >
                         <div className='p-1 text-right'>
                           <span
@@ -389,7 +436,7 @@ export function EventsView() {
                               key={match.id}
                               className={`
                                   truncate rounded p-1 text-xs
-                                  ${new Date(combineDateAndTime(match.date, match.time)) <= new Date() ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}
+                                  ${match.status === MatchStatus.FINISHED || match.status === MatchStatus.IN_PROGRESS ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}
                                 `}
                             >
                               {format(combineDateAndTime(match.date, match.time), 'HH:mm')}{' '}
@@ -416,43 +463,72 @@ export function EventsView() {
                   </h3>
                   <div className='space-y-2'>
                     {getMatchesForDay(selectedDate).length > 0 ? (
-                      getMatchesForDay(selectedDate).map(match => (
-                        <Card
-                          key={match.id}
-                          className='cursor-pointer hover:bg-accent/50'
-                          onClick={() => handleSelectMatch(match)}
-                        >
-                          <CardContent className='p-4'>
-                            <div className='flex items-center justify-between'>
-                              <div className='flex items-center gap-2'>
-                                <div
-                                  className={`h-8 w-2 rounded-sm ${new Date(combineDateAndTime(match.date, match.time)) <= new Date() ? 'bg-green-500' : 'bg-blue-500'}`}
-                                ></div>
-                                <div>
-                                  <h4 className='font-medium'>{match.opponent}</h4>
-                                  <div className='flex items-center gap-1 text-sm text-muted-foreground'>
-                                    <Clock className='size-3' />
-                                    {format(combineDateAndTime(match.date, match.time), 'HH:mm')}
-                                    <span className='mx-1'>•</span>
-                                    <MapPin className='size-3' />
-                                    {match.location}
+                      getMatchesForDay(selectedDate).map(match => {
+                        const outcome = getMatchOutcome(match)
+                        return (
+                          <Card
+                            key={match.id}
+                            className='cursor-pointer hover:bg-accent/50'
+                            onClick={() => handleSelectMatch(match)}
+                          >
+                            <CardContent className='p-4'>
+                              <div className='flex items-center justify-between'>
+                                <div className='flex items-center gap-2'>
+                                  <div
+                                    className={`h-8 w-2 rounded-sm ${match.status === MatchStatus.FINISHED || match.status === MatchStatus.IN_PROGRESS ? 'bg-green-500' : 'bg-blue-500'}`}
+                                  ></div>
+                                  <div>
+                                    <div className='flex items-center gap-2 font-medium'>
+                                      <h4 className='font-medium'>{match.opponent}</h4>
+                                      <Badge
+                                        variant={match.matchType === 'home' ? 'default' : 'outline'}
+                                        className='text-xs'
+                                      >
+                                        {match.matchType === 'home' ? (
+                                          <>
+                                            <Home className='mr-1 size-3' /> Home
+                                          </>
+                                        ) : (
+                                          <>
+                                            <Plane className='mr-1 size-3' /> Away
+                                          </>
+                                        )}
+                                      </Badge>
+                                    </div>
                                   </div>
                                 </div>
+                                {match.status === MatchStatus.FINISHED &&
+                                  match.homeScore &&
+                                  match.awayScore && (
+                                    <div className='flex items-center gap-1.5'>
+                                      <Badge
+                                        variant={
+                                          outcome === 'win'
+                                            ? 'default'
+                                            : outcome === 'loss'
+                                              ? 'destructive'
+                                              : 'secondary'
+                                        }
+                                        className={
+                                          outcome === 'win' ? 'bg-green-500 hover:bg-green-600' : ''
+                                        }
+                                      >
+                                        {outcome === 'win'
+                                          ? 'Win'
+                                          : outcome === 'loss'
+                                            ? 'Loss'
+                                            : 'Draw'}
+                                      </Badge>
+                                      <span className='font-medium'>
+                                        {match.homeScore} - {match.awayScore}
+                                      </span>
+                                    </div>
+                                  )}
                               </div>
-                              {new Date(combineDateAndTime(match.date, match.time)) <= new Date() &&
-                                match.homeScore &&
-                                match.awayScore && (
-                                  <div className='flex items-center gap-1.5'>
-                                    <CheckCircle2 size={16} className='text-green-600' />
-                                    <span className='font-medium'>
-                                      {match.homeScore} - {match.awayScore}
-                                    </span>
-                                  </div>
-                                )}
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))
+                            </CardContent>
+                          </Card>
+                        )
+                      })
                     ) : (
                       <div className='py-6 text-center text-muted-foreground'>
                         No matches on this day.
@@ -505,9 +581,10 @@ export function EventsView() {
                   ))}
 
                   {/* Day cells */}
-                  {daysInMonth.map(day => {
+                  {daysToDisplay.map(day => {
                     const dayMatches = getMatchesForDay(day)
                     const isSelected = selectedDate && isSameDay(day, selectedDate)
+                    const isCurrentMonth = isSameMonth(day, currentDate)
 
                     return (
                       <div
@@ -516,7 +593,8 @@ export function EventsView() {
                         className={`
                             h-24 cursor-pointer rounded border p-1 transition-colors
                             ${isSelected ? 'border-primary bg-primary/5' : 'hover:bg-accent'}
-                          `}
+                            ${!isCurrentMonth ? 'opacity-40' : ''}
+                        `}
                       >
                         <div className='p-1 text-right'>
                           <span
@@ -536,7 +614,7 @@ export function EventsView() {
                               key={match.id}
                               className={`
                                   truncate rounded p-1 text-xs
-                                  ${new Date(combineDateAndTime(match.date, match.time)) <= new Date() ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}
+                                  ${match.status === MatchStatus.FINISHED || match.status === MatchStatus.IN_PROGRESS ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}
                                 `}
                             >
                               {format(combineDateAndTime(match.date, match.time), 'HH:mm')}{' '}
@@ -563,43 +641,75 @@ export function EventsView() {
                   </h3>
                   <div className='space-y-2'>
                     {getMatchesForDay(selectedDate).length > 0 ? (
-                      getMatchesForDay(selectedDate).map(match => (
-                        <Card
-                          key={match.id}
-                          className='cursor-pointer hover:bg-accent/50'
-                          onClick={() => handleSelectMatch(match)}
-                        >
-                          <CardContent className='p-4'>
-                            <div className='flex items-center justify-between'>
-                              <div className='flex items-center gap-2'>
-                                <div
-                                  className={`h-8 w-2 rounded-sm ${new Date(combineDateAndTime(match.date, match.time)) <= new Date() ? 'bg-green-500' : 'bg-blue-500'}`}
-                                ></div>
-                                <div>
-                                  <h4 className='font-medium'>{match.opponent}</h4>
-                                  <div className='flex items-center gap-1 text-sm text-muted-foreground'>
-                                    <Clock className='size-3' />
-                                    {format(combineDateAndTime(match.date, match.time), 'HH:mm')}
-                                    <span className='mx-1'>•</span>
-                                    <MapPin className='size-3' />
-                                    {match.location}
+                      getMatchesForDay(selectedDate).map(match => {
+                        const outcome = getMatchOutcome(match)
+                        return (
+                          <Card
+                            key={match.id}
+                            className='cursor-pointer hover:bg-accent/50'
+                            onClick={() => handleSelectMatch(match)}
+                          >
+                            <CardContent className='p-4'>
+                              <div className='flex items-center justify-between'>
+                                <div className='flex items-center gap-2'>
+                                  <div
+                                    className={`h-8 w-2 rounded-sm ${match.status === MatchStatus.FINISHED || match.status === MatchStatus.IN_PROGRESS ? 'bg-green-500' : 'bg-blue-500'}`}
+                                  ></div>
+                                  <div>
+                                    <div className='flex items-center gap-2 font-medium'>
+                                      <h4 className='font-medium'>{match.opponent}</h4>
+                                      <Badge
+                                        variant={match.matchType === 'home' ? 'default' : 'outline'}
+                                        className='text-xs'
+                                      >
+                                        {match.matchType === 'home' ? (
+                                          <>
+                                            <Home className='mr-1 size-3' /> Home
+                                          </>
+                                        ) : (
+                                          <>
+                                            <Plane className='mr-1 size-3' /> Away
+                                          </>
+                                        )}
+                                      </Badge>
+                                    </div>
+                                    <div className='flex items-center gap-1 text-sm capitalize text-muted-foreground'>
+                                      {match.matchType}
+                                    </div>
                                   </div>
                                 </div>
+                                {match.status === MatchStatus.FINISHED &&
+                                  match.homeScore &&
+                                  match.awayScore && (
+                                    <div className='flex items-center gap-1.5'>
+                                      <Badge
+                                        variant={
+                                          outcome === 'win'
+                                            ? 'default'
+                                            : outcome === 'loss'
+                                              ? 'destructive'
+                                              : 'secondary'
+                                        }
+                                        className={
+                                          outcome === 'win' ? 'bg-green-500 hover:bg-green-600' : ''
+                                        }
+                                      >
+                                        {outcome === 'win'
+                                          ? 'Win'
+                                          : outcome === 'loss'
+                                            ? 'Loss'
+                                            : 'Draw'}
+                                      </Badge>
+                                      <span className='font-medium'>
+                                        {match.homeScore} - {match.awayScore}
+                                      </span>
+                                    </div>
+                                  )}
                               </div>
-                              {new Date(combineDateAndTime(match.date, match.time)) <= new Date() &&
-                                match.homeScore &&
-                                match.awayScore && (
-                                  <div className='flex items-center gap-1.5'>
-                                    <CheckCircle2 size={16} className='text-green-600' />
-                                    <span className='font-medium'>
-                                      {match.homeScore} - {match.awayScore}
-                                    </span>
-                                  </div>
-                                )}
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))
+                            </CardContent>
+                          </Card>
+                        )
+                      })
                     ) : (
                       <div className='py-6 text-center text-muted-foreground'>
                         No matches on this day.

@@ -95,20 +95,29 @@ export class PlayerService {
   public getAllPlayers(userId: string | null | undefined) {
     this.updateState({ loading: true, error: undefined })
     if (!userId) {
-      this.updateState({ allUserPlayers: [], loading: false, error: 'No active team' })
+      this.updateState({ allUserPlayers: [], loading: false, error: 'No active user' })
       return
     }
-    from(getPlayersByUserId(userId))
-      .pipe(
-        map(xResponse => {
-          this.updateState({ allUserPlayers: xResponse.data, loading: false })
-        }),
-        catchError(e => {
-          this.updateState({ allUserPlayers: [], loading: false, error: e.message })
-          return []
-        }),
-      )
-      .subscribe()
+    const allUserPlayers: Player[] = []
+    const fetchPage = (currentPage: number = 1, limit: number = 10) => {
+      from(getPlayersByUserId(userId, currentPage, limit))
+        .pipe(
+          map(xResponse => {
+            allUserPlayers.push(...xResponse.data)
+            if (xResponse.hasNextPage) {
+              fetchPage(currentPage + 1, limit)
+            } else {
+              this.updateState({ allUserPlayers, loading: false })
+            }
+          }),
+          catchError(e => {
+            this.updateState({ allUserPlayers: [], loading: false, error: e.message })
+            return []
+          }),
+        )
+        .subscribe()
+    }
+    fetchPage(1)
   }
 
   public async insert(data: PlayerFormData, teamId: string) {
