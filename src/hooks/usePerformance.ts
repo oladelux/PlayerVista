@@ -6,9 +6,10 @@ import { performanceService } from '@/singletons'
 /**
  * Hook to manage performance.
  */
-export const usePerformance = (playerId?: string, eventId?: string) => {
+export const usePerformance = (playerId?: string, eventId?: string, teamId?: string) => {
   const [performanceByPlayer, setPerformanceByPlayer] = useState<PlayerPerformance[]>([])
   const [performanceByEvent, setPerformanceByEvent] = useState<PlayerPerformance[]>([])
+  const [performanceByTeam, setPerformanceByTeam] = useState<PlayerPerformance[]>([])
   const [performanceByEventAndPlayer, setPerformanceByEventAndPlayer] =
     useState<PlayerPerformance | null>(null)
   const [loading, setLoading] = useState(false)
@@ -19,6 +20,7 @@ export const usePerformance = (playerId?: string, eventId?: string) => {
       setPerformanceByPlayer(state.performanceByPlayer)
       setPerformanceByEvent(state.performanceByEvent)
       setPerformanceByEventAndPlayer(state.performanceByEventAndPlayer)
+      setPerformanceByTeam(state.performanceByTeam)
       setLoading(state.loading)
       setError(state.error)
     })
@@ -31,16 +33,20 @@ export const usePerformance = (playerId?: string, eventId?: string) => {
     if (eventId && playerId) {
       performanceService.getPerformanceByEventAndPlayer(eventId, playerId)
     }
+    if (teamId) {
+      performanceService.getAllPerformanceByTeam(teamId)
+    }
 
     return () => {
       Subscription.unsubscribe()
     }
-  }, [eventId, playerId])
+  }, [eventId, playerId, teamId])
 
   return {
     performanceByPlayer,
     performanceByEvent,
     performanceByEventAndPlayer,
+    performanceByTeam,
     error,
     loading,
   }

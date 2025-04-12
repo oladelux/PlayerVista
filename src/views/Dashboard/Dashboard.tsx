@@ -5,7 +5,7 @@ import { Calendar, Trophy, UserCog, Users } from 'lucide-react'
 import { useOutletContext } from 'react-router-dom'
 
 import * as api from '@/api'
-import { ApiError, LogType } from '@/api'
+import { ApiError, LogType, MatchStatus } from '@/api'
 import { DashboardLayoutOutletContext } from '@/component/DashboardLayout/DashboardLayout.tsx'
 import { LoadingPage } from '@/component/LoadingPage/LoadingPage.tsx'
 import { UpcomingMatches } from '@/component/UpcomingMatches/UpcomingMatches'
@@ -13,6 +13,7 @@ import { useEvents } from '@/hooks/useEvents'
 import { usePlayer } from '@/hooks/usePlayer'
 import { appService, logService } from '@/singletons'
 import { combineDateAndTime } from '@/utils/dateObject'
+import { calculateMatchStatistics } from '@/utils/players'
 import { SessionInstance } from '@/utils/SessionInstance.ts'
 
 import { RecentActivity } from '../../component/RecentActivity/RecentActivity'
@@ -28,7 +29,12 @@ import { VerificationAlert } from '@/component/VerificationAlert/VerificationAle
 export function Dashboard() {
   const teamId = SessionInstance.getTeamId()
   const userData = appService.getUserData()
-  const { allUserPlayers, loading: playersLoading, error: playersError } = usePlayer()
+  const {
+    allUserPlayers,
+    players,
+    loading: playersLoading,
+    error: playersError,
+  } = usePlayer(undefined, teamId)
   const { events } = useEvents(teamId, undefined)
   const {
     teams,
@@ -43,6 +49,10 @@ export function Dashboard() {
   const [emailVerificationSent, setEmailVerificationSent] = useState(false)
 
   const [showVerificationAlert, setShowVerificationAlert] = useState(false)
+
+  const playedMatches = events.filter(match => match.status === MatchStatus.FINISHED)
+  // Calculate statistics from match data
+  const calculatedStats = calculateMatchStatistics(playedMatches)
 
   useEffect(() => {
     const alertDismissed = localStorage.getItem('verification_alert_dismissed') === 'true'
@@ -127,14 +137,14 @@ export function Dashboard() {
           />
           <StatsCard
             title='Win Rate'
-            value='64%'
+            value={`${calculatedStats.winRate}%`}
             description='Season average'
             icon={<Trophy size={20} className='text-emerald-500' />}
-            trend={{ value: 2.8, isPositive: true }}
+            trend={{ value: calculatedStats.trend, isPositive: calculatedStats.trend > 0 }}
           />
         </div>
         <div className='dash-section grid grid-cols-1 gap-6 lg:grid-cols-2'>
-          <PlayerPerformanceCard />
+          <PlayerPerformanceCard players={players} teamId={teamId} events={events} />
           <RecentActivity applicationLogs={logs} />
         </div>
         <div className='dash-section grid grid-cols-1 gap-6 lg:grid-cols-2'>
