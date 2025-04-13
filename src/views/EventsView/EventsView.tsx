@@ -42,13 +42,14 @@ import { combineDateAndTime } from '@/utils/dateObject'
 import { SessionInstance } from '@/utils/SessionInstance'
 
 const getMatchOutcome = (match: Event): 'win' | 'loss' | 'draw' | undefined => {
-  if (match.status !== MatchStatus.FINISHED || !match.homeScore || !match.awayScore)
-    return undefined
-
-  if (match.matchType === 'home' && match.homeScore > match.awayScore) return 'win'
-  if (match.matchType === 'away' && match.homeScore < match.awayScore) return 'win'
-  if (match.homeScore === match.awayScore) return 'draw'
-  return 'loss'
+  if (match.status !== MatchStatus.FINISHED) return undefined
+  const { homeScore, awayScore, matchType } = match
+  if (homeScore == null || awayScore == null) return undefined
+  if (homeScore === awayScore) return 'draw'
+  const isWin =
+    (matchType === 'home' && homeScore > awayScore) ||
+    (matchType === 'away' && awayScore > homeScore)
+  return isWin ? 'win' : 'loss'
 }
 
 export function EventsView() {
