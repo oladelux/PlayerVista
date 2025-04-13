@@ -67,11 +67,13 @@ export function PlayerPerformanceCard({
 }) {
   const [selectedPlayer, setSelectedPlayer] = useState<string>('0')
   const { performanceByTeam } = usePerformance(undefined, undefined, teamId)
+
   const topPlayers = players.map(player => ({
     id: player.id,
     name: player.firstName + ' ' + player.lastName,
     position: player.position,
   }))
+
   const playerEvents = performanceByTeam.map(performance => {
     const event = events.find(event => event.id === performance.eventId)
     return {
@@ -80,9 +82,14 @@ export function PlayerPerformanceCard({
       opponent: event?.opponent,
     }
   })
+
   // Get data based on selected player or team average
   const playerDataSets = generatePlayerDataSets(topPlayers, playerEvents)
-  const performanceData = playerDataSets[parseInt(selectedPlayer)]
+
+  // Use the selected player ID directly as a string key
+  // Fall back to team average (0) if the selected player data is not available
+  const performanceData = playerDataSets[selectedPlayer] || playerDataSets['0'] || []
+
   return (
     <Card className='h-full'>
       <CardHeader className='pb-3'>
