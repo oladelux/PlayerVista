@@ -1,6 +1,5 @@
 import { FC } from 'react'
 
-import { useSelector } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
 
 import { Player, TeamResponse } from '@/api'
@@ -15,11 +14,14 @@ import {
 } from '@/components/ui/dropdown-menu.tsx'
 import { routes } from '@/constants/routes.ts'
 import { usePermission } from '@/hooks/usePermission.ts'
+import { usePlayer } from '@/hooks/usePlayer'
 import { useTeams } from '@/hooks/useTeams.ts'
 import { appService } from '@/singletons'
-import { playersSelector } from '@/store/slices/PlayersSlice.ts'
 import useAuth from '@/useAuth.ts'
 import { toLocalSession } from '@/utils/localSession.ts'
+
+import { NotFound } from '../NotFound'
+
 import './TeamView.scss'
 
 const NoTeamView: FC = () => {
@@ -37,7 +39,7 @@ const NoTeamView: FC = () => {
 }
 
 export function TeamView() {
-  const { allPlayers } = useSelector(playersSelector)
+  const { allUserPlayers } = usePlayer()
   const { teams, error, loading } = useTeams()
   const navigate = useNavigate()
   const isTeamsAvailable = teams.length > 0
@@ -55,10 +57,9 @@ export function TeamView() {
     signOut()
     navigate('/login')
   }
-
   if (loading) return <LoadingPage />
-  //TODO: Create Error Page
-  if (error) return 'This is an error page'
+
+  if (error) return <NotFound />
 
   return (
     <>
@@ -91,7 +92,7 @@ export function TeamView() {
               <TeamViewCard
                 key={team.id}
                 team={team}
-                players={allPlayers.filter(player => player.teamId === team.id)}
+                players={allUserPlayers.filter(player => player.teamId === team.id)}
               />
             ))}
           </div>

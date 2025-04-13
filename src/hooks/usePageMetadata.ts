@@ -35,6 +35,10 @@ export function getMetadataForPath(pathname: string): TitleDescription {
       title: 'Players',
       description: 'Manage your players',
     },
+    '/players/add-player': {
+      title: 'Add Player',
+      description: 'Add a new player to your team',
+    },
     '/settings': {
       title: 'Settings',
       description: 'Manage your settings',

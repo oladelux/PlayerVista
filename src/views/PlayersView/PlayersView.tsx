@@ -14,6 +14,7 @@ import { SessionInstance } from '@/utils/SessionInstance.ts'
 import './PlayersView.scss'
 
 import { Column, Table } from '../../component/Table/Table'
+import { NotFound } from '../NotFound'
 
 const playerColumns: Column<never>[] = [
   { key: 'name', title: 'Name' },
@@ -100,10 +101,8 @@ export function PlayersView() {
   })
 
   if (loading) return <LoadingPage />
-  //TODO: Create Error Page
   if (error) {
-    console.log(error)
-    return 'This is an error page'
+    return <NotFound />
   }
 
   return (

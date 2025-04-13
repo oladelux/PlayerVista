@@ -15,6 +15,7 @@ import { appService, logService } from '@/singletons'
 import { combineDateAndTime } from '@/utils/dateObject'
 import { calculateMatchStatistics } from '@/utils/players'
 import { SessionInstance } from '@/utils/SessionInstance.ts'
+import { NotFound } from '@/views/NotFound'
 
 import { RecentActivity } from '../../component/RecentActivity/RecentActivity'
 import { StatsCard } from '../../component/StatsCard/StatsCard'
@@ -107,8 +108,7 @@ export function Dashboard() {
   }, [])
 
   if (loading || logsLoading || playersLoading) return <LoadingPage />
-  //TODO: Create Error Page
-  if (error || logsError || playersError || !userData) return 'This is an error page'
+  if (error || logsError || playersError || !userData) return <NotFound />
 
   return (
     <Fragment>

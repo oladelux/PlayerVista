@@ -51,6 +51,7 @@ import { useToast } from '@/hooks/use-toast.ts'
 import { usePermission } from '@/hooks/usePermission.ts'
 import { usePlayer } from '@/hooks/usePlayer.ts'
 import { appService, playerService } from '@/singletons'
+import { NotFound } from '@/views/NotFound'
 import { getPlayerDefaultValues } from '@/views/PlayersView/EditPlayer/form/playerDefaultValues.ts'
 import { PlayerPositionType } from '@/views/PlayersView/form/PlayerPosition.ts'
 import {
@@ -164,9 +165,8 @@ export const EditPlayer: FC = () => {
   }
 
   if (loadingPlayer) return <LoadingPage />
-  //TODO: Create Error Page
   if (error) {
-    return 'This is an error page'
+    return <NotFound />
   }
 
   return (
