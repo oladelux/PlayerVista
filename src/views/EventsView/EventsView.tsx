@@ -319,33 +319,31 @@ export function EventsView() {
                                     </div>
                                   </div>
                                 </div>
-                                {match.status === MatchStatus.FINISHED &&
-                                  match.homeScore &&
-                                  match.awayScore && (
-                                    <div className='flex items-center gap-1.5'>
-                                      <Badge
-                                        variant={
-                                          outcome === 'win'
-                                            ? 'default'
-                                            : outcome === 'loss'
-                                              ? 'destructive'
-                                              : 'secondary'
-                                        }
-                                        className={
-                                          outcome === 'win' ? 'bg-green-500 hover:bg-green-600' : ''
-                                        }
-                                      >
-                                        {outcome === 'win'
-                                          ? 'Win'
+                                {match.status === MatchStatus.FINISHED && (
+                                  <div className='flex items-center gap-1.5'>
+                                    <Badge
+                                      variant={
+                                        outcome === 'win'
+                                          ? 'default'
                                           : outcome === 'loss'
-                                            ? 'Loss'
-                                            : 'Draw'}
-                                      </Badge>
-                                      <span className='font-medium'>
-                                        {match.homeScore} - {match.awayScore}
-                                      </span>
-                                    </div>
-                                  )}
+                                            ? 'destructive'
+                                            : 'secondary'
+                                      }
+                                      className={
+                                        outcome === 'win' ? 'bg-green-500 hover:bg-green-600' : ''
+                                      }
+                                    >
+                                      {outcome === 'win'
+                                        ? 'Win'
+                                        : outcome === 'loss'
+                                          ? 'Loss'
+                                          : 'Draw'}
+                                    </Badge>
+                                    <span className='font-medium'>
+                                      {match.homeScore} - {match.awayScore}
+                                    </span>
+                                  </div>
+                                )}
                               </div>
                             </CardContent>
                           </Card>
@@ -497,33 +495,31 @@ export function EventsView() {
                                     </div>
                                   </div>
                                 </div>
-                                {match.status === MatchStatus.FINISHED &&
-                                  match.homeScore &&
-                                  match.awayScore && (
-                                    <div className='flex items-center gap-1.5'>
-                                      <Badge
-                                        variant={
-                                          outcome === 'win'
-                                            ? 'default'
-                                            : outcome === 'loss'
-                                              ? 'destructive'
-                                              : 'secondary'
-                                        }
-                                        className={
-                                          outcome === 'win' ? 'bg-green-500 hover:bg-green-600' : ''
-                                        }
-                                      >
-                                        {outcome === 'win'
-                                          ? 'Win'
+                                {match.status === MatchStatus.FINISHED && (
+                                  <div className='flex items-center gap-1.5'>
+                                    <Badge
+                                      variant={
+                                        outcome === 'win'
+                                          ? 'default'
                                           : outcome === 'loss'
-                                            ? 'Loss'
-                                            : 'Draw'}
-                                      </Badge>
-                                      <span className='font-medium'>
-                                        {match.homeScore} - {match.awayScore}
-                                      </span>
-                                    </div>
-                                  )}
+                                            ? 'destructive'
+                                            : 'secondary'
+                                      }
+                                      className={
+                                        outcome === 'win' ? 'bg-green-500 hover:bg-green-600' : ''
+                                      }
+                                    >
+                                      {outcome === 'win'
+                                        ? 'Win'
+                                        : outcome === 'loss'
+                                          ? 'Loss'
+                                          : 'Draw'}
+                                    </Badge>
+                                    <span className='font-medium'>
+                                      {match.homeScore} - {match.awayScore}
+                                    </span>
+                                  </div>
+                                )}
                               </div>
                             </CardContent>
                           </Card>
@@ -678,33 +674,31 @@ export function EventsView() {
                                     </div>
                                   </div>
                                 </div>
-                                {match.status === MatchStatus.FINISHED &&
-                                  match.homeScore &&
-                                  match.awayScore && (
-                                    <div className='flex items-center gap-1.5'>
-                                      <Badge
-                                        variant={
-                                          outcome === 'win'
-                                            ? 'default'
-                                            : outcome === 'loss'
-                                              ? 'destructive'
-                                              : 'secondary'
-                                        }
-                                        className={
-                                          outcome === 'win' ? 'bg-green-500 hover:bg-green-600' : ''
-                                        }
-                                      >
-                                        {outcome === 'win'
-                                          ? 'Win'
+                                {match.status === MatchStatus.FINISHED && (
+                                  <div className='flex items-center gap-1.5'>
+                                    <Badge
+                                      variant={
+                                        outcome === 'win'
+                                          ? 'default'
                                           : outcome === 'loss'
-                                            ? 'Loss'
-                                            : 'Draw'}
-                                      </Badge>
-                                      <span className='font-medium'>
-                                        {match.homeScore} - {match.awayScore}
-                                      </span>
-                                    </div>
-                                  )}
+                                            ? 'destructive'
+                                            : 'secondary'
+                                      }
+                                      className={
+                                        outcome === 'win' ? 'bg-green-500 hover:bg-green-600' : ''
+                                      }
+                                    >
+                                      {outcome === 'win'
+                                        ? 'Win'
+                                        : outcome === 'loss'
+                                          ? 'Loss'
+                                          : 'Draw'}
+                                    </Badge>
+                                    <span className='font-medium'>
+                                      {match.homeScore} - {match.awayScore}
+                                    </span>
+                                  </div>
+                                )}
                               </div>
                             </CardContent>
                           </Card>
