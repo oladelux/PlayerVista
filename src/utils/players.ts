@@ -597,8 +597,8 @@ export function getPossessionData(data: PlayerActions): possessionFullPlayerData
   const totalTouches = data.touches.length ?? 0
   const attemptedTakeOns = data.dribbles.length ?? 0
   const successfulTakeOns = data.dribbles.filter(takeOn => takeOn.successful).length ?? 0
-  const totalCorners = data.cornerKick.length ?? 0
-  const totalFreeKicks = data.freekick.length ?? 0
+  const totalCorners = data.cornerKick?.length ?? 0
+  const totalFreeKicks = data.freekick?.length ?? 0
   const totalFoulsReceived = data.foulsReceived?.length ?? 0
 
   return {

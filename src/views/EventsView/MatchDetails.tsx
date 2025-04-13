@@ -274,7 +274,7 @@ export function MatchDetails() {
                 <div className='relative ml-4 space-y-6 border-l-2 border-muted py-2 pl-6'>
                   {match.highlights.map((highlight, index) => (
                     <div key={index} className='relative'>
-                      <div className='absolute -left-[29px] mt-1.5 size-3 rounded-full bg-primary' />
+                      <div className='absolute left-[29px] mt-1.5 size-3 rounded-full bg-primary' />
                       <div className='flex items-start'>
                         <Badge variant='outline' className='mr-3'>
                           {highlight.minute}'
