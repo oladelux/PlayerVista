@@ -33,6 +33,7 @@ import { Staffs } from '@/views/UserManagementView/Staffs/Staffs.tsx'
 
 import './App.scss'
 import { setupStore } from './store'
+import { NotFound } from './views/NotFound'
 import { PlayerStats } from './views/PlayersView/PlayerStats/PlayerStats'
 import { TeamStats } from './views/TeamStats/TeamStats'
 
@@ -70,7 +71,7 @@ const router = createBrowserRouter([
         <Toaster />
       </AuthRequiredWrapper>
     ),
-    errorElement: 'error page',
+    errorElement: <NotFound />,
     children: [
       { index: true, element: <TeamView /> },
       { path: routes.dashboard, element: <Dashboard /> },
@@ -88,7 +89,7 @@ const router = createBrowserRouter([
       { path: routes.settings, element: <SettingsView /> },
       { path: routes.addPlayer, element: <AddPlayer /> },
       { path: routes.addStaff, element: <AddStaff /> },
-      { path: '*', element: 'error page' },
+      { path: '*', element: <NotFound /> },
     ],
   },
 ])

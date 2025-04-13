@@ -24,6 +24,7 @@ import { useTeams } from '@/hooks/useTeams.ts'
 import { cn } from '@/lib/utils'
 import { appService } from '@/singletons'
 import useAuth from '@/useAuth.ts'
+import { NotFound } from '@/views/NotFound'
 import './DashboardLayout.scss'
 
 type DashboardHeaderProps = {
@@ -56,6 +57,7 @@ export const DashboardHeader: FC<DashboardHeaderProps> = ({
   const userData = appService.getUserData()
   const { signOut } = useAuth()
   const isMobile = useMediaQuery('(max-width:767px)')
+
   function getUserInitials(): string {
     if (!userData) return ''
     const firstInitial = userData.firstName.charAt(0).toUpperCase()
@@ -126,8 +128,7 @@ export function DashboardLayout() {
   const { title, description } = usePageMetadata()
 
   if (loading) return <LoadingPage />
-  //TODO: Create Error Page
-  if (error) return 'This is an error page'
+  if (error) return <NotFound />
 
   return (
     <SidebarProvider>
