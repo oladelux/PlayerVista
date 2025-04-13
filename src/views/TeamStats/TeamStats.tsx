@@ -320,22 +320,7 @@ export function TeamStats() {
 
       {/* Main Content */}
       {view === 'overview' ? (
-        <div className='space-y-6'>
-          <div className='flex items-center space-x-3'>
-            <Avatar className='size-10 rounded-md'>
-              <img
-                src={team?.logo || '/placeholder.svg'}
-                alt={`${team?.teamName} logo`}
-                className='size-full object-cover'
-              />
-            </Avatar>
-            <div>
-              <h2 className='text-xl font-bold'>{team?.teamName || 'Team'}</h2>
-              <p className='text-sm text-muted-foreground'>Team Statistics</p>
-            </div>
-          </div>
-          <TeamPerformanceStats teamData={{ ...teamData, performanceByTeam }} />
-        </div>
+        <TeamPerformanceStats teamData={{ ...teamData, performanceByTeam }} />
       ) : (
         <TeamMatchStats teamData={teamData} matchesData={matchesData} />
       )}
