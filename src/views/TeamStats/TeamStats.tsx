@@ -216,7 +216,7 @@ export function TeamStats() {
 
   // Generate real match data from pastMatches instead of using mock data
   const generateMatchesData = () => {
-    return pastMatches.map((match, index) => {
+    return pastMatches.map(match => {
       const isHome = match.matchType === 'home'
       const homeScore = match.homeScore ?? 0
       const awayScore = match.awayScore ?? 0
@@ -251,7 +251,7 @@ export function TeamStats() {
       }
 
       return {
-        id: index + 1,
+        id: match.id,
         opponent: isHome ? match.opponent || 'Unknown' : match.opponent || 'Unknown',
         date: match.date.toString(),
         venue: isHome ? 'Home' : 'Away',

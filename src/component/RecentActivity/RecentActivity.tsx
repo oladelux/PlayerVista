@@ -110,7 +110,7 @@ export function RecentActivity({ applicationLogs }: RecentActivityProps) {
       </CardHeader>
       <CardContent className='pb-1'>
         <div className='space-y-1 divide-y divide-border'>
-          {activitiesData.map(activity => (
+          {activitiesData.slice(0, 5).map(activity => (
             <ActivityItem
               key={activity.id}
               avatarFallback={activity.avatarFallback}

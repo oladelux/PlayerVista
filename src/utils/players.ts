@@ -1,12 +1,12 @@
 import {
   Action,
+  Event,
   HeatmapEntry,
+  MatchStatus,
   Player,
   PlayerActionPeriod,
   PlayerActions,
   PlayerPerformance,
-  Event,
-  MatchStatus,
 } from '@/api'
 import { getHalfData, HalfType } from '@/utils/phaseMetrics.ts'
 import { PlayerPositionType } from '@/views/PlayersView/form/PlayerPosition.ts'
@@ -586,6 +586,9 @@ export type possessionFullPlayerData = {
   totalTouches: number
   attemptedTakeOns: number
   successfulTakeOns: number
+  totalCorners: number
+  totalFreeKicks: number
+  totalFoulsReceived: number
 }
 
 export function getPossessionData(data: PlayerActions): possessionFullPlayerData {
@@ -594,6 +597,9 @@ export function getPossessionData(data: PlayerActions): possessionFullPlayerData
   const totalTouches = data.touches.length ?? 0
   const attemptedTakeOns = data.dribbles.length ?? 0
   const successfulTakeOns = data.dribbles.filter(takeOn => takeOn.successful).length ?? 0
+  const totalCorners = data.cornerKick.length ?? 0
+  const totalFreeKicks = data.freekick.length ?? 0
+  const totalFoulsReceived = data.foulsReceived?.length ?? 0
 
   return {
     totalCrosses,
@@ -601,6 +607,9 @@ export function getPossessionData(data: PlayerActions): possessionFullPlayerData
     totalTouches,
     attemptedTakeOns,
     successfulTakeOns,
+    totalCorners,
+    totalFreeKicks,
+    totalFoulsReceived,
   }
 }
 
@@ -1076,36 +1085,64 @@ type PerformanceData = {
 /**
  * Generates real player performance data sets from player events
  * @param playerEvents Array of player events containing performance data
- * @param playerId Player ID to generate data for
  * @returns A properly formatted array of PerformanceData objects
  */
 export function generatePlayerDataSet(playerEvents: PlayerEvent[]): PerformanceData[] {
-  // Sort events by date to ensure chronological order
-  const sortedEvents = [...playerEvents]
-    .filter(event => event.eventDate)
-    .sort((a, b) => {
-      if (!a.eventDate || !b.eventDate) return 0
-      return new Date(a.eventDate).getTime() - new Date(b.eventDate).getTime()
+  // Group events by month
+  const eventsByMonth: Record<string, PlayerEvent[]> = {}
+
+  playerEvents.forEach(event => {
+    if (!event.eventDate) return
+
+    const date = new Date(event.eventDate)
+    const month = date.toLocaleString('default', { month: 'short' }).substring(0, 3)
+
+    if (!eventsByMonth[month]) {
+      eventsByMonth[month] = []
+    }
+
+    eventsByMonth[month].push(event)
+  })
+
+  // Calculate totals for each month
+  return Object.entries(eventsByMonth).map(([month, events]) => {
+    let totalGoals = 0
+    let totalAssists = 0
+    let totalMinutes = 0
+    let totalPasses = 0
+    let totalTackles = 0
+    let totalShots = 0
+    let totalShotsAccuracy = 0
+    let validShotsEvents = 0
+
+    events.forEach(event => {
+      const offensiveData = getOffensiveData(event.actions)
+      const defensiveData = getDefensiveData(event.actions)
+
+      totalGoals += offensiveData.totalGoals
+      totalAssists += offensiveData.totalAssists
+      totalMinutes += event.minutePlayed
+      totalPasses += offensiveData.totalPasses
+      totalTackles += defensiveData.totalTackles
+      totalShots += offensiveData.totalShots
+
+      // Only include shots accuracy when shots were taken
+      if (offensiveData.totalShots > 0) {
+        totalShotsAccuracy += offensiveData.shotsAccuracy
+        validShotsEvents++
+      }
     })
 
-  return sortedEvents.map(event => {
-    const eventDate = event.eventDate ? new Date(event.eventDate) : new Date()
-    const month = eventDate.toLocaleString('default', { month: 'short' })
-
-    // Get performance data using the existing utility functions
-    const offensiveData = getOffensiveData(event.actions)
-    const defensiveData = getDefensiveData(event.actions)
-
-    // Convert to the expected PerformanceData format
+    // For individual players, we show totals per month
     return {
-      month: month.substring(0, 3), // Ensure 3-letter month format
-      goals: offensiveData.totalGoals,
-      assists: offensiveData.totalAssists,
-      minutes: event.minutePlayed,
-      passes: offensiveData.totalPasses,
-      tackles: defensiveData.totalTackles,
-      shots: offensiveData.totalShots,
-      accuracy: offensiveData.shotsAccuracy,
+      month,
+      goals: totalGoals,
+      assists: totalAssists,
+      minutes: Math.round(totalMinutes / events.length), // Average minutes per game
+      passes: totalPasses,
+      tackles: totalTackles,
+      shots: totalShots,
+      accuracy: validShotsEvents > 0 ? Math.round(totalShotsAccuracy / validShotsEvents) : 0,
     }
   })
 }
@@ -1119,22 +1156,22 @@ export function generatePlayerDataSet(playerEvents: PlayerEvent[]): PerformanceD
 export function generatePlayerDataSets(
   players: { id: number | string; name: string; position: string }[],
   allPlayerEvents: PlayerEvent[],
-): Record<number, PerformanceData[]> {
-  const result: Record<number, PerformanceData[]> = {}
+): Record<string, PerformanceData[]> {
+  const result: Record<string, PerformanceData[]> = {}
 
   // Generate team average first (ID 0)
   const teamAverageData = generateTeamAverageData(allPlayerEvents)
-  result[0] = teamAverageData
+  result['0'] = teamAverageData
 
   // Generate individual player data
-  players.forEach((player, index) => {
+  players.forEach(player => {
     const playerEventsFiltered = allPlayerEvents.filter(
       event => event.playerId === player.id.toString(),
     )
 
-    result[index + 1] = generatePlayerDataSet(playerEventsFiltered)
+    // Use the player's ID as string as the key
+    result[player.id.toString()] = generatePlayerDataSet(playerEventsFiltered)
   })
-  console.log('result', result)
 
   return result
 }
@@ -1163,7 +1200,17 @@ function generateTeamAverageData(allEvents: PlayerEvent[]): PerformanceData[] {
 
   // Calculate averages for each month
   return Object.entries(eventsByMonth).map(([month, events]) => {
-    const totalEvents = events.length
+    const eventsByPlayer: Record<string, PlayerEvent[]> = {}
+
+    // Group by player to avoid counting the same player multiple times in a month
+    events.forEach(event => {
+      if (!eventsByPlayer[event.playerId]) {
+        eventsByPlayer[event.playerId] = []
+      }
+      eventsByPlayer[event.playerId].push(event)
+    })
+
+    const playerCount = Object.keys(eventsByPlayer).length
 
     // Initialize with zeros
     let totalGoals = 0
@@ -1173,31 +1220,60 @@ function generateTeamAverageData(allEvents: PlayerEvent[]): PerformanceData[] {
     let totalTackles = 0
     let totalShots = 0
     let totalShotsAccuracy = 0
+    let validShotsPlayers = 0
 
-    // Sum up values
-    events.forEach(event => {
-      const offensiveData = getOffensiveData(event.actions)
-      const defensiveData = getDefensiveData(event.actions)
+    // Calculate averages per player first
+    Object.values(eventsByPlayer).forEach(playerEvents => {
+      let playerGoals = 0
+      let playerAssists = 0
+      let playerMinutes = 0
+      let playerPasses = 0
+      let playerTackles = 0
+      let playerShots = 0
+      let playerShotsAccuracy = 0
+      let playerHasShots = false
 
-      totalGoals += offensiveData.totalGoals
-      totalAssists += offensiveData.totalAssists
-      totalMinutes += event.minutePlayed
-      totalPasses += offensiveData.totalPasses
-      totalTackles += defensiveData.totalTackles
-      totalShots += offensiveData.totalShots
-      totalShotsAccuracy += offensiveData.shotsAccuracy
+      playerEvents.forEach(event => {
+        const offensiveData = getOffensiveData(event.actions)
+        const defensiveData = getDefensiveData(event.actions)
+
+        playerGoals += offensiveData.totalGoals
+        playerAssists += offensiveData.totalAssists
+        playerMinutes += event.minutePlayed
+        playerPasses += offensiveData.totalPasses
+        playerTackles += defensiveData.totalTackles
+        playerShots += offensiveData.totalShots
+
+        if (offensiveData.totalShots > 0) {
+          playerShotsAccuracy += offensiveData.shotsAccuracy
+          playerHasShots = true
+        }
+      })
+
+      // Add player averages to team totals
+      totalGoals += playerGoals
+      totalAssists += playerAssists
+      totalMinutes += playerMinutes / playerEvents.length // Average minutes per game for this player
+      totalPasses += playerPasses
+      totalTackles += playerTackles
+      totalShots += playerShots
+
+      if (playerHasShots) {
+        totalShotsAccuracy += playerShotsAccuracy / playerEvents.length
+        validShotsPlayers++
+      }
     })
 
-    // Calculate averages
+    // Calculate team averages (per player)
     return {
       month,
-      goals: Math.round(totalGoals / totalEvents),
-      assists: Math.round(totalAssists / totalEvents),
-      minutes: Math.round(totalMinutes / totalEvents),
-      passes: Math.round(totalPasses / totalEvents),
-      tackles: Math.round(totalTackles / totalEvents),
-      shots: Math.round(totalShots / totalEvents),
-      accuracy: Math.round(totalShotsAccuracy / totalEvents),
+      goals: Math.round(totalGoals / playerCount),
+      assists: Math.round(totalAssists / playerCount),
+      minutes: Math.round(totalMinutes / playerCount),
+      passes: Math.round(totalPasses / playerCount),
+      tackles: Math.round(totalTackles / playerCount),
+      shots: Math.round(totalShots / playerCount),
+      accuracy: validShotsPlayers > 0 ? Math.round(totalShotsAccuracy / validShotsPlayers) : 0,
     }
   })
 }

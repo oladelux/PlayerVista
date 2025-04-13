@@ -684,8 +684,12 @@ export type LogApiResponse = {
 
 export type LogsResponse = BaseApiResponse & LogApiResponse
 
-export async function getLogs(groupId: string): Promise<LogsResponse> {
-  const res = await apiRequest(`/activities/group/${groupId}?page=1&limit=5`, 'GET')
+export async function getLogs(
+  groupId: string,
+  page: number = 1,
+  limit: number = 5,
+): Promise<LogsResponse> {
+  const res = await apiRequest(`/activities/group/${groupId}?page=${page}&limit=${limit}`, 'GET')
   return await res.json()
 }
 
@@ -720,6 +724,7 @@ export type PlayerActions = {
   aerialDuels: Action[]
   aerialClearance: Action[]
   fouls: Action[]
+  foulsReceived: Action[]
   saves: Action[]
   mistakes: Action[]
   recoveries: Action[]
