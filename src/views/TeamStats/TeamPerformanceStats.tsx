@@ -1,3 +1,4 @@
+import { format } from 'date-fns'
 import { TrendingDown, TrendingUp } from 'lucide-react'
 import {
   Area,
@@ -21,38 +22,9 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { combineDateAndTime } from '@/utils/dateObject'
 
 import { TeamType } from './TeamStats'
-
-// Mock data for performance over time
-const performanceData = [
-  { month: 'Aug', played: 3, won: 2, drawn: 1, lost: 0, goalsFor: 7, goalsAgainst: 2 },
-  { month: 'Sep', played: 4, won: 3, drawn: 0, lost: 1, goalsFor: 10, goalsAgainst: 4 },
-  { month: 'Oct', played: 5, won: 2, drawn: 2, lost: 1, goalsFor: 8, goalsAgainst: 6 },
-  { month: 'Nov', played: 4, won: 3, drawn: 1, lost: 0, goalsFor: 9, goalsAgainst: 3 },
-  { month: 'Dec', played: 6, won: 3, drawn: 2, lost: 1, goalsFor: 11, goalsAgainst: 5 },
-  { month: 'Jan', played: 3, won: 1, drawn: 1, lost: 1, goalsFor: 4, goalsAgainst: 4 },
-  { month: 'Feb', played: 4, won: 2, drawn: 1, lost: 1, goalsFor: 5, goalsAgainst: 4 },
-  { month: 'Mar', played: 3, won: 2, drawn: 0, lost: 1, goalsFor: 4, goalsAgainst: 2 },
-]
-
-// Mock data for results
-const resultsData = [
-  { name: 'Won', value: 18 },
-  { name: 'Drawn', value: 8 },
-  { name: 'Lost', value: 6 },
-]
-
-const COLORS = ['#10b981', '#f59e0b', '#ef4444']
-
-// Mock data for player contributions
-const playerContributions = [
-  { name: 'M. Rashford', goals: 15, assists: 8 },
-  { name: 'B. Fernandes', goals: 12, assists: 14 },
-  { name: 'C. Ronaldo', goals: 18, assists: 3 },
-  { name: 'J. Sancho', goals: 8, assists: 7 },
-  { name: 'A. Martial', goals: 5, assists: 3 },
-]
 
 // Custom tooltip component
 type CustomTooltipProps = {
@@ -91,6 +63,111 @@ type TeamPerformanceStatsProps = {
 }
 
 export function TeamPerformanceStats({ teamData }: TeamPerformanceStatsProps) {
+  // Create performance data from real events
+  const getPerformanceData = () => {
+    // Get the last 8 months of data
+    const months = []
+    const today = new Date()
+
+    for (let i = 7; i >= 0; i--) {
+      const date = new Date(today.getFullYear(), today.getMonth() - i, 1)
+      months.push(format(date, 'MMM'))
+    }
+
+    // Create empty performance data structure with months
+    const performanceData = months.map(month => ({
+      month,
+      played: 0,
+      won: 0,
+      drawn: 0,
+      lost: 0,
+      goalsFor: 0,
+      goalsAgainst: 0,
+    }))
+
+    // Fill with real data if we have past matches
+    if (teamData.pastMatches && teamData.pastMatches.length > 0) {
+      teamData.pastMatches.forEach(match => {
+        const matchDate = new Date(combineDateAndTime(match.date, match.time))
+        const monthStr = format(matchDate, 'MMM')
+
+        // Find the corresponding month in our data
+        const monthData = performanceData.find(data => data.month === monthStr)
+        if (monthData) {
+          // Increment counters
+          monthData.played += 1
+
+          // Determine match result
+          const isHome = match.matchType === 'home'
+          const homeScore = match.homeScore ?? 0
+          const awayScore = match.awayScore ?? 0
+
+          if (homeScore === awayScore) {
+            monthData.drawn += 1
+          } else if ((isHome && homeScore > awayScore) || (!isHome && awayScore > homeScore)) {
+            monthData.won += 1
+          } else {
+            monthData.lost += 1
+          }
+
+          // Add goals
+          if (isHome) {
+            monthData.goalsFor += homeScore
+            monthData.goalsAgainst += awayScore
+          } else {
+            monthData.goalsFor += awayScore
+            monthData.goalsAgainst += homeScore
+          }
+        }
+      })
+    }
+
+    return performanceData
+  }
+
+  // Generate results data from real matches
+  const getResultsData = () => {
+    return [
+      { name: 'Won', value: teamData.stats.won },
+      { name: 'Drawn', value: teamData.stats.drawn },
+      { name: 'Lost', value: teamData.stats.lost },
+    ]
+  }
+
+  const COLORS = ['#10b981', '#f59e0b', '#ef4444']
+
+  // Get top scorers from the team's past matches
+  const getPlayerContributions = () => {
+    if (!teamData.pastMatches || !teamData.players) return []
+
+    // Create a map to track player contributions
+    const playerStats = new Map()
+
+    // Initialize with player data if available
+    if (teamData.players) {
+      teamData.players.forEach(player => {
+        playerStats.set(player.id, {
+          name: player.firstName + ' ' + player.lastName,
+          goals: 0,
+          assists: 0,
+        })
+      })
+    }
+
+    // Count goals and assists from past matches
+    // This is a placeholder - actual implementation would depend on your data structure
+    // You would need to have player goal and assist data in your past matches
+
+    // Convert to array and sort by goals
+    return Array.from(playerStats.values())
+      .sort((a, b) => b.goals - a.goals || b.assists - a.assists)
+      .slice(0, 5)
+  }
+
+  const performanceData = getPerformanceData()
+  const resultsData = getResultsData()
+  const playerContributions = getPlayerContributions()
+
   return (
     <div className='animate-fade-in space-y-6'>
       {/* Season summary cards */}
@@ -631,66 +708,127 @@ export function TeamPerformanceStats({ teamData }: TeamPerformanceStatsProps) {
 
           {/* Top performers */}
           <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4'>
-            <Card className='bg-gradient-to-br from-orange-50 to-amber-100 dark:from-amber-950/20 dark:to-orange-900/20'>
-              <CardContent className='p-4'>
-                <p className='mb-3 text-xs font-medium text-muted-foreground'>TOP GOALSCORER</p>
-                <div className='flex items-center space-x-3'>
-                  <div className='flex size-12 items-center justify-center rounded-full bg-amber-200 dark:bg-amber-900'>
-                    <span className='font-bold text-amber-600 dark:text-amber-300'>CR</span>
-                  </div>
-                  <div>
-                    <p className='font-semibold'>C. Ronaldo</p>
-                    <p className='text-sm'>
-                      <span className='font-medium'>18</span> Goals
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            {playerContributions.length > 0 ? (
+              <>
+                <Card className='bg-gradient-to-br from-orange-50 to-amber-100 dark:from-amber-950/20 dark:to-orange-900/20'>
+                  <CardContent className='p-4'>
+                    <p className='mb-3 text-xs font-medium text-muted-foreground'>TOP GOALSCORER</p>
+                    <div className='flex items-center space-x-3'>
+                      <div className='flex size-12 items-center justify-center rounded-full bg-amber-200 dark:bg-amber-900'>
+                        <span className='font-bold text-amber-600 dark:text-amber-300'>
+                          {playerContributions[0]?.name
+                            ?.split(' ')
+                            .map((n: string) => n[0])
+                            .join('') || 'N/A'}
+                        </span>
+                      </div>
+                      <div>
+                        <p className='font-semibold'>{playerContributions[0]?.name || 'No data'}</p>
+                        <p className='text-sm'>
+                          <span className='font-medium'>{playerContributions[0]?.goals || 0}</span>{' '}
+                          Goals
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
 
-            <Card className='bg-gradient-to-br from-blue-50 to-cyan-100 dark:from-cyan-950/20 dark:to-blue-900/20'>
-              <CardContent className='p-4'>
-                <p className='mb-3 text-xs font-medium text-muted-foreground'>TOP ASSISTS</p>
-                <div className='flex items-center space-x-3'>
-                  <div className='flex size-12 items-center justify-center rounded-full bg-blue-200 dark:bg-blue-900'>
-                    <span className='font-bold text-blue-600 dark:text-blue-300'>BF</span>
-                  </div>
-                  <div>
-                    <p className='font-semibold'>B. Fernandes</p>
-                    <p className='text-sm'>
-                      <span className='font-medium'>14</span> Assists
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                <Card className='bg-gradient-to-br from-blue-50 to-cyan-100 dark:from-cyan-950/20 dark:to-blue-900/20'>
+                  <CardContent className='p-4'>
+                    <p className='mb-3 text-xs font-medium text-muted-foreground'>TOP ASSISTS</p>
+                    <div className='flex items-center space-x-3'>
+                      <div className='flex size-12 items-center justify-center rounded-full bg-blue-200 dark:bg-blue-900'>
+                        <span className='font-bold text-blue-600 dark:text-blue-300'>
+                          {playerContributions
+                            .sort((a, b) => b.assists - a.assists)[0]
+                            ?.name?.split(' ')
+                            .map((n: string) => n[0])
+                            .join('') || 'N/A'}
+                        </span>
+                      </div>
+                      <div>
+                        <p className='font-semibold'>
+                          {playerContributions.sort((a, b) => b.assists - a.assists)[0]?.name ||
+                            'No data'}
+                        </p>
+                        <p className='text-sm'>
+                          <span className='font-medium'>
+                            {playerContributions.sort((a, b) => b.assists - a.assists)[0]
+                              ?.assists || 0}
+                          </span>{' '}
+                          Assists
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
 
-            <Card className='bg-gradient-to-br from-purple-50 to-indigo-100 dark:from-indigo-950/20 dark:to-purple-900/20'>
-              <CardContent className='p-4'>
-                <p className='mb-3 text-xs font-medium text-muted-foreground'>MOST MINUTES</p>
-                <div className='flex items-center space-x-3'>
-                  <div className='flex size-12 items-center justify-center rounded-full bg-purple-200 dark:bg-purple-900'>
-                    <span className='font-bold text-purple-600 dark:text-purple-300'>BF</span>
-                  </div>
-                  <div>
-                    <p className='font-semibold'>B. Fernandes</p>
-                    <p className='text-sm'>
-                      <span className='font-medium'>2,842</span> Minutes
+                <Card className='bg-gradient-to-br from-purple-50 to-indigo-100 dark:from-indigo-950/20 dark:to-purple-900/20'>
+                  <CardContent className='p-4'>
+                    <p className='mb-3 text-xs font-medium text-muted-foreground'>MOST MINUTES</p>
+                    <div className='flex items-center space-x-3'>
+                      <div className='flex size-12 items-center justify-center rounded-full bg-purple-200 dark:bg-purple-900'>
+                        <span className='font-bold text-purple-600 dark:text-purple-300'>
+                          {teamData.players && teamData.players.length > 0
+                            ? teamData.players[0]?.firstName?.charAt(0) +
+                              teamData.players[0]?.lastName?.charAt(0)
+                            : 'N/A'}
+                        </span>
+                      </div>
+                      <div>
+                        <p className='font-semibold'>
+                          {teamData.players && teamData.players.length > 0
+                            ? `${teamData.players[0]?.firstName} ${teamData.players[0]?.lastName}`
+                            : 'No data'}
+                        </p>
+                        <p className='text-sm'>
+                          <span className='font-medium'>
+                            {teamData.players && teamData.players.length > 0 ? '—' : 0}
+                          </span>{' '}
+                          Minutes
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </>
+            ) : (
+              // Default display if no player data is available
+              Array.from({ length: 3 }).map((_, i) => (
+                <Card
+                  key={i}
+                  className='bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900/20 dark:to-gray-800/20'
+                >
+                  <CardContent className='p-4'>
+                    <p className='mb-3 text-xs font-medium text-muted-foreground'>
+                      {i === 0 ? 'TOP GOALSCORER' : i === 1 ? 'TOP ASSISTS' : 'MOST MINUTES'}
                     </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                    <div className='flex items-center space-x-3'>
+                      <div className='flex size-12 items-center justify-center rounded-full bg-gray-200 dark:bg-gray-800'>
+                        <span className='font-bold text-gray-600 dark:text-gray-400'>—</span>
+                      </div>
+                      <div>
+                        <p className='font-semibold'>No data available</p>
+                        <p className='text-sm'>
+                          <span className='font-medium'>0</span>{' '}
+                          {i === 0 ? 'Goals' : i === 1 ? 'Assists' : 'Minutes'}
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            )}
 
             <Card className='bg-gradient-to-br from-green-50 to-emerald-100 dark:from-emerald-950/20 dark:to-green-900/20'>
               <CardContent className='p-4'>
                 <p className='mb-3 text-xs font-medium text-muted-foreground'>CLEAN SHEETS</p>
                 <div className='flex items-center space-x-3'>
                   <div className='flex size-12 items-center justify-center rounded-full bg-green-200 dark:bg-green-900'>
-                    <span className='font-bold text-green-600 dark:text-green-300'>DH</span>
+                    <span className='font-bold text-green-600 dark:text-green-300'>GK</span>
                   </div>
                   <div>
-                    <p className='font-semibold'>D. Henderson</p>
+                    <p className='font-semibold'>Goalkeeper</p>
                     <p className='text-sm'>
                       <span className='font-medium'>{teamData.stats.cleanSheets}</span> Clean Sheets
                     </p>

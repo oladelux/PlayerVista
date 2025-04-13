@@ -3,12 +3,14 @@ import { useState } from 'react'
 import { BarChart3, Calendar, Info, Shield } from 'lucide-react'
 import { useOutletContext, useParams } from 'react-router-dom'
 
+import { Event, Player } from '@/api'
 import { DashboardLayoutOutletContext } from '@/component/DashboardLayout/DashboardLayout'
 import { Avatar } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { useEvents } from '@/hooks/useEvents'
+import { usePlayer } from '@/hooks/usePlayer'
 import { combineDateAndTime } from '@/utils/dateObject'
 import { TeamMatchStats } from '@/views/TeamStats/TeamMatchStats'
 import { TeamPerformanceStats } from '@/views/TeamStats/TeamPerformanceStats'
@@ -28,6 +30,8 @@ export type TeamType = {
     shotsPerGame: number
     tacklesPerGame: number
   }
+  pastMatches?: Event[]
+  players?: Player[]
 }
 
 export function TeamStats() {
@@ -35,6 +39,7 @@ export function TeamStats() {
   const { teams } = useOutletContext<DashboardLayoutOutletContext>()
   const team = teams.find(team => team.id === teamId)
   const { events } = useEvents(teamId, undefined)
+  const { players } = usePlayer(undefined, teamId)
   const pastMatches = events.filter(
     match => new Date(combineDateAndTime(match.date, match.time)) < new Date(),
   )
@@ -91,6 +96,8 @@ export function TeamStats() {
       shotsPerGame: 14.2,
       tacklesPerGame: 18.6,
     },
+    pastMatches,
+    players,
   }
 
   // Mock data for matches
