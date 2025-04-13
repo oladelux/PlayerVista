@@ -18,13 +18,21 @@ import {
   YAxis,
 } from 'recharts'
 
+import { PlayerPerformance } from '@/api'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { combineDateAndTime } from '@/utils/dateObject'
+import { aggregatePlayerActions } from '@/utils/phaseMetrics'
+import { getOffensiveData } from '@/utils/players'
 
 import { TeamType } from './TeamStats'
+
+// Update TeamType to include performanceByTeam property
+type ExtendedTeamType = TeamType & {
+  performanceByTeam?: PlayerPerformance[]
+}
 
 // Custom tooltip component
 type CustomTooltipProps = {
@@ -59,7 +67,7 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
 }
 
 type TeamPerformanceStatsProps = {
-  teamData: TeamType
+  teamData: ExtendedTeamType
 }
 
 export function TeamPerformanceStats({ teamData }: TeamPerformanceStatsProps) {
@@ -154,19 +162,61 @@ export function TeamPerformanceStats({ teamData }: TeamPerformanceStatsProps) {
       })
     }
 
-    // Count goals and assists from past matches
-    // This is a placeholder - actual implementation would depend on your data structure
-    // You would need to have player goal and assist data in your past matches
+    // Check if we have performance data in teamData from team stats
+    // We need to access the performanceByTeam data that was used to calculate team stats
+    const performanceByTeamData = teamData.performanceByTeam || []
 
-    // Convert to array and sort by goals
+    if (performanceByTeamData.length > 0 && teamData.players && teamData.players.length > 0) {
+      // Process player performances
+      teamData.players.forEach(player => {
+        // Get all performances for this player
+        const playerPerformances = performanceByTeamData.filter(
+          (perf: PlayerPerformance) => perf.playerId === player.id,
+        )
+
+        // Skip if no performances found
+        if (playerPerformances.length === 0) return
+
+        // Aggregate all player actions
+        const aggregatedActions = aggregatePlayerActions(playerPerformances)
+
+        // Get offensive data (goals and assists)
+        const offensiveData = getOffensiveData(aggregatedActions)
+
+        // Update the player stats
+        const playerData = playerStats.get(player.id)
+        if (playerData) {
+          playerData.goals = offensiveData.totalGoals
+          playerData.assists = offensiveData.totalAssists
+        }
+      })
+    }
+
+    // Convert to array and sort by combined goals and assists
     return Array.from(playerStats.values())
-      .sort((a, b) => b.goals - a.goals || b.assists - a.assists)
-      .slice(0, 5)
+      .sort((a, b) => {
+        // Sort by combined goals and assists, then by goals if tied, then by assists
+        const aCombined = a.goals + a.assists
+        const bCombined = b.goals + b.assists
+
+        if (bCombined !== aCombined) {
+          return bCombined - aCombined // Sort by combined total
+        }
+
+        if (b.goals !== a.goals) {
+          return b.goals - a.goals // If combined total is tied, sort by goals
+        }
+
+        return b.assists - a.assists // If goals are tied, sort by assists
+      })
+      .slice(0, 5) // Return top 5 players
   }
 
   const performanceData = getPerformanceData()
   const resultsData = getResultsData()
   const playerContributions = getPlayerContributions()
+  // Pre-sort players by assists for the assists card
+  const playersByAssists = [...playerContributions].sort((a, b) => b.assists - a.assists)
 
   return (
     <div className='animate-fade-in space-y-6'>
@@ -517,7 +567,6 @@ export function TeamPerformanceStats({ teamData }: TeamPerformanceStatsProps) {
                         style={{ width: `${teamData.stats.possession}%` }}
                       ></div>
                     </div>
-                    <p className='text-xs text-muted-foreground'>League Average: 50%</p>
                   </div>
 
                   <div className='space-y-2'>
@@ -531,7 +580,6 @@ export function TeamPerformanceStats({ teamData }: TeamPerformanceStatsProps) {
                         style={{ width: `${teamData.stats.passAccuracy}%` }}
                       ></div>
                     </div>
-                    <p className='text-xs text-muted-foreground'>League Average: 78%</p>
                   </div>
                 </div>
 
@@ -547,7 +595,6 @@ export function TeamPerformanceStats({ teamData }: TeamPerformanceStatsProps) {
                         style={{ width: `${teamData.stats.shotsPerGame * 5}%` }}
                       ></div>
                     </div>
-                    <p className='text-xs text-muted-foreground'>League Average: 12.5</p>
                   </div>
 
                   <div className='space-y-2'>
@@ -561,7 +608,6 @@ export function TeamPerformanceStats({ teamData }: TeamPerformanceStatsProps) {
                         style={{ width: `${teamData.stats.tacklesPerGame * 3}%` }}
                       ></div>
                     </div>
-                    <p className='text-xs text-muted-foreground'>League Average: 16.2</p>
                   </div>
                 </div>
               </div>
@@ -739,23 +785,16 @@ export function TeamPerformanceStats({ teamData }: TeamPerformanceStatsProps) {
                     <div className='flex items-center space-x-3'>
                       <div className='flex size-12 items-center justify-center rounded-full bg-blue-200 dark:bg-blue-900'>
                         <span className='font-bold text-blue-600 dark:text-blue-300'>
-                          {playerContributions
-                            .sort((a, b) => b.assists - a.assists)[0]
-                            ?.name?.split(' ')
+                          {playersByAssists[0]?.name
+                            ?.split(' ')
                             .map((n: string) => n[0])
                             .join('') || 'N/A'}
                         </span>
                       </div>
                       <div>
-                        <p className='font-semibold'>
-                          {playerContributions.sort((a, b) => b.assists - a.assists)[0]?.name ||
-                            'No data'}
-                        </p>
+                        <p className='font-semibold'>{playersByAssists[0]?.name || 'No data'}</p>
                         <p className='text-sm'>
-                          <span className='font-medium'>
-                            {playerContributions.sort((a, b) => b.assists - a.assists)[0]
-                              ?.assists || 0}
-                          </span>{' '}
+                          <span className='font-medium'>{playersByAssists[0]?.assists || 0}</span>{' '}
                           Assists
                         </p>
                       </div>
@@ -765,27 +804,27 @@ export function TeamPerformanceStats({ teamData }: TeamPerformanceStatsProps) {
 
                 <Card className='bg-gradient-to-br from-purple-50 to-indigo-100 dark:from-indigo-950/20 dark:to-purple-900/20'>
                   <CardContent className='p-4'>
-                    <p className='mb-3 text-xs font-medium text-muted-foreground'>MOST MINUTES</p>
+                    <p className='mb-3 text-xs font-medium text-muted-foreground'>
+                      TOP CONTRIBUTOR
+                    </p>
                     <div className='flex items-center space-x-3'>
                       <div className='flex size-12 items-center justify-center rounded-full bg-purple-200 dark:bg-purple-900'>
                         <span className='font-bold text-purple-600 dark:text-purple-300'>
-                          {teamData.players && teamData.players.length > 0
-                            ? teamData.players[0]?.firstName?.charAt(0) +
-                              teamData.players[0]?.lastName?.charAt(0)
-                            : 'N/A'}
+                          {playerContributions[0]?.name
+                            ?.split(' ')
+                            .map((n: string) => n[0])
+                            .join('') || 'N/A'}
                         </span>
                       </div>
                       <div>
-                        <p className='font-semibold'>
-                          {teamData.players && teamData.players.length > 0
-                            ? `${teamData.players[0]?.firstName} ${teamData.players[0]?.lastName}`
-                            : 'No data'}
-                        </p>
+                        <p className='font-semibold'>{playerContributions[0]?.name || 'No data'}</p>
                         <p className='text-sm'>
                           <span className='font-medium'>
-                            {teamData.players && teamData.players.length > 0 ? '—' : 0}
+                            {playerContributions[0]
+                              ? playerContributions[0].goals + playerContributions[0].assists
+                              : 0}
                           </span>{' '}
-                          Minutes
+                          Goal Contributions
                         </p>
                       </div>
                     </div>

@@ -3,15 +3,17 @@ import { useState } from 'react'
 import { BarChart3, Calendar, Info, Shield } from 'lucide-react'
 import { useOutletContext, useParams } from 'react-router-dom'
 
-import { Event, Player } from '@/api'
+import { Event, Player, PlayerPerformance } from '@/api'
 import { DashboardLayoutOutletContext } from '@/component/DashboardLayout/DashboardLayout'
 import { Avatar } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { useEvents } from '@/hooks/useEvents'
+import { usePerformance } from '@/hooks/usePerformance'
 import { usePlayer } from '@/hooks/usePlayer'
 import { combineDateAndTime } from '@/utils/dateObject'
+import { aggregatePlayerActions } from '@/utils/phaseMetrics'
 import { TeamMatchStats } from '@/views/TeamStats/TeamMatchStats'
 import { TeamPerformanceStats } from '@/views/TeamStats/TeamPerformanceStats'
 
@@ -32,6 +34,7 @@ export type TeamType = {
   }
   pastMatches?: Event[]
   players?: Player[]
+  performanceByTeam?: PlayerPerformance[]
 }
 
 export function TeamStats() {
@@ -39,6 +42,7 @@ export function TeamStats() {
   const { teams } = useOutletContext<DashboardLayoutOutletContext>()
   const team = teams.find(team => team.id === teamId)
   const { events } = useEvents(teamId, undefined)
+  const { performanceByTeam } = usePerformance(undefined, undefined, teamId)
   const { players } = usePlayer(undefined, teamId)
   const pastMatches = events.filter(
     match => new Date(combineDateAndTime(match.date, match.time)) < new Date(),
@@ -81,6 +85,115 @@ export function TeamStats() {
     return opposingScore === 0
   }).length
 
+  // Calculate possession based on actual match data
+  // Since direct possession data isn't available, we'll estimate it based on
+  // relative strength of teams, goals scored/conceded, and home advantage
+  const calculatePossession = () => {
+    if (pastMatches.length === 0) return 50 // Default to 50% if no past matches
+
+    // Calculate possession based on a combination of factors:
+    // 1. Home advantage (home teams typically have ~55% possession)
+    // 2. Goal difference (scoring teams typically have more possession)
+    // 3. Match result (winning teams typically have more possession)
+
+    let totalPossession = 0
+
+    pastMatches.forEach(match => {
+      const isHome = match.matchType === 'home'
+      const homeScore = match.homeScore ?? 0
+      const awayScore = match.awayScore ?? 0
+
+      // Base possession starts at 50%
+      let matchPossession = 50
+
+      // Home advantage factor: +5% for home, -5% for away
+      matchPossession += isHome ? 5 : -5
+
+      // Goal difference factor: each goal difference affects possession by ~3%
+      const goalDiff = isHome ? homeScore - awayScore : awayScore - homeScore
+      matchPossession += goalDiff * 3
+
+      // Result factor: winners typically have more possession
+      if (goalDiff > 0) {
+        matchPossession += 3 // Win
+      } else if (goalDiff < 0) {
+        matchPossession -= 7 // Loss (bigger impact than winning)
+      }
+
+      // Ensure possession stays within realistic bounds (35-75%)
+      matchPossession = Math.max(35, Math.min(75, matchPossession))
+
+      totalPossession += matchPossession
+    })
+
+    // Return average possession across all matches
+    return Math.round(totalPossession / pastMatches.length)
+  }
+
+  // Calculate pass accuracy based on available data
+  const calculatePassAccuracy = () => {
+    // If we have performance data, calculate actual pass accuracy
+    if (performanceByTeam && performanceByTeam.length > 0) {
+      // Aggregate all player actions across the team
+      const aggregatedActions = aggregatePlayerActions(performanceByTeam)
+
+      // Calculate pass accuracy based on successful passes / total passes
+      const totalPasses =
+        aggregatedActions.passes.length +
+        aggregatedActions.shortPass.length +
+        aggregatedActions.longPass.length
+
+      const successfulPasses =
+        aggregatedActions.passes.filter(p => p.successful).length +
+        aggregatedActions.shortPass.filter(p => p.successful).length +
+        aggregatedActions.longPass.filter(p => p.successful).length
+
+      // Calculate accuracy and convert to percentage
+      if (totalPasses > 0) {
+        return Math.round((successfulPasses / totalPasses) * 100)
+      }
+    }
+
+    // Return 0 if no performance data is available
+    return 0
+  }
+
+  // Calculate shots per game based on available data
+  const calculateShotsPerGame = () => {
+    // If we have performance data, calculate actual shots per game
+    if (performanceByTeam && performanceByTeam.length > 0 && pastMatches.length > 0) {
+      // Aggregate all player actions across the team
+      const aggregatedActions = aggregatePlayerActions(performanceByTeam)
+
+      // Count total shots
+      const totalShots = aggregatedActions.shots.length
+
+      // Calculate shots per game
+      return Number((totalShots / pastMatches.length).toFixed(1))
+    }
+
+    // Return 0 if no performance data is available
+    return 0
+  }
+
+  // Calculate tackles per game using actual player data
+  const calculateTacklesPerGame = () => {
+    // If we have performance data, calculate actual tackles per game
+    if (performanceByTeam && performanceByTeam.length > 0 && pastMatches.length > 0) {
+      // Aggregate all player actions across the team
+      const aggregatedActions = aggregatePlayerActions(performanceByTeam)
+
+      // Count total tackles made by all players
+      const totalTackles = aggregatedActions.tackles.length
+
+      // Calculate tackles per game and format to 1 decimal place
+      return Number((totalTackles / pastMatches.length).toFixed(1))
+    }
+
+    // Return 0 if no performance data is available
+    return 0
+  }
+
   const teamData: TeamType = {
     id: teamId,
     stats: {
@@ -91,73 +204,72 @@ export function TeamStats() {
       goalsFor: goalsFor,
       goalsAgainst: goalsAgainst,
       cleanSheets: cleanSheets,
-      possession: 54,
-      passAccuracy: 83,
-      shotsPerGame: 14.2,
-      tacklesPerGame: 18.6,
+      possession: calculatePossession(),
+      passAccuracy: calculatePassAccuracy(),
+      shotsPerGame: calculateShotsPerGame(),
+      tacklesPerGame: calculateTacklesPerGame(),
     },
     pastMatches,
     players,
+    performanceByTeam,
   }
 
-  // Mock data for matches
-  const matchesData = [
-    {
-      id: 1,
-      opponent: 'Arsenal',
-      date: '2023-08-12',
-      venue: 'Home',
-      result: 'W 2-1',
-      possession: 51,
-      shots: 14,
-      passes: 423,
-      tackles: 16,
-    },
-    {
-      id: 2,
-      opponent: 'Liverpool',
-      date: '2023-08-19',
-      venue: 'Away',
-      result: 'D 1-1',
-      possession: 46,
-      shots: 10,
-      passes: 378,
-      tackles: 20,
-    },
-    {
-      id: 3,
-      opponent: 'Newcastle',
-      date: '2023-08-26',
-      venue: 'Home',
-      result: 'W 3-0',
-      possession: 62,
-      shots: 18,
-      passes: 578,
-      tackles: 14,
-    },
-    {
-      id: 4,
-      opponent: 'Chelsea',
-      date: '2023-09-02',
-      venue: 'Away',
-      result: 'L 0-2',
-      possession: 48,
-      shots: 8,
-      passes: 402,
-      tackles: 19,
-    },
-    {
-      id: 5,
-      opponent: 'Everton',
-      date: '2023-09-16',
-      venue: 'Home',
-      result: 'W 2-0',
-      possession: 58,
-      shots: 16,
-      passes: 504,
-      tackles: 12,
-    },
-  ]
+  // Generate real match data from pastMatches instead of using mock data
+  const generateMatchesData = () => {
+    return pastMatches.map((match, index) => {
+      const isHome = match.matchType === 'home'
+      const homeScore = match.homeScore ?? 0
+      const awayScore = match.awayScore ?? 0
+      const goalDiff = isHome ? homeScore - awayScore : awayScore - homeScore
+
+      // Calculate possession for this specific match using the same algorithm
+      let possession = 50
+      possession += isHome ? 5 : -5
+      possession += goalDiff * 3
+      if (goalDiff > 0) {
+        possession += 3
+      } else if (goalDiff < 0) {
+        possession -= 7
+      }
+      possession = Math.max(35, Math.min(75, possession))
+
+      // Find performances for this specific match if available
+      const matchPerformances = performanceByTeam?.filter(perf => perf.eventId === match.id) || []
+
+      // Default values for match data (will be overwritten if performance data is available)
+      let shots = 0
+      let tackles = 0
+      let passes = 0
+
+      if (matchPerformances.length > 0) {
+        const matchActions = aggregatePlayerActions(matchPerformances)
+        // Update with real data
+        shots = matchActions.shots.length
+        tackles = matchActions.tackles.length
+        passes =
+          matchActions.passes.length + matchActions.shortPass.length + matchActions.longPass.length
+      }
+
+      return {
+        id: index + 1,
+        opponent: isHome ? match.opponent || 'Unknown' : match.opponent || 'Unknown',
+        date: match.date.toString(),
+        venue: isHome ? 'Home' : 'Away',
+        result:
+          goalDiff > 0
+            ? `W ${isHome ? homeScore : awayScore}-${isHome ? awayScore : homeScore}`
+            : goalDiff < 0
+              ? `L ${isHome ? homeScore : awayScore}-${isHome ? awayScore : homeScore}`
+              : `D ${homeScore}-${awayScore}`,
+        possession: possession,
+        shots: shots,
+        passes: passes,
+        tackles: tackles,
+      }
+    })
+  }
+
+  const matchesData = generateMatchesData()
 
   return (
     <div className='space-y-6 p-4 md:p-6'>
@@ -208,7 +320,7 @@ export function TeamStats() {
 
       {/* Main Content */}
       {view === 'overview' ? (
-        <TeamPerformanceStats teamData={teamData} />
+        <TeamPerformanceStats teamData={{ ...teamData, performanceByTeam }} />
       ) : (
         <TeamMatchStats teamData={teamData} matchesData={matchesData} />
       )}
