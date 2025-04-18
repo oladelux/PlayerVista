@@ -32,6 +32,7 @@ export enum Routes {
   SETTINGS = '/settings',
   SELECT_PLAN = '/onboard/select-plan',
   PAYMENT_CALLBACK = '/onboard/payment-callback',
+  ACTIVITY = '/activity',
 }
 
 export const routes = {
@@ -68,4 +69,5 @@ export const routes = {
   changePassword: Routes.CHANGE_PASSWORD,
   selectPlan: Routes.SELECT_PLAN,
   paymentCallback: Routes.PAYMENT_CALLBACK,
+  activity: Routes.ACTIVITY,
 }

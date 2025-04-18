@@ -43,7 +43,8 @@ export function useBackLink(): string | undefined {
     path === '/manage-teams' ||
     path === '/events' ||
     path === '/staffs' ||
-    path === '/settings'
+    path === '/settings' ||
+    path === '/activity'
   ) {
     return undefined
   }

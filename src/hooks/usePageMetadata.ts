@@ -55,6 +55,10 @@ export function getMetadataForPath(pathname: string): TitleDescription {
       title: 'Calendar',
       description: 'Manage your calender',
     },
+    '/activity': {
+      title: 'Activities',
+      description: 'Comprehensive log of recent team actions and updates',
+    },
   }
 
   // Check for exact match first
@@ -114,6 +118,13 @@ export function getMetadataForPath(pathname: string): TitleDescription {
       metadata: {
         title: 'Team Statistics',
         description: 'Team performance analysis',
+      },
+    },
+    {
+      pattern: /^\/activity$/,
+      metadata: {
+        title: 'Activities',
+        description: 'Comprehensive log of recent team actions and updates',
       },
     },
   ]

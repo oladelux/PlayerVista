@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
 import { AreaChart, ArrowRight, BarChart, UserCheck, Users } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import {
   Area,
   Bar,
@@ -292,10 +293,16 @@ export function PlayerPerformanceCard({
       </CardContent>
       <CardFooter className='pt-3'>
         <Button variant='ghost' className='w-full justify-between' asChild>
-          <a href='/player-stats'>
-            View detailed stats
+          <Link
+            to={
+              selectedPlayer === '0'
+                ? `/team-stats/${teamId}`
+                : `/player-statistics/${selectedPlayer}`
+            }
+          >
+            {selectedPlayer === '0' ? 'View team stats' : 'View player stats'}
             <ArrowRight size={16} />
-          </a>
+          </Link>
         </Button>
       </CardFooter>
     </Card>
