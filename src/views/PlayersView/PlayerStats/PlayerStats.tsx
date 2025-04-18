@@ -7,7 +7,6 @@ import { useOutletContext, useParams } from 'react-router-dom'
 import { z } from 'zod'
 
 import { DashboardLayoutOutletContext } from '@/component/DashboardLayout/DashboardLayout'
-import DownloadPdfButton from '@/component/DownloadPdfButton/DownloadPdfButton'
 import { LoadingPage } from '@/component/LoadingPage/LoadingPage'
 import PlayerDataTab from '@/component/PlayerDataTab/PlayerDataTab'
 import DatePickerField from '@/components/form/DatePickerField'
@@ -16,14 +15,15 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import { ExportPdfButton } from '@/components/ui/export-pdf-button'
 import { Form } from '@/components/ui/form'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { PdfType } from '@/config/PdfType'
 import { useEvents } from '@/hooks/useEvents'
 import { usePerformance } from '@/hooks/usePerformance'
 import { usePlayer } from '@/hooks/usePlayer'
 import { calculateAge } from '@/services/helper'
 import { combineDateAndTime } from '@/utils/dateObject'
+import { createPlayerSeasonPdfOptions } from '@/utils/exportPlayerPdf'
 import {
   aggregatePlayerActions,
   DefensiveMetrics,
@@ -32,20 +32,7 @@ import {
   OffensiveMetrics,
   PossessionMetrics,
 } from '@/utils/phaseMetrics'
-import {
-  getDefensiveChartData,
-  getDefensiveData,
-  getDisciplinaryChartData,
-  getDisciplinaryData,
-  getGoalkeeperChartData,
-  getGoalkeeperData,
-  getOffensiveChartData,
-  getOffensiveData,
-  getPlayerMatches,
-  getPlayerPerformanceData,
-  getPossessionChartData,
-  getPossessionData,
-} from '@/utils/players'
+import { getPlayerMatches, getPlayerPerformanceData } from '@/utils/players'
 import { SessionInstance } from '@/utils/SessionInstance'
 
 import { PlayerMatchStats } from './PlayerMatchStats'
@@ -115,6 +102,10 @@ export function PlayerStats() {
   const year = form.watch('year')
   const hasFilters = !!year || !!(dateRange?.from || dateRange?.to)
 
+  // Create PDF options for the player using the helper function
+  const playerFullName = `${player.firstName} ${player.lastName}`
+  const pdfOptions = createPlayerSeasonPdfOptions(playerId || '', playerFullName, team.teamName)
+
   // Filter performance data based on selected filters
   const filteredData = performanceByPlayer.filter(performance => {
     const event = events.find(event => event.id === performance.eventId)
@@ -153,223 +144,207 @@ export function PlayerStats() {
 
   const numberOfMatchesPlayed = filteredData.filter(match => match.minutePlayed !== null).length
 
-  // Sort filtered data by event start date
-  const sortedPlayerData = filteredData.sort((a, b) => {
-    const eventA = events.find(event => event.id === a.eventId)
-    const eventB = events.find(event => event.id === b.eventId)
-    if (!eventA || !eventB) return 0
-    return (
-      new Date(combineDateAndTime(eventA.date, eventA.time)).getTime() -
-      new Date(combineDateAndTime(eventB.date, eventB.time)).getTime()
-    )
-  })
-
   // Aggregate player data for stats
   const aggregatePlayerData = aggregatePlayerActions(filteredData)
-
-  // Generate data for different stat categories
-  const offensiveData = getOffensiveData(aggregatePlayerData)
-  const defensiveData = getDefensiveData(aggregatePlayerData)
-  const possessionData = getPossessionData(aggregatePlayerData)
-  const disciplinaryData = getDisciplinaryData(aggregatePlayerData)
-  const goalkeeperData = getGoalkeeperData(aggregatePlayerData)
-
-  // Generate chart data
-  const offensiveChartData = getOffensiveChartData(sortedPlayerData)
-  const defensiveChartData = getDefensiveChartData(sortedPlayerData)
-  const possessionChartData = getPossessionChartData(sortedPlayerData)
-  const disciplinaryChartData = getDisciplinaryChartData(sortedPlayerData)
-  const goalkeeperChartData = getGoalkeeperChartData(sortedPlayerData)
 
   // Generate player initials for avatar
   const playerInitials = `${player.firstName?.charAt(0) || ''}${player.lastName?.charAt(0) || ''}`
 
   return (
-    <div className='animate-fade-in space-y-6 p-4 md:p-6'>
-      <Card className='overflow-hidden bg-gradient-to-r from-[rgb(36,0,38)] to-[rgb(80,20,83)] text-white'>
-        <CardContent className='relative p-6'>
-          <div className='relative z-10 flex flex-col gap-6 md:flex-row md:items-center'>
-            <div className='flex items-center gap-4'>
-              <Avatar className='size-24 border-2 border-white/30'>
-                <AvatarFallback className='bg-white/10 text-3xl text-white'>
-                  {playerInitials}
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <h2 className='flex items-center gap-2 text-3xl font-bold'>
-                  {player.firstName} {player.lastName}
-                  <Badge className='ml-2 bg-white/20 text-white hover:bg-white/30'>
-                    {player.uniformNumber}
-                  </Badge>
-                </h2>
-                <div className='mt-1 flex items-center gap-2'>
-                  <Badge variant='outline' className='border-white/30 text-white'>
-                    {player.position}
-                  </Badge>
-                  <span className='text-sm text-white/70'>{team.teamName}</span>
+    <>
+      <ExportPdfButton
+        options={pdfOptions}
+        variant='default'
+        style={{ backgroundColor: 'rgb(36, 0, 38)' }}
+        className='flex items-center gap-1.5'
+        customLabel='Export Full Report'
+      />
+      <div className='animate-fade-in space-y-6 p-4 md:p-6'>
+        <Card className='overflow-hidden bg-gradient-to-r from-[rgb(36,0,38)] to-[rgb(80,20,83)] text-white'>
+          <CardContent className='relative p-6'>
+            <div className='relative z-10 flex flex-col gap-6 md:flex-row md:items-center'>
+              <div className='flex items-center gap-4'>
+                <Avatar className='size-24 border-2 border-white/30'>
+                  <AvatarFallback className='bg-white/10 text-3xl text-white'>
+                    {playerInitials}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <h2 className='flex items-center gap-2 text-3xl font-bold'>
+                    {player.firstName} {player.lastName}
+                    <Badge className='ml-2 bg-white/20 text-white hover:bg-white/30'>
+                      {player.uniformNumber}
+                    </Badge>
+                  </h2>
+                  <div className='mt-1 flex items-center gap-2'>
+                    <Badge variant='outline' className='border-white/30 text-white'>
+                      {player.position}
+                    </Badge>
+                    <span className='text-sm text-white/70'>{team.teamName}</span>
+                  </div>
+                  <div className='mt-2 flex items-center gap-2'>
+                    <Badge className='bg-white/20 text-white hover:bg-white/30'>
+                      Matches: {numberOfMatchesPlayed}
+                    </Badge>
+                    <Badge className='bg-white/20 text-white hover:bg-white/30'>
+                      Minutes: {totalMinutesPlayed}
+                    </Badge>
+                  </div>
                 </div>
-                <div className='mt-2 flex items-center gap-2'>
-                  <Badge className='bg-white/20 text-white hover:bg-white/30'>
-                    Matches: {numberOfMatchesPlayed}
-                  </Badge>
-                  <Badge className='bg-white/20 text-white hover:bg-white/30'>
-                    Minutes: {totalMinutesPlayed}
-                  </Badge>
+              </div>
+
+              <div className='mt-4 grid flex-1 grid-cols-2 gap-4 text-white sm:grid-cols-3 md:mt-0 md:grid-cols-5'>
+                <div className='space-y-1'>
+                  <p className='text-sm text-white/70'>Age</p>
+                  <p className='font-medium'>{calculateAge(player.birthDate)}</p>
+                </div>
+                <div className='space-y-1'>
+                  <p className='text-sm text-white/70'>Nationality</p>
+                  <p className='font-medium'>{player.nationality}</p>
+                </div>
+                <div className='space-y-1'>
+                  <p className='text-sm text-white/70'>Height</p>
+                  <p className='font-medium'>{player.height}</p>
+                </div>
+                <div className='space-y-1'>
+                  <p className='text-sm text-white/70'>Weight</p>
+                  <p className='font-medium'>{player.weight}</p>
+                </div>
+                <div className='space-y-1'>
+                  <p className='text-sm text-white/70'>Preferred Foot</p>
+                  <p className='font-medium'>{player.preferredFoot}</p>
                 </div>
               </div>
             </div>
 
-            <div className='mt-4 grid flex-1 grid-cols-2 gap-4 text-white sm:grid-cols-3 md:mt-0 md:grid-cols-5'>
-              <div className='space-y-1'>
-                <p className='text-sm text-white/70'>Age</p>
-                <p className='font-medium'>{calculateAge(player.birthDate)}</p>
-              </div>
-              <div className='space-y-1'>
-                <p className='text-sm text-white/70'>Nationality</p>
-                <p className='font-medium'>{player.nationality}</p>
-              </div>
-              <div className='space-y-1'>
-                <p className='text-sm text-white/70'>Height</p>
-                <p className='font-medium'>{player.height}</p>
-              </div>
-              <div className='space-y-1'>
-                <p className='text-sm text-white/70'>Weight</p>
-                <p className='font-medium'>{player.weight}</p>
-              </div>
-              <div className='space-y-1'>
-                <p className='text-sm text-white/70'>Preferred Foot</p>
-                <p className='font-medium'>{player.preferredFoot}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Background decorative elements */}
-          <div className='absolute right-0 top-0 size-64 -translate-y-1/2 translate-x-1/4 rounded-full bg-white/5'></div>
-          <div className='absolute bottom-0 left-0 size-48 -translate-x-1/4 translate-y-1/2 rounded-full bg-white/5'></div>
-        </CardContent>
-      </Card>
-      {/* Filters Card */}
-      <Card>
-        <CardContent className='p-6'>
-          <div className='flex flex-col items-start justify-between gap-4 md:flex-row md:items-center'>
-            <Form {...form}>
-              <form className='w-full'>
-                <div className='flex gap-4'>
-                  <div>
-                    <div className='mb-1 text-xs text-muted-foreground'>Filter by Year</div>
-                    <SelectFormField
-                      control={form.control}
-                      name='year'
-                      options={yearSelect}
-                      inputClassName='w-fit'
-                    />
-                  </div>
-                  <div>
-                    <div className='mb-1 text-xs text-muted-foreground'>Filter by Date Range</div>
-                    <DatePickerField control={form.control} name='dateRange' />
-                  </div>
-                </div>
-              </form>
-            </Form>
-
-            {hasFilters && (
-              <Button
-                variant='outline'
-                size='sm'
-                className='flex items-center gap-1.5'
-                onClick={() => form.reset()}
-              >
-                <RotateCcw size={14} />
-                Reset Filters
-              </Button>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Stats View Toggle */}
-      <div className='flex justify-between gap-2'>
-        <div className='flex space-x-2'>
-          <Button
-            variant={view === 'overview' ? 'default' : 'outline'}
-            size='sm'
-            onClick={() => setView('overview')}
-            className='flex items-center gap-1.5'
-          >
-            <BarChart3 size={16} />
-            Season Overview
-          </Button>
-          <Button
-            variant={view === 'matches' ? 'default' : 'outline'}
-            size='sm'
-            onClick={() => setView('matches')}
-            className='flex items-center gap-1.5'
-          >
-            <Calendar size={16} />
-            Match by Match
-          </Button>
-        </div>
-        <DownloadPdfButton
-          templateName='fullPlayerReport'
-          filename={`${player.lastName}_${player.firstName}`}
-          pdfType={PdfType.FULL_PLAYER_REPORT}
-          data={{
-            player,
-            team,
-            totalMatchesPlayed: numberOfMatchesPlayed,
-            totalMinutesPlayed,
-            calculatedAge: calculateAge(player.birthDate),
-            offensiveData,
-            defensiveData,
-            possessionData,
-            disciplinaryData,
-            goalkeeperData,
-            offensiveChartData: JSON.stringify(offensiveChartData),
-            defensiveChartData: JSON.stringify(defensiveChartData),
-            possessionChartData: JSON.stringify(possessionChartData),
-            disciplinaryChartData: JSON.stringify(disciplinaryChartData),
-            goalkeeperChartData: JSON.stringify(goalkeeperChartData),
-          }}
-        />
-      </div>
-
-      {/* Main Content */}
-      {view === 'overview' && (
-        // Performance Tabs
-        <Card>
-          <CardContent className='p-6'>
-            <Tabs defaultValue='offensive'>
-              <TabsList className='mb-5 grid grid-cols-5 gap-2'>
-                <TabsTrigger value='offensive'>Offensive</TabsTrigger>
-                <TabsTrigger value='defensive'>Defensive</TabsTrigger>
-                <TabsTrigger value='possession'>Possession</TabsTrigger>
-                <TabsTrigger value='disciplinary'>Disciplinary</TabsTrigger>
-                <TabsTrigger value='goalkeeping'>Goalkeeping</TabsTrigger>
-              </TabsList>
-              <TabsContent value='offensive' className='animate-fade-in rounded-lg border p-6'>
-                <PlayerDataTab metrics={OffensiveMetrics} actions={aggregatePlayerData} />
-              </TabsContent>
-              <TabsContent value='defensive' className='animate-fade-in rounded-lg border p-6'>
-                <PlayerDataTab metrics={DefensiveMetrics} actions={aggregatePlayerData} />
-              </TabsContent>
-              <TabsContent value='possession' className='animate-fade-in rounded-lg border p-6'>
-                <PlayerDataTab metrics={PossessionMetrics} actions={aggregatePlayerData} />
-              </TabsContent>
-              <TabsContent value='disciplinary' className='animate-fade-in rounded-lg border p-6'>
-                <PlayerDataTab metrics={DisciplineMetric} actions={aggregatePlayerData} />
-              </TabsContent>
-              <TabsContent value='goalkeeping' className='animate-fade-in rounded-lg border p-6'>
-                <PlayerDataTab metrics={GoalkeepingMetrics} actions={aggregatePlayerData} />
-              </TabsContent>
-            </Tabs>
+            {/* Background decorative elements */}
+            <div className='absolute right-0 top-0 size-64 -translate-y-1/2 translate-x-1/4 rounded-full bg-white/5'></div>
+            <div className='absolute bottom-0 left-0 size-48 -translate-x-1/4 translate-y-1/2 rounded-full bg-white/5'></div>
           </CardContent>
         </Card>
-      )}
+        {/* Filters Card */}
+        <Card>
+          <CardContent className='p-6'>
+            <div className='flex flex-col items-start justify-between gap-4 md:flex-row md:items-center'>
+              <Form {...form}>
+                <form className='w-full'>
+                  <div className='flex gap-4'>
+                    <div>
+                      <div className='mb-1 text-xs text-muted-foreground'>Filter by Year</div>
+                      <SelectFormField
+                        control={form.control}
+                        name='year'
+                        options={yearSelect}
+                        inputClassName='w-fit'
+                      />
+                    </div>
+                    <div>
+                      <div className='mb-1 text-xs text-muted-foreground'>Filter by Date Range</div>
+                      <DatePickerField control={form.control} name='dateRange' />
+                    </div>
+                  </div>
+                </form>
+              </Form>
 
-      {view === 'matches' && <PlayerMatchStats playerData={player} matchesData={playerMatches} />}
+              {hasFilters && (
+                <Button
+                  variant='outline'
+                  size='sm'
+                  className='flex items-center gap-1.5'
+                  onClick={() => form.reset()}
+                >
+                  <RotateCcw size={14} />
+                  Reset Filters
+                </Button>
+              )}
+            </div>
+          </CardContent>
+        </Card>
 
-      {/* Performance Over Time */}
-      {view === 'overview' && <PlayerPerformanceChart performanceData={playerPerformanceData} />}
-    </div>
+        {/* Stats View Toggle */}
+        <div className='flex justify-between gap-2'>
+          <div className='flex space-x-2'>
+            <Button
+              variant={view === 'overview' ? 'default' : 'outline'}
+              size='sm'
+              onClick={() => setView('overview')}
+              className='flex items-center gap-1.5'
+            >
+              <BarChart3 size={16} />
+              Season Overview
+            </Button>
+            <Button
+              variant={view === 'matches' ? 'default' : 'outline'}
+              size='sm'
+              onClick={() => setView('matches')}
+              className='flex items-center gap-1.5'
+            >
+              <Calendar size={16} />
+              Match by Match
+            </Button>
+          </div>
+          {/* <DownloadPdfButton
+            templateName='fullPlayerReport'
+            filename={`${player.lastName}_${player.firstName}`}
+            pdfType={PdfType.FULL_PLAYER_REPORT}
+            data={{
+              player,
+              team,
+              totalMatchesPlayed: numberOfMatchesPlayed,
+              totalMinutesPlayed,
+              calculatedAge: calculateAge(player.birthDate),
+              offensiveData,
+              defensiveData,
+              possessionData,
+              disciplinaryData,
+              goalkeeperData,
+              offensiveChartData: JSON.stringify(offensiveChartData),
+              defensiveChartData: JSON.stringify(defensiveChartData),
+              possessionChartData: JSON.stringify(possessionChartData),
+              disciplinaryChartData: JSON.stringify(disciplinaryChartData),
+              goalkeeperChartData: JSON.stringify(goalkeeperChartData),
+            }}
+          /> */}
+        </div>
+
+        {/* Main Content */}
+        {view === 'overview' && (
+          // Performance Tabs
+          <Card>
+            <CardContent className='p-6'>
+              <Tabs defaultValue='offensive'>
+                <TabsList className='mb-5 grid grid-cols-5 gap-2'>
+                  <TabsTrigger value='offensive'>Offensive</TabsTrigger>
+                  <TabsTrigger value='defensive'>Defensive</TabsTrigger>
+                  <TabsTrigger value='possession'>Possession</TabsTrigger>
+                  <TabsTrigger value='disciplinary'>Disciplinary</TabsTrigger>
+                  <TabsTrigger value='goalkeeping'>Goalkeeping</TabsTrigger>
+                </TabsList>
+                <TabsContent value='offensive' className='animate-fade-in rounded-lg border p-6'>
+                  <PlayerDataTab metrics={OffensiveMetrics} actions={aggregatePlayerData} />
+                </TabsContent>
+                <TabsContent value='defensive' className='animate-fade-in rounded-lg border p-6'>
+                  <PlayerDataTab metrics={DefensiveMetrics} actions={aggregatePlayerData} />
+                </TabsContent>
+                <TabsContent value='possession' className='animate-fade-in rounded-lg border p-6'>
+                  <PlayerDataTab metrics={PossessionMetrics} actions={aggregatePlayerData} />
+                </TabsContent>
+                <TabsContent value='disciplinary' className='animate-fade-in rounded-lg border p-6'>
+                  <PlayerDataTab metrics={DisciplineMetric} actions={aggregatePlayerData} />
+                </TabsContent>
+                <TabsContent value='goalkeeping' className='animate-fade-in rounded-lg border p-6'>
+                  <PlayerDataTab metrics={GoalkeepingMetrics} actions={aggregatePlayerData} />
+                </TabsContent>
+              </Tabs>
+            </CardContent>
+          </Card>
+        )}
+
+        {view === 'matches' && <PlayerMatchStats playerData={player} matchesData={playerMatches} />}
+
+        {/* Performance Over Time */}
+        {view === 'overview' && <PlayerPerformanceChart performanceData={playerPerformanceData} />}
+      </div>
+    </>
   )
 }

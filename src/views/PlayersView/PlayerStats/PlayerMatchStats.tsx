@@ -46,7 +46,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { PdfType } from '@/config/PdfType'
+import { PdfTypeEnum } from '@/config/PdfType'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { PlayerMatch } from '@/utils/players'
 
@@ -531,7 +531,7 @@ export function PlayerMatchStats({ playerData, matchesData }: PlayerMatchStatsPr
             <DownloadPdfButton
               templateName='fullPlayerReport'
               filename={`${playerData.lastName}_${playerData.firstName}`}
-              pdfType={PdfType.FULL_PLAYER_REPORT}
+              pdfType={PdfTypeEnum.FULL_PLAYER_REPORT}
               data={playerData}
             />
           </CardFooter>

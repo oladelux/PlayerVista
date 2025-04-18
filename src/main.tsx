@@ -33,6 +33,7 @@ import { Staffs } from '@/views/UserManagementView/Staffs/Staffs.tsx'
 
 import './App.scss'
 import { setupStore } from './store'
+import { ActivityView } from './views/ActivityView/ActivityView'
 import { NotFound } from './views/NotFound'
 import { PlayerStats } from './views/PlayersView/PlayerStats/PlayerStats'
 import { TeamStats } from './views/TeamStats/TeamStats'
@@ -46,7 +47,6 @@ const router = createBrowserRouter([
     path: routes.signUp,
     element: <SignUp />,
   },
-
   {
     path: routes.selectPlan,
     element: <SelectPlan />,
@@ -89,8 +89,12 @@ const router = createBrowserRouter([
       { path: routes.settings, element: <SettingsView /> },
       { path: routes.addPlayer, element: <AddPlayer /> },
       { path: routes.addStaff, element: <AddStaff /> },
-      { path: '*', element: <NotFound /> },
+      { path: routes.activity, element: <ActivityView /> },
     ],
+  },
+  {
+    path: '*',
+    element: <NotFound />,
   },
 ])
 

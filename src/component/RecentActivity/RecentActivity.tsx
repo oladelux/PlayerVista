@@ -1,6 +1,15 @@
 import { useMemo } from 'react'
 
-import { ArrowRight, Clock, MessageCircle, UserPlus } from 'lucide-react'
+import {
+  ArrowRight,
+  Calendar,
+  MessageCircle,
+  PenLine,
+  Trophy,
+  UserCog,
+  UserPlus,
+} from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 import { LogType } from '@/api'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -71,7 +80,59 @@ export function RecentActivity({ applicationLogs }: RecentActivityProps) {
     [applicationLogs],
   )
 
-  // Map your log data to the format expected by ActivityItem
+  // Determine the appropriate icon based on the log message content
+  const getIconForLogMessage = (message: string) => {
+    const lowerMessage = message.toLowerCase()
+
+    if (
+      lowerMessage.includes('add team') ||
+      lowerMessage.includes('new team') ||
+      lowerMessage.includes('created team')
+    ) {
+      return <UserPlus size={14} className='text-blue-500' />
+    } else if (
+      lowerMessage.includes('staff') ||
+      lowerMessage.includes('coach') ||
+      lowerMessage.includes('join')
+    ) {
+      return <UserPlus size={14} className='text-emerald-500' />
+    } else if (
+      lowerMessage.includes('match') ||
+      lowerMessage.includes('game') ||
+      lowerMessage.includes('win') ||
+      lowerMessage.includes('score')
+    ) {
+      return <Trophy size={14} className='text-amber-500' />
+    } else if (
+      lowerMessage.includes('event') ||
+      lowerMessage.includes('upcoming') ||
+      lowerMessage.includes('date')
+    ) {
+      return <Calendar size={14} className='text-blue-500' />
+    } else if (
+      lowerMessage.includes('update') ||
+      lowerMessage.includes('edit') ||
+      lowerMessage.includes('change')
+    ) {
+      return <PenLine size={14} className='text-violet-500' />
+    } else if (
+      lowerMessage.includes('stat') ||
+      lowerMessage.includes('analytics') ||
+      lowerMessage.includes('performance')
+    ) {
+      return <UserCog size={14} className='text-indigo-500' />
+    } else if (
+      lowerMessage.includes('comment') ||
+      lowerMessage.includes('message') ||
+      lowerMessage.includes('chat')
+    ) {
+      return <MessageCircle size={14} className='text-amber-500' />
+    } else {
+      return <UserCog size={14} className='text-violet-500' />
+    }
+  }
+
+  // Map the actual logs to the format expected by ActivityItem
   const activitiesData = sortedApplicationLogs.map((log, index) => {
     // Get initials from username for avatar fallback
     const initials = log.username
@@ -81,24 +142,13 @@ export function RecentActivity({ applicationLogs }: RecentActivityProps) {
       .toUpperCase()
       .substring(0, 2)
 
-    // Choose an icon based on some logic (you can customize this)
-    const getIcon = () => {
-      // This is just an example - you might want to derive icons based on log message content
-      const icons = [
-        <UserPlus key='user' size={14} className='text-emerald-500' />,
-        <MessageCircle key='message' size={14} className='text-amber-500' />,
-        <Clock key='clock' size={14} className='text-blue-500' />,
-      ]
-      return icons[index % icons.length]
-    }
-
     return {
       id: index,
       avatarFallback: initials,
       title: `${log.username} ${log.message}`,
       description: formatDate(log.createdAt),
       timestamp: new Date(log.createdAt),
-      icon: getIcon(),
+      icon: getIconForLogMessage(log.message),
     }
   })
 
@@ -110,24 +160,32 @@ export function RecentActivity({ applicationLogs }: RecentActivityProps) {
       </CardHeader>
       <CardContent className='pb-1'>
         <div className='space-y-1 divide-y divide-border'>
-          {activitiesData.slice(0, 5).map(activity => (
-            <ActivityItem
-              key={activity.id}
-              avatarFallback={activity.avatarFallback}
-              title={activity.title}
-              description={activity.description}
-              timestamp={activity.timestamp}
-              icon={activity.icon}
-            />
-          ))}
+          {activitiesData.length > 0 ? (
+            activitiesData
+              .slice(0, 5)
+              .map(activity => (
+                <ActivityItem
+                  key={activity.id}
+                  avatarFallback={activity.avatarFallback}
+                  title={activity.title}
+                  description={activity.description}
+                  timestamp={activity.timestamp}
+                  icon={activity.icon}
+                />
+              ))
+          ) : (
+            <p className='py-4 text-center text-sm text-muted-foreground'>
+              No recent activity to display
+            </p>
+          )}
         </div>
       </CardContent>
       <CardFooter className='pt-3'>
         <Button variant='ghost' className='w-full justify-between' asChild>
-          <a href='#'>
+          <Link to='/activity'>
             View all activity
             <ArrowRight size={16} />
-          </a>
+          </Link>
         </Button>
       </CardFooter>
     </Card>

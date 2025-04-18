@@ -45,7 +45,7 @@ export function NotFound() {
           <img src={PlayerVistaLogo} alt='playervista' width={150} />
         </div>
 
-        <Card className='mb-8 border-primary/20 bg-opacity-90 p-6 backdrop-blur-sm'>
+        <Card className='mb-8 border-primary/20 bg-background/90 p-6 backdrop-blur-sm'>
           <div className='relative mb-8 flex justify-center'>
             <div className='pointer-events-none absolute select-none opacity-10'>
               <motion.div
